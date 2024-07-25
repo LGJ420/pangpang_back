@@ -7,8 +7,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Entity
+@Getter
+@Builder
 public class member {
 
     // ▼▼▼ 로그인할 때 필요한 데이터 ▼▼▼
