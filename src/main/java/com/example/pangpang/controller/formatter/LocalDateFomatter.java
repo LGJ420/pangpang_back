@@ -17,13 +17,13 @@ public class LocalDateFomatter implements Formatter<LocalDate>{
     @Override
     public LocalDate parse(String text, Locale locale) {
         
-        return LocalDate.parse(text, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return LocalDate.parse(text, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     @Override
     public String print(LocalDate object, Locale locale) {
         
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(object);
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(object);
     }
     
 }
