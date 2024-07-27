@@ -1,8 +1,5 @@
 package com.example.pangpang.entity;
 
-import java.time.*;
-import java.util.*;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,20 +9,19 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Article {
+public class Orders {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String articleTitle;
-    private String articleContent;
-    private LocalDateTime articleCreated;
-    private LocalDateTime articleUpdated;
+    private int orderCount;
+    private String orderAddress;
+    private String orderPhone;
 
     @ManyToOne
     private Member member;
 
-    @OneToMany
-    private List<Comment> comments;
+    @ManyToOne
+    private Product product;
 }

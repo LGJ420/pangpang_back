@@ -1,7 +1,6 @@
 package com.example.pangpang.entity;
 
 import java.time.*;
-import java.util.*;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,20 +11,19 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Article {
+public class Comment {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String articleTitle;
-    private String articleContent;
-    private LocalDateTime articleCreated;
-    private LocalDateTime articleUpdated;
+    private String commentContent;
+    private LocalDateTime commentCreated;
+    private LocalDateTime commentUpdated;
 
     @ManyToOne
     private Member member;
 
-    @OneToMany
-    private List<Comment> comments;
+    @ManyToOne
+    private Article article;
 }
