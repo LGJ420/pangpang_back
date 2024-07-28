@@ -23,7 +23,7 @@ import net.coobird.thumbnailator.Thumbnails;
 @RequiredArgsConstructor
 public class CustomFileUtil {
 
-    @Value("${org.zerock.upload.path}")
+    @Value("${com.example.upload.path}")
     private String uploadPath;
 
     @PostConstruct
