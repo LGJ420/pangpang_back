@@ -24,8 +24,9 @@ public class Article {
     private LocalDateTime articleUpdated;
 
     @ManyToOne
+    @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany
+    @OneToMany(mappedBy = "article")
     private List<Comment> comments;
 }

@@ -23,9 +23,9 @@ public class Product {
     private String productContent;
     private int productPrice;
 
-    @OneToMany
+    @ElementCollection
     private List<ProductImage> productImages;
 
-    @OneToMany
+    @OneToMany(mappedBy = "product")
     private List<Orders> orders;
 }

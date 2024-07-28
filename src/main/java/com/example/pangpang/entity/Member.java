@@ -55,12 +55,12 @@ public class Member {
         // ▲▲▲ 회원가입, ID/PW찾기 때 필요한 데이터 ▲▲▲
 
 
-        @OneToMany
+        @OneToMany(mappedBy = "member")
         private List<Orders> orders;
 
-        @OneToMany
+        @OneToMany(mappedBy = "member")
         private List<Article> articles;
 
-        @OneToMany
+        @OneToMany(mappedBy = "member")
         private List<Comment> comment;
 }

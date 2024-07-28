@@ -20,8 +20,10 @@ public class Orders {
     private String orderPhone;
 
     @ManyToOne
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 }
