@@ -13,14 +13,16 @@ import lombok.*;
 @NoArgsConstructor
 public class Product {
     
+    // 기본키
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id;    
 
-    private String productTitle;
-    private String productContent;
-    private int productPrice;
+    private String productTitle;    // 상품 이름
+    private String productContent;  // 상품 설명
+    private int productPrice;       // 상품 가격
 
+    // 상품 주문
     @OneToMany(mappedBy = "product")
     private List<Orders> orders;
 }

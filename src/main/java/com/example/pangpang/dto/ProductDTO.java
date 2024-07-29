@@ -25,10 +25,10 @@ public class ProductDTO {
     @Positive
     private int productPrice;
 
-    @Builder.Default
-    private List<MultipartFile> files = new ArrayList<>();
+    // @Builder.Default
+    // private List<MultipartFile> files = new ArrayList<>();
 
-    @Builder.Default
-    private List<String> uploadFileNames = new ArrayList<>();
+    // @Builder.Default
+    // private List<String> uploadFileNames = new ArrayList<>();
 
 }
