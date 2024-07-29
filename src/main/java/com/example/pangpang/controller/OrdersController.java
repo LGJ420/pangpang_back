@@ -29,7 +29,7 @@ public class OrdersController {
     }
 
 
-    @PostMapping("/")
+    @PostMapping("")
     public Map<String, String> add(@RequestBody OrdersDTO ordersDTO){
 
         ordersService.add(ordersDTO);

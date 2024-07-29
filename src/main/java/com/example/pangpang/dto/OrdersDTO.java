@@ -18,4 +18,10 @@ public class OrdersDTO {
 
     @NotEmpty
     private String orderPhone;
+
+    @Positive
+    private Long memberId;
+
+    @Positive
+    private Long productId;
 }
