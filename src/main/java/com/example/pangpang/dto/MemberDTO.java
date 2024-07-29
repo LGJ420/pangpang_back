@@ -1,5 +1,10 @@
 package com.example.pangpang.dto;
 
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -14,7 +19,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberDTO {
+public class MemberDTO implements UserDetails {
 
     @NotNull
     private String memberId;
@@ -28,5 +33,22 @@ public class MemberDTO {
     @NotNull
     @Size(min = 6, max = 6)
     private int memberBirth;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // 권한 설정 로직 (필요 시 구현)
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return memberId;
+    }
+
+    @Override
+    public String getPassword() {
+        return memberPw;
+    }
+
 
 }
