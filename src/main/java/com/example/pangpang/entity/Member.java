@@ -5,14 +5,6 @@ import jakarta.persistence.*;
 
 import lombok.*;
 
-/*
- * 이 주석은 지워도 읽고 지워도됩니다
- * 
- * 1. 클래스 이름은 대문자라서 member -> Meber 수정했어요
- * 2. 자바는 카멜기법 써야되서 member_id -> memberId 수정했어요
- * 3. 생년월일은 Birth가 좋을거같아서 바꿨어요
- * 4. 검증은 DTO단계에서 하기로 해서 검증애노테이션들은 DTO로 옮겼어요 (@NotNull같은것들)
- */
 @Entity
 @Getter
 @Builder
