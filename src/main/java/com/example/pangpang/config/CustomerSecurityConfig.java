@@ -38,6 +38,10 @@ public class CustomerSecurityConfig {
         http.csrf(config -> config.disable());
         // ▲▲▲ CSRF 보호 비활성화 코드(☆★☆★배포 시 삭제하기!!!!!!!!!!!!!!!!!!!!☆★☆★) ▲▲▲
 
+        http.formLogin(config -> {
+            config.loginPage("/api/member/login");
+        });
+        
         return http.build();
     }
 
