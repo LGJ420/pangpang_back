@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.example.pangpang.dto.CartDTO;
+import com.example.pangpang.dto.CartListDTO;
 import com.example.pangpang.entity.Cart;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.entity.Product;
@@ -53,17 +54,18 @@ public class CartService {
     }
 
 
-    public List<CartDTO> list(){
+    public List<CartListDTO> list(){
 
-        List<CartDTO> cartDTOs = cartRepository.findAll()
+        List<CartListDTO> cartListDTOs = cartRepository.findAll()
             .stream()
-            .map(cart->CartDTO.builder()
+            .map(cart->CartListDTO.builder()
+                .productTitle(cart.getProduct().getProductTitle())
+                .productContent(cart.getProduct().getProductContent())
+                .productPrice(cart.getProduct().getProductPrice())
                 .cartCount(cart.getCartCount())
-                .memberId(cart.getMember().getId())
-                .productId(cart.getProduct().getId())
                 .build())
             .collect(Collectors.toList());
         
-        return cartDTOs;
+        return cartListDTOs;
     }
 }
