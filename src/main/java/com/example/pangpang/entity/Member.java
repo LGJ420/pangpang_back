@@ -23,29 +23,28 @@ public class Member {
         // 유저 아이디
         @Column(unique = true)
         private String memberId;
-        
+
         // 유저 비밀번호
         @Column(nullable = false)
         private String memberPw;
-        
+
         // ▲▲▲ 로그인할 때 필요한 데이터 ▲▲▲
-        
+
         // =============================================
-        
+
         // ▼▼▼ 회원가입, ID/PW찾기 때 필요한 데이터 ▼▼▼
-        
+
         // 유저 이름
         private String memberName;
-        
+
         // 유저 생년월일(주민번호 6자리)
-        private int memberBirth;
-        
+        private String memberBirth;
+
         // 유저 역할 (admin(관리자), user(일반유저))
-        // 사람들이 회원가입할 때 <input type="hidden" name="role" value="user"> 로 숨겨두기
+        // 사람들이 회원가입할 때 <input type="hidden"> 로 숨겨두기
         private String memberRole;
 
         // ▲▲▲ 회원가입, ID/PW찾기 때 필요한 데이터 ▲▲▲
-
 
         @OneToMany(mappedBy = "member")
         private List<Orders> orders;

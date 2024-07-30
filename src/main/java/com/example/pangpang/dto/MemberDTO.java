@@ -32,7 +32,9 @@ public class MemberDTO implements UserDetails {
     
     @NotNull
     @Size(min = 6, max = 6)
-    private int memberBirth;
+    private String memberBirth;
+
+    private String memberRole;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
