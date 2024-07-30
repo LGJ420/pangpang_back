@@ -15,6 +15,8 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private int cartCount;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
@@ -22,4 +24,10 @@ public class Cart {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+        
+    public void changeCartCount(int cartCount){
+
+        this.cartCount = cartCount;
+    }
 }

@@ -9,6 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 public class CartDTO {
     
+    @Positive
+    private int cartCount;
     
     @Positive
     private Long memberId;
