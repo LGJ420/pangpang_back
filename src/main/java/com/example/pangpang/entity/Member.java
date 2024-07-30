@@ -42,7 +42,7 @@ public class Member {
         
         // 유저 역할 (admin(관리자), user(일반유저))
         // 사람들이 회원가입할 때 <input type="hidden" name="role" value="user"> 로 숨겨두기
-        private String role;
+        private String memberRole;
 
         // ▲▲▲ 회원가입, ID/PW찾기 때 필요한 데이터 ▲▲▲
 
