@@ -1,5 +1,6 @@
 package com.example.pangpang.service;
 
+import org.hibernate.mapping.Map;
 import org.springframework.stereotype.Service;
 
 import com.example.pangpang.dto.MemberDTO;
@@ -17,5 +18,19 @@ public class MemberService{
     // 멤버 리포지터리 의존성주입
     private final MemberRepository memberRepository;
 
+    // 회원가입 서비스
+    public void createMember(MemberDTO memberDTO){
+
+        // 리액트 입력값 -> 엔티티 등록값 변경(매핑비스무리)
+        Member member = Member.builder()
+            .memberId(memberDTO.getMemberId())
+            .memberPw(memberDTO.getMemberPw())
+            .memberName(memberDTO.getMemberName())
+            .memberBirth(memberDTO.getMemberBirth())
+            .memberRole(memberDTO.getMemberRole())
+            .build();
+
+        memberRepository.save(member);
+    }
 
 }
