@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-
 /*
  * DTO는 정말 웹이랑 주고받는 객체
  * 그래서 정말 필요한것만 주고받는다
@@ -21,17 +20,17 @@ import lombok.*;
 @NoArgsConstructor
 public class MemberDTO implements UserDetails {
 
-    @NotNull
+    @NotNull(message = "아이디는 필수 항목입니다.")
     private String memberId;
-    
-    @NotNull
+
+    @NotNull(message = "비밀번호는 필수 항목입니다.")
     private String memberPw;
-    
-    @NotNull
+
+    @NotNull(message = "비밀번호 확인은 필수 항목입니다.")
     private String memberName;
-    
-    @NotNull
-    @Size(min = 6, max = 6)
+
+    @NotNull(message = "생년월일은 필수 항목입니다.")
+    @Size(min = 6, max = 6, message = "생년월일은 숫자 6자리로 입력해주세요.")
     private String memberBirth;
 
     private String memberRole;
@@ -51,6 +50,5 @@ public class MemberDTO implements UserDetails {
     public String getPassword() {
         return memberPw;
     }
-
 
 }
