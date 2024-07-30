@@ -1,6 +1,7 @@
 package com.example.pangpang.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,10 +19,17 @@ public class ProductController {
 
   private final ProductService productService;
 
-  // 목록 보기
+  /* 상품 목록 보기 */
   @GetMapping("/list")
   public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
     return productService.list(pageRequestDTO);
+  }
+
+
+  /* 상품 상세 보기 */
+  @GetMapping("/read/{id}")
+  public ProductDTO getDetail(@PathVariable(name = "id")Long id) {
+    return productService.getDetail(id);
   }
 
   

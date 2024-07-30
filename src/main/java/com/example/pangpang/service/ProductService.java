@@ -1,6 +1,7 @@
 package com.example.pangpang.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -28,7 +29,7 @@ public class ProductService {
     private final ModelMapper modelMapper;
     private final ProductRepository productRepository;
 
-    // 페이징 처리
+    /* 목록 보기 - 페이징 처리 */
     public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
 
       Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize());
@@ -42,5 +43,15 @@ public class ProductService {
       PageResponseDTO<ProductDTO> responseDTO = PageResponseDTO.<ProductDTO>withAll().dtoList(dtoList).pageRequestDTO(pageRequestDTO).totalCount(totalCount).build();
 
       return responseDTO;
+    }
+
+
+    /* 상품 상세보기 */
+    public ProductDTO getDetail(Long id) {
+      Optional<Product> result = productRepository.findById(id);
+      Product product = result.orElseThrow();
+      ProductDTO dto = modelMapper.map(product, ProductDTO.class);
+
+      return dto;
     }
 }
