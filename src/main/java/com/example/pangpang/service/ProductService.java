@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.pangpang.dto.PageRequestDTO;
@@ -20,38 +21,40 @@ import com.example.pangpang.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class ProductService {
-    
-    private final ModelMapper modelMapper;
-    private final ProductRepository productRepository;
 
-    /* 목록 보기 - 페이징 처리 */
-    public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
+  private final ModelMapper modelMapper;
+  private final ProductRepository productRepository;
 
-      Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize());
+  /* 목록 보기 - 페이징 처리 */
+  public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
 
-      Page<Product> result = productRepository.findAll(pageable);
+    // 한 페이지 당 보여줄 아이템 12개로 설정
+    Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
+        Sort.by("id").ascending());
 
-      List<ProductDTO> dtoList = result.getContent().stream().map(product -> modelMapper.map(product, ProductDTO.class)).collect(Collectors.toList());
+    Page<Product> result = productRepository.findAll(pageable);
 
-      long totalCount = result.getTotalElements();
+    List<ProductDTO> dtoList = result.getContent().stream().map(product -> modelMapper.map(product, ProductDTO.class))
+        .collect(Collectors.toList());
 
-      PageResponseDTO<ProductDTO> responseDTO = PageResponseDTO.<ProductDTO>withAll().dtoList(dtoList).pageRequestDTO(pageRequestDTO).totalCount(totalCount).build();
+    long totalCount = result.getTotalElements();
 
-      return responseDTO;
-    }
+    PageResponseDTO<ProductDTO> responseDTO = PageResponseDTO.<ProductDTO>withAll().dtoList(dtoList)
+        .pageRequestDTO(pageRequestDTO).totalCount(totalCount).build();
 
+    return responseDTO;
+  }
 
-    /* 상품 상세보기 */
-    public ProductDTO getDetail(Long id) {
-      Optional<Product> result = productRepository.findById(id);
-      Product product = result.orElseThrow();
-      ProductDTO dto = modelMapper.map(product, ProductDTO.class);
+  /* 상품 상세보기 */
+  public ProductDTO getDetail(Long id) {
+    Optional<Product> result = productRepository.findById(id);
+    Product product = result.orElseThrow();
+    ProductDTO dto = modelMapper.map(product, ProductDTO.class);
 
-      return dto;
-    }
+    return dto;
+  }
 }
