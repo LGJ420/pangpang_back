@@ -9,15 +9,11 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Orders {
+public class Cart {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private int orderCount;
-    private String orderAddress;
-    private String orderPhone;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -26,10 +22,4 @@ public class Orders {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-
-    
-    public void changeOrderCount(int orderCount){
-
-        this.orderCount = orderCount;
-    }
 }
