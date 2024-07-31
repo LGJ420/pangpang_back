@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.pangpang.dto.MemberDTO;
 import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.dto.MemberInFindPwDTO;
+import com.example.pangpang.dto.MemberInFindPwForResetDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.MemberService;
 
@@ -62,4 +63,14 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("비밀번호를 찾을 수 없습니다.");
         }
     }
+
+    // 비밀번호 찾기->비밀번호 변경
+    @PostMapping("/find_pw/reset")
+    public Map<String, String> resetPw(@Valid @RequestBody MemberInFindPwForResetDTO memberInFindPwResetForDTO) {
+
+        memberService.resetPw(memberInFindPwResetForDTO);
+
+        return Map.of("result", "비밀번호 변경 성공!");
+    }
+
 }

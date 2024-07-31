@@ -16,7 +16,7 @@ public class MemberInFindPwDTO {
     @NotNull(message = "아이디는 필수 항목입니다.")
     private String memberIdInFindPw;
 
-    @NotNull(message = "비밀번호 확인은 필수 항목입니다.")
+    @NotNull(message = "이름은 필수 항목입니다.")
     private String memberNameInFindPw;
 
     @NotNull(message = "생년월일은 필수 항목입니다.")

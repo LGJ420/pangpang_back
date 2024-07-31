@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.pangpang.dto.MemberDTO;
 import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.dto.MemberInFindPwDTO;
+import com.example.pangpang.dto.MemberInFindPwForResetDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.repository.MemberRepository;
 
@@ -61,12 +62,12 @@ public class MemberService {
     }
 
     // 비밀번호 찾기 서비스
-    public Optional<Member> findPw(MemberInFindPwDTO memberInFindPwDTO){
+    public Optional<Member> findPw(MemberInFindPwDTO memberInFindPwDTO) {
         // 리액트 입력값을 레포지토리를 통해 데이터 확인
         Optional<Member> memberInfo = memberRepository.findByMemberIdAndMemberNameAndMemberBirth(
-            memberInFindPwDTO.getMemberIdInFindPw(), 
-            memberInFindPwDTO.getMemberNameInFindPw(), 
-            memberInFindPwDTO.getMemberBirthInFindPw());
+                memberInFindPwDTO.getMemberIdInFindPw(),
+                memberInFindPwDTO.getMemberNameInFindPw(),
+                memberInFindPwDTO.getMemberBirthInFindPw());
 
         // 위에서 데이터를 확인했을 때 데이터의 유무 확인
         if (memberInfo.isPresent()) {
@@ -74,6 +75,21 @@ public class MemberService {
         } else {
             return Optional.empty();
         }
+    }
+
+    // 비밀번호 변경 서비스
+    public void resetPw(MemberInFindPwForResetDTO memberInFindPwResetForDTO) {
+        // 비밀번호 암호화
+        String encoderedPw = passwordEncoder.encode(memberInFindPwResetForDTO.getMemberPwInFindPwForReset());
+
+        // 리액트 입력값 -> 엔티티 등록값 변경
+        Member member = Member.builder()
+                .memberId(memberInFindPwResetForDTO.getMemberIdInFindPwForReset())
+                // 비밀번호만 암호화 된 거 사용
+                .memberPw(encoderedPw)
+                .build();
+
+        memberRepository.save(member);
     }
 
 }
