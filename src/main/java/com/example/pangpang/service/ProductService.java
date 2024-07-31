@@ -32,10 +32,10 @@ public class ProductService {
   /* 목록 보기 - 페이징 처리 */
   public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
 
-    // 테스트용
-    // System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getSearch());
-    // System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getPage());
-    // System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getSize());
+/*     테스트용
+    System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getSearch());
+    System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getPage());
+    System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getSize()); */
     
 
     // 페이지 정의
@@ -45,16 +45,15 @@ public class ProductService {
     // 검색 키워드 가져오기
     String search = pageRequestDTO.getSearch();
 
+    // Product 엔티티 정의
     Page<Product> result;
 
+    // 검색 키워드가 비워져 있지 않으면 검색 키워드 기준으로 페이징, 아니면 상품 목록 전체 출력
     if (search != null && !search.isEmpty()) {
       result = productRepository.findByProductTitleContaining(search, pageable);
     } else {
       result = productRepository.findAll(pageable);
     }
-
-    // Product 엔티티에서 페이징 정의한 것 기준으로 상품 목록 조회
-    // Page<Product> result = productRepository.findAll(pageable);
 
     // Product 엔티티를 ProductDTO로 변환하여 리스트로 만듦
     List<ProductDTO> dtoList = result.getContent().stream().map(product -> modelMapper.map(product, ProductDTO.class))
@@ -69,6 +68,8 @@ public class ProductService {
 
     return responseDTO;
   }
+
+
 
   /* 상품 상세보기 */
   public ProductDTO getDetail(Long id) {

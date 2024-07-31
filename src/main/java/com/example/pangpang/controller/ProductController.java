@@ -27,6 +27,7 @@ public class ProductController {
       @RequestParam(value = "size", defaultValue = "10") int size,
       @RequestParam(value = "search", required = false) String search) {
 
+    // URL에서 전달받은 데이터 PageRequestDTO에 저장
     PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
         .page(page)
         .size(size)
