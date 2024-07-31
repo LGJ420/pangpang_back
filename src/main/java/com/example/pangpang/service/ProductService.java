@@ -32,17 +32,38 @@ public class ProductService {
   /* 목록 보기 - 페이징 처리 */
   public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
 
-    // 한 페이지 당 보여줄 아이템 12개로 설정
+    // 테스트용
+    // System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getSearch());
+    // System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getPage());
+    // System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getSize());
+    
+
+    // 페이지 정의
     Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
-        Sort.by("id").ascending());
+        Sort.by("id").descending());
 
-    Page<Product> result = productRepository.findAll(pageable);
+    // 검색 키워드 가져오기
+    String search = pageRequestDTO.getSearch();
 
+    Page<Product> result;
+
+    if (search != null && !search.isEmpty()) {
+      result = productRepository.findByProductTitleContaining(search, pageable);
+    } else {
+      result = productRepository.findAll(pageable);
+    }
+
+    // Product 엔티티에서 페이징 정의한 것 기준으로 상품 목록 조회
+    // Page<Product> result = productRepository.findAll(pageable);
+
+    // Product 엔티티를 ProductDTO로 변환하여 리스트로 만듦
     List<ProductDTO> dtoList = result.getContent().stream().map(product -> modelMapper.map(product, ProductDTO.class))
         .collect(Collectors.toList());
 
+    // 전체 상품의 개수 가져옴
     long totalCount = result.getTotalElements();
 
+    // PageResponseDTO를 생성하여 dtoList, pageRequestDTO, totalCount를 포함하여 반환
     PageResponseDTO<ProductDTO> responseDTO = PageResponseDTO.<ProductDTO>withAll().dtoList(dtoList)
         .pageRequestDTO(pageRequestDTO).totalCount(totalCount).build();
 
