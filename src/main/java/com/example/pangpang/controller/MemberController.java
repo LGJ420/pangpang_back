@@ -38,21 +38,16 @@ public class MemberController {
 
     // 아이디 찾기
     @PostMapping(value = "/find_id")
-    public ResponseEntity<String> findId(@Valid @RequestBody MemberInFindIdDTO memberInFindIdDTO) {
+    public ResponseEntity<?> findId(@Valid @RequestBody MemberInFindIdDTO memberInFindIdDTO) {
 
         Optional<Member> memberInfo = memberService.findId(memberInFindIdDTO);
 
         if (memberInfo.isPresent()) {
-            return ResponseEntity.ok(memberInfo.get().getMemberId());
+            return ResponseEntity.ok(memberInfo.get());
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("아이디를 찾을 수 없습니다.");
         }
     }
-
-    // @GetMapping("/find_id")
-    // public String findId() {
-    // return new String();
-    // }
 
     // 비밀번호 찾기
 
