@@ -68,4 +68,15 @@ public class CartService {
         
         return cartListDTOs;
     }
+
+
+    public void delete(Long memberId, Long productId){
+
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(()->new EntityNotFoundException("Member not found"));
+        Product product = productRepository.findById(productId)
+            .orElseThrow(()->new EntityNotFoundException("Product not found"));
+
+        cartRepository.deleteByMemberAndProduct(member, product);
+    }
 }

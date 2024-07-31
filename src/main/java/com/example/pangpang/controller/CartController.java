@@ -27,13 +27,24 @@ public class CartController {
         return cartService.list();
     }
 
-
+    // 나중에 로그인한 사용자 id를 넘겨주어야함
+    // 지금은 cartDTO안에 1로 고정되있음
     @PostMapping("")
     public Map<String, String> add(@Valid @RequestBody CartDTO cartDTO){
 
         cartService.add(cartDTO);
 
         return Map.of("result", "추가 완료");
+    }
+
+
+    // 나중에 로그인한 사용자 id를 넘겨주어야함
+    @DeleteMapping("")
+    public Map<String, String> delete(Long memberId, Long productId){
+
+        cartService.delete(memberId, productId);
+
+        return Map.of("result", "삭제 완료");
     }
     
 }
