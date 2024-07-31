@@ -39,10 +39,13 @@ public class CartController {
 
 
     // 나중에 로그인한 사용자 id를 넘겨주어야함
+    // 지금은 1로 강제로 고정
     @DeleteMapping("")
-    public Map<String, String> delete(Long memberId, Long productId){
+    public Map<String, String> delete(@RequestBody CartListDTO cartListDTO){
 
-        cartService.delete(memberId, productId);
+        Long memberId = 1L;
+
+        cartService.delete(memberId, cartListDTO);
 
         return Map.of("result", "삭제 완료");
     }

@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 public class CartListDTO {
     
+    private Long productId;
     private String productTitle;
     private String productContent;
     private int productPrice;
