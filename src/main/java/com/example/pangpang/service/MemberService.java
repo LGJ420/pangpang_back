@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.pangpang.dto.MemberDTO;
 import com.example.pangpang.dto.MemberInFindIdDTO;
+import com.example.pangpang.dto.MemberInFindPwDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.repository.MemberRepository;
 
@@ -46,17 +47,33 @@ public class MemberService {
 
     // 아이디 찾기 서비스
     public Optional<Member> findId(MemberInFindIdDTO memberInFindIdDTO) {
-        // 리액트 입력값 -> 엔티티 등록값 변경
+        // 리액트 입력값을 레포지토리를 통해 데이터 확인
         Optional<Member> memberInfo = memberRepository.findByMemberNameAndMemberBirth(
                 memberInFindIdDTO.getMemberNameInFindId(),
                 memberInFindIdDTO.getMemberBirthInFindId());
 
+        // 위에서 데이터를 확인했을 때 데이터의 유무 확인
         if (memberInfo.isPresent()) {
             return Optional.of(memberInfo.get());
         } else {
             return Optional.empty();
         }
+    }
 
+    // 비밀번호 찾기 서비스
+    public Optional<Member> findPw(MemberInFindPwDTO memberInFindPwDTO){
+        // 리액트 입력값을 레포지토리를 통해 데이터 확인
+        Optional<Member> memberInfo = memberRepository.findByMemberIdAndMemberNameAndMemberBirth(
+            memberInFindPwDTO.getMemberIdInFindPw(), 
+            memberInFindPwDTO.getMemberNameInFindPw(), 
+            memberInFindPwDTO.getMemberBirthInFindPw());
+
+        // 위에서 데이터를 확인했을 때 데이터의 유무 확인
+        if (memberInfo.isPresent()) {
+            return Optional.of(memberInfo.get());
+        } else {
+            return Optional.empty();
+        }
     }
 
 }

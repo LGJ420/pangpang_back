@@ -11,4 +11,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>{
 
     // 아이디 찾기에 멤버이름, 멤버생년월일이 필요함
     Optional<Member> findByMemberNameAndMemberBirth(String memberName, String memberBirth);
+
+    // 비밀번호 찾기에 멤버아이디, 멤버이름, 멤버생년월일이 필요함
+    Optional<Member> findByMemberIdAndMemberNameAndMemberBirth(String memberId, String memberName, String memberBirth);
 }

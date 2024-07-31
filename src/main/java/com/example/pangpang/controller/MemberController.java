@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.pangpang.dto.MemberDTO;
 import com.example.pangpang.dto.MemberInFindIdDTO;
+import com.example.pangpang.dto.MemberInFindPwDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.MemberService;
 
@@ -37,7 +38,7 @@ public class MemberController {
     }
 
     // 아이디 찾기
-    @PostMapping(value = "/find_id")
+    @PostMapping("/find_id")
     public ResponseEntity<?> findId(@Valid @RequestBody MemberInFindIdDTO memberInFindIdDTO) {
 
         Optional<Member> memberInfo = memberService.findId(memberInFindIdDTO);
@@ -50,5 +51,15 @@ public class MemberController {
     }
 
     // 비밀번호 찾기
+    @PostMapping("/find_pw")
+    public ResponseEntity<?> findPw(@RequestBody MemberInFindPwDTO memberInFindPwDTO) {
 
+        Optional<Member> memberInfo = memberService.findPw(memberInFindPwDTO);
+
+        if (memberInfo.isPresent()) {
+            return ResponseEntity.ok(memberInfo.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("비밀번호를 찾을 수 없습니다.");
+        }
+    }
 }
