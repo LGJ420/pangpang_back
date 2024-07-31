@@ -8,4 +8,7 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long>{
 
     Optional<Member> findByMemberId(String memberId);
+
+    // 아이디 찾기에 멤버이름, 멤버생년월일이 필요함
+    Optional<Member> findByMemberNameAndMemberBirth(String memberName, String memberBirth);
 }

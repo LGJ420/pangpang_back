@@ -1,10 +1,13 @@
 package com.example.pangpang.service;
 
+import java.util.Optional;
+
 import org.hibernate.mapping.Map;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.pangpang.dto.MemberDTO;
+import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.repository.MemberRepository;
 
@@ -39,6 +42,21 @@ public class MemberService {
                 .build();
 
         memberRepository.save(member);
+    }
+
+    // 아이디 찾기 서비스
+    public Optional<Member> findId(MemberInFindIdDTO memberInFindIdDTO) {
+        // 리액트 입력값 -> 엔티티 등록값 변경
+        Optional<Member> memberInfo = memberRepository.findByMemberNameAndMemberBirth(
+                memberInFindIdDTO.getMemberNameInFindId(),
+                memberInFindIdDTO.getMemberBirthInFindId());
+
+        if (memberInfo.isPresent()) {
+            return Optional.of(memberInfo.get());
+        } else {
+            return Optional.empty();
+        }
+
     }
 
 }
