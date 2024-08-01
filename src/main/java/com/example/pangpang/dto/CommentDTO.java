@@ -9,6 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 public class CommentDTO {
     
-    @NotEmpty
+    @NotEmpty(message = "내용은 반드시 작성해 주세요.")
     private String commentContent;
 }

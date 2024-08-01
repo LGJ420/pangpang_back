@@ -7,6 +7,7 @@ import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @ToString
 @AllArgsConstructor
@@ -17,7 +18,9 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(columnDefinition = "TEXT")
     private String commentContent;
+
     private LocalDateTime commentCreated;
     private LocalDateTime commentUpdated;
 
