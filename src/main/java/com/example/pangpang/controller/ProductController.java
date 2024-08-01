@@ -44,7 +44,4 @@ public class ProductController {
   }
 
 
-  /* 메인 페이지 상품 목록 */
-
-
 }
