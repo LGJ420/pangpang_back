@@ -32,10 +32,10 @@ public class ProductService {
   /* 목록 보기 - 페이징 처리 */
   public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
 
-/*     테스트용
-    System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getSearch());
-    System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getPage());
-    System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getSize()); */
+    // 테스트용
+    // System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getSearch());
+    // System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getPage());
+    // System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getSize());
     
 
     // 페이지 정의
