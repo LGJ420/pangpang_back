@@ -9,19 +9,20 @@ import com.example.pangpang.dto.MemberDTO;
 import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.dto.MemberInFindPwDTO;
 import com.example.pangpang.dto.MemberInFindPwForResetDTO;
+import com.example.pangpang.dto.MemberInLoginDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.MemberService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/member")
 @RequiredArgsConstructor
@@ -71,6 +72,14 @@ public class MemberController {
         memberService.resetPw(memberInFindPwResetForDTO);
 
         return Map.of("result", "비밀번호 변경 성공!");
+    }
+
+    // 로그인
+    @PostMapping("/login")
+    public Optional<Member> login(@Valid @RequestBody MemberInLoginDTO memberInLoginDTO) {
+        Optional<Member> memberInfo = memberService.login(memberInLoginDTO);
+
+        return memberInfo;
     }
 
 }
