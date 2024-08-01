@@ -17,4 +17,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>{
 
     // 로그인에 멤버 아이디, 멤버 비밀번호 필요함
     Optional<Member> findByMemberIdAndMemberPw(String memberId, String MemberPw);
+
+    public boolean existsByMemberIdAndMemberPw(String memberId, String memberPw);
 }
