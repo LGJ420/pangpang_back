@@ -1,7 +1,6 @@
 package com.example.pangpang.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import java.util.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,56 +16,41 @@ import com.example.pangpang.entity.Article;
 import com.example.pangpang.service.ArticleService;
 
 import jakarta.validation.Valid;
-
-import java.util.*;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/article")
+@RequiredArgsConstructor
 public class ArticleController {
-    @Autowired
-    private ArticleService articleService;
+    private final ArticleService articleService;
 
-    @PostMapping
-    public ResponseEntity<Article> createArticle(@Valid @RequestBody ArticleDTO articleDTO){
-        Article article = Article.builder()
-        .articleTitle(articleDTO.getArticleTitle())
-        .articleContent(articleDTO.getArticleContent())
-        .articleAuthor(articleDTO.getArticleAuthor())
-        .build();
-    Article createdArticle = articleService.createArticle(article);
-    return ResponseEntity.status(HttpStatus.CREATED).body(createdArticle);    
+    @PostMapping("/list")
+    public ResponseEntity<Long> createArticle(@Valid @RequestBody ArticleDTO articleDTO){
+        Long articleId = articleService.createArticle(articleDTO);
+        return ResponseEntity.ok(articleId);
     }
-    
-    @GetMapping
+
+    @GetMapping 
     public ResponseEntity<List<Article>> getAllArticles() {
-        List<Article> articles = articleService.getArticles();
+        List<Article> articles = articleService.getAllArticles();
         return ResponseEntity.ok(articles);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Article> getArticleById(@PathVariable Long id){
-        Optional<Article> article = articleService.getArticleById(id);
-        return article.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Article article = articleService.getArticleById(id);
+        return ResponseEntity.ok(article);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Article> updateArticle(@PathVariable Long id, @Valid @RequestBody ArticleDTO articleDTO){
-        Article articleDetails = Article.builder()
-        .articleTitle(articleDTO.getArticleTitle())
-        .articleContent(articleDTO.getArticleContent())
-        .articleAuthor(articleDTO.getArticleAuthor())
-        .build();
-        Optional<Article> updatedArticle = articleService.updateArticle(id, articleDetails);
-        return updatedArticle.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Void> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO){
+        articleService.updateArticle(id, articleDTO);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteArticle(@PathVariable Long id){
-        boolean isDeleted = articleService.deleteArticle(id);
-        if(isDeleted){
-            return ResponseEntity.noContent().build();
-        }else{
-            return ResponseEntity.notFound().build();
-        }
+        articleService.deleteArticle(id);
+        return ResponseEntity.noContent().build();
     }
 }

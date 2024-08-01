@@ -27,19 +27,16 @@ public class Article {
 
     private String articleAuthor;
 
+    @Column(name = "article_created", nullable = false, updatable = false)
     private LocalDateTime articleCreated;
+
+    @Column(name = "article_updated")
     private LocalDateTime articleUpdated;
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
-  //  @ManyToOne
-  //  private SiteUser author;
-
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
-
-//  @ManyToMany
-//  Set<SiteUser> voter
 }
