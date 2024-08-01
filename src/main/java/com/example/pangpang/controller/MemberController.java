@@ -78,7 +78,7 @@ public class MemberController {
     // 로그인
     @PostMapping("/login")
     public MemberResponseDTO<?> login(@Valid @RequestBody MemberInLoginDTO memberInLoginDTO) {
-        return null;
+        MemberResponseDTO<?> result = memberService.login(memberInLoginDTO);
+        return result;
     }
-
 }
