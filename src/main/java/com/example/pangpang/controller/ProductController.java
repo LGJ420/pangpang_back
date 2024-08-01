@@ -43,4 +43,8 @@ public class ProductController {
     return productService.getDetail(id);
   }
 
+
+  /* 메인 페이지 상품 목록 */
+
+
 }

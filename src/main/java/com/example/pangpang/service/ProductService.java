@@ -20,10 +20,12 @@ import com.example.pangpang.repository.ProductRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Log4j2
 public class ProductService {
 
   private final ModelMapper modelMapper;
@@ -78,5 +80,20 @@ public class ProductService {
     ProductDTO dto = modelMapper.map(product, ProductDTO.class);
 
     return dto;
+  }
+
+
+
+  /* 메인 페이지 상품 목록 */
+  public List<ProductDTO> mainList() {
+
+    // 엔티티 정의
+    List<Product> result = productRepository.findAll();
+
+    // Product 엔티티를 ProductDTO로 변환하여 리스트로 만듦
+    List<ProductDTO> dtoList = result.stream().map(product -> modelMapper.map(product, ProductDTO.class))
+        .collect(Collectors.toList());
+
+        return dtoList;
   }
 }
