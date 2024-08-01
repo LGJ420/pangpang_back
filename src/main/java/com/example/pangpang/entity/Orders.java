@@ -1,5 +1,7 @@
 package com.example.pangpang.entity;
 
+import java.util.*;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,21 +17,16 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int orderCount;
+    private String orderName;
     private String orderAddress;
     private String orderPhone;
+
+    @OneToMany(mappedBy = "orders")
+    private List<OrdersProduct> ordersProducts;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
 
-    
-    public void changeOrderCount(int orderCount){
-
-        this.orderCount = orderCount;
-    }
 }

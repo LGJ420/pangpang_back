@@ -1,5 +1,7 @@
 package com.example.pangpang.dto;
 
+import java.util.*;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
@@ -12,18 +14,15 @@ import lombok.*;
 public class OrdersDTO {
     
     @Positive
-    private int orderCount;
+    private String name;
 
     @NotEmpty
-    private String orderAddress;
+    private String adress;
 
     @NotEmpty
     @Pattern(regexp = "^[0-9]*$", message = "숫자(0~9)만 입력 가능합니다.")
-    private String orderPhone;
+    private String phone;
 
     @Positive
-    private Long memberId;
-
-    @Positive
-    private Long productId;
+    private List<OrdersProductDTO> products;
 }
