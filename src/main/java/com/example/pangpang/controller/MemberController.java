@@ -10,6 +10,7 @@ import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.dto.MemberInFindPwDTO;
 import com.example.pangpang.dto.MemberInFindPwForResetDTO;
 import com.example.pangpang.dto.MemberInLoginDTO;
+import com.example.pangpang.dto.MemberResponseDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.MemberService;
 
@@ -76,10 +77,8 @@ public class MemberController {
 
     // 로그인
     @PostMapping("/login")
-    public Optional<Member> login(@Valid @RequestBody MemberInLoginDTO memberInLoginDTO) {
-        Optional<Member> memberInfo = memberService.login(memberInLoginDTO);
-
-        return memberInfo;
+    public MemberResponseDTO<?> login(@Valid @RequestBody MemberInLoginDTO memberInLoginDTO) {
+        return null;
     }
 
 }
