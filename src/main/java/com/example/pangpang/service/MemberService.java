@@ -79,17 +79,20 @@ public class MemberService {
 
     // 비밀번호 변경 서비스
     public void resetPw(MemberInFindPwForResetDTO memberInFindPwResetForDTO) {
+
+        // 회원번호(id)로 회원 존재 유무 확인
+        Member existingMember = memberRepository.findById(memberInFindPwResetForDTO.getIdInFindPwForReset())
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
         // 비밀번호 암호화
         String encoderedPw = passwordEncoder.encode(memberInFindPwResetForDTO.getMemberPwInFindPwForReset());
 
-        // 리액트 입력값 -> 엔티티 등록값 변경
-        Member member = Member.builder()
-                .memberId(memberInFindPwResetForDTO.getMemberIdInFindPwForReset())
-                // 비밀번호만 암호화 된 거 사용
-                .memberPw(encoderedPw)
-                .build();
+        // 기존 엔티티 비밀번호만 변경
+        // 세터를 쓴 이유 : 빌더를 쓰면 id, memberId, memberPw... 등 다 적어야함
+        // 귀찮아서 세터씀 ^^)>
+        existingMember.setMemberPw(encoderedPw);
 
-        memberRepository.save(member);
+        memberRepository.save(existingMember);
     }
 
 }
