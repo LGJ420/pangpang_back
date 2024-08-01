@@ -24,7 +24,7 @@ public class ProductController {
   @GetMapping("/list")
   public PageResponseDTO<ProductDTO> list(
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "size", defaultValue = "10") int size,
+      @RequestParam(value = "size", defaultValue = "12") int size,
       @RequestParam(value = "search", required = false) String search) {
 
     // URL에서 전달받은 데이터 PageRequestDTO에 저장
@@ -42,5 +42,6 @@ public class ProductController {
   public ProductDTO getDetail(@PathVariable(name = "id") Long id) {
     return productService.getDetail(id);
   }
+
 
 }
