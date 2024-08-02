@@ -39,6 +39,12 @@ public class CustomerSecurityConfig {
         http.csrf(config -> config.disable());
         // ▲▲▲ CSRF 보호 비활성화 코드(☆★☆★배포 시 삭제하기!!!!!!!!!!!!!!!!!!!!☆★☆★) ▲▲▲
 
+        // ▼▼▼ 경로 허용 설정 ▼▼▼
+        http.authorizeHttpRequests(authorizeRequests->authorizeRequests
+        .requestMatchers("/api/member/login").permitAll() // 로그인 경로 허용
+        .anyRequest().authenticated());
+        // ▲▲▲ 경로 허용 설정 ▲▲▲
+
         return http.build();
     }
 
