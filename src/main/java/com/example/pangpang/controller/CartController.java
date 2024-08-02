@@ -50,4 +50,15 @@ public class CartController {
         return Map.of("result", "삭제 완료");
     }
     
+
+    @DeleteMapping("/pay")
+    public Map<String, String> deletes(@RequestBody List<CartListDTO> cartListDTOs){
+
+        Long memberId = 1L;
+
+        cartService.deletes(memberId, cartListDTOs);
+
+        return Map.of("result", "삭제 완료");
+    }
+    
 }
