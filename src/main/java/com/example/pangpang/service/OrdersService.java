@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.pangpang.dto.OrdersDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.entity.Orders;
+import com.example.pangpang.entity.OrdersProduct;
 import com.example.pangpang.entity.Product;
 import com.example.pangpang.repository.MemberRepository;
 import com.example.pangpang.repository.OrdersRepository;
@@ -40,11 +41,38 @@ public class OrdersService {
     }
 
 
-    public void add(OrdersDTO ordersDTO){
+    public void add(Long memberId, OrdersDTO ordersDTO){
 
-        
-    
+        Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new EntityNotFoundException("Member not found"));
 
+        Orders orders = Orders.builder()
+            .member(member)
+            .orderName(ordersDTO.getName())
+            .orderPhone(ordersDTO.getPhone())
+            .orderAddress(ordersDTO.getAddress())
+            .build();
+
+        List<OrdersProduct> ordersProducts = ordersDTO.getOrdersProducts().stream()
+            .map(dto -> {
+
+                Product product = productRepository.findById(dto.getProductId())
+                    .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+                OrdersProduct ordersProduct = OrdersProduct.builder()
+                    .orders(orders)
+                    .product(product)
+                    .count(dto.getCartCount())
+                    .build();
+                    
+                return ordersProduct;
+
+            })
+            .collect(Collectors.toList());
+
+
+        orders.addOrdersProducts(ordersProducts);
+        ordersRepository.save(orders);
 
     }
 }

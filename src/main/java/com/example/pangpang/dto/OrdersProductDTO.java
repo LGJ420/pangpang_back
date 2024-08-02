@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 public class OrdersProductDTO {
     
-    private Long id;
+    private Long productId;
 
     @NotEmpty
     private String productTitle;

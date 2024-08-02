@@ -32,7 +32,10 @@ public class OrdersController {
     @PostMapping("")
     public Map<String, String> add(@RequestBody OrdersDTO ordersDTO){
 
-        ordersService.add(ordersDTO);
+        //지금은 유저를 1도 지정
+        Long memberId = 1L;
+
+        ordersService.add(memberId, ordersDTO);
 
         return Map.of("result", "ok");
     }

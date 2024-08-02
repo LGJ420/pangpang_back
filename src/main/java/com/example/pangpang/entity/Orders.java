@@ -21,12 +21,15 @@ public class Orders {
     private String orderAddress;
     private String orderPhone;
 
-    @OneToMany(mappedBy = "orders")
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
     private List<OrdersProduct> ordersProducts;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
+    public void addOrdersProducts(List<OrdersProduct> ordersProducts){
 
+        this.ordersProducts = ordersProducts;
+    }
 }
