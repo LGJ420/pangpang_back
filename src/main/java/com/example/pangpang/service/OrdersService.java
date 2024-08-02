@@ -43,37 +43,7 @@ public class OrdersService {
     public void add(OrdersDTO ordersDTO){
 
         
-
-        Member member = memberRepository.findById(ordersDTO.getMemberId())
-            .orElseThrow(()->new EntityNotFoundException("Member not found"));
-        Product product = productRepository.findById(ordersDTO.getProductId())
-            .orElseThrow(()->new EntityNotFoundException("Product not found"));
-
-        Orders findOrders = ordersRepository.findByMemberAndProduct(member, product).orElse(null);
-
-
-
-        if (findOrders != null) {
-            
-            int orderCount = findOrders.getOrderCount()+ordersDTO.getOrderCount();
-
-            findOrders.changeOrderCount(orderCount);
-
-            ordersRepository.save(findOrders);
-        }
-        else {
-
-            Orders orders = Orders.builder()
-                .orderCount(ordersDTO.getOrderCount())
-                .orderAddress(ordersDTO.getOrderAddress())
-                .orderPhone(ordersDTO.getOrderPhone())
-                .member(member)
-                .product(product)
-                .build();
     
-            ordersRepository.save(orders);
-        }
-
 
 
     }
