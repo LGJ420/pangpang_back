@@ -1,6 +1,5 @@
 package com.example.pangpang.entity;
 
-import java.util.*;
 import jakarta.persistence.*;
 
 import lombok.*;

@@ -2,7 +2,6 @@ package com.example.pangpang.service;
 
 import java.util.Optional;
 
-import org.hibernate.mapping.Map;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -10,12 +9,10 @@ import com.example.pangpang.dto.MemberDTO;
 import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.dto.MemberInFindPwDTO;
 import com.example.pangpang.dto.MemberInFindPwForResetDTO;
-import com.example.pangpang.dto.MemberInLoginDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
