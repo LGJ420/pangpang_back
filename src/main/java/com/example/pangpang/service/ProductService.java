@@ -38,7 +38,6 @@ public class ProductService {
     // System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getSearch());
     // System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getPage());
     // System.out.println("데이터 전달받고 있음 : " + pageRequestDTO.getSize());
-    
 
     // 페이지 정의
     Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
@@ -71,7 +70,25 @@ public class ProductService {
     return responseDTO;
   }
 
+  /* 메인 페이지 상품 목록 */
+  public PageResponseDTO<ProductDTO> mainList(PageRequestDTO pageRequestDTO) {
 
+    Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
+        Sort.by("id").descending());
+
+    Page<Product> result = productRepository.findAllRandom(pageable);
+
+    List<ProductDTO> dtoList = result.getContent().stream()
+        .map(product -> modelMapper.map(product, ProductDTO.class))
+        .collect(Collectors.toList());
+
+    long totalCount = result.getTotalElements();
+
+    PageResponseDTO<ProductDTO> responseDTO = PageResponseDTO.<ProductDTO>withAll().dtoList(dtoList)
+        .pageRequestDTO(pageRequestDTO).totalCount(totalCount).build();
+
+    return responseDTO;
+  }
 
   /* 상품 상세보기 */
   public ProductDTO getDetail(Long id) {
@@ -82,18 +99,4 @@ public class ProductService {
     return dto;
   }
 
-
-
-  /* 메인 페이지 상품 목록 */
-  public List<ProductDTO> mainList() {
-
-    // 엔티티 정의
-    List<Product> result = productRepository.findAll();
-
-    // Product 엔티티를 ProductDTO로 변환하여 리스트로 만듦
-    List<ProductDTO> dtoList = result.stream().map(product -> modelMapper.map(product, ProductDTO.class))
-        .collect(Collectors.toList());
-
-        return dtoList;
-  }
 }
