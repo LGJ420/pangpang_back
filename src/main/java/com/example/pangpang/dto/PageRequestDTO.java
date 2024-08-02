@@ -20,4 +20,7 @@ public class PageRequestDTO {
 
     @Builder.Default
     private int size = 10;
+
+    /* 검색 키워드 - 상품 목록 검색에서 사용 */
+    private String search;
 }

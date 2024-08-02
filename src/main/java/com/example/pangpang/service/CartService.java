@@ -13,10 +13,12 @@ import com.example.pangpang.entity.Product;
 import com.example.pangpang.repository.*;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CartService {
     
     private final CartRepository cartRepository;
@@ -59,6 +61,7 @@ public class CartService {
         List<CartListDTO> cartListDTOs = cartRepository.findAll()
             .stream()
             .map(cart->CartListDTO.builder()
+                .productId(cart.getProduct().getId())
                 .productTitle(cart.getProduct().getProductTitle())
                 .productContent(cart.getProduct().getProductContent())
                 .productPrice(cart.getProduct().getProductPrice())
@@ -67,5 +70,16 @@ public class CartService {
             .collect(Collectors.toList());
         
         return cartListDTOs;
+    }
+
+    
+    public void delete(Long memberId, CartListDTO cartListDTO){
+
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(()->new EntityNotFoundException("Member not found"));
+        Product product = productRepository.findById(cartListDTO.getProductId())
+            .orElseThrow(()->new EntityNotFoundException("Product not found"));
+
+        cartRepository.deleteByMemberAndProduct(member, product);
     }
 }
