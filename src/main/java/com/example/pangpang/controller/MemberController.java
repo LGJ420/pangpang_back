@@ -78,8 +78,8 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody MemberInLoginDTO memberInLoginDTO) {
 
-        
-        return ResponseEntity.ok().body("로그인 성공");
+        memberService.login(memberInLoginDTO);
+        return ResponseEntity.ok().body("로그인 컨트롤러 실행");
     }
-    
+
 }
