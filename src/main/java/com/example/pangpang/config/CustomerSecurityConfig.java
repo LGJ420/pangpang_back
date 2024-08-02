@@ -26,10 +26,11 @@ public class CustomerSecurityConfig {
 
         log.info("--------------------security config--------------------");
 
-        http.cors(HttpSecurityCorsConfigurer -> {
-            HttpSecurityCorsConfigurer.configurationSource(corsConfigurationSource());
+        http.cors(httpSecurityCorsConfigurer -> {
+            httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource());
         });
 
+        
         // ▼▼▼ 세션관리 무상태(STATELESS)로 설정 ▼▼▼
         http.sessionManagement(sessionConfig->sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         // ▲▲▲ 세션관리 무상태(STATELESS)로 설정 ▲▲▲
@@ -38,16 +39,11 @@ public class CustomerSecurityConfig {
         http.csrf(config -> config.disable());
         // ▲▲▲ CSRF 보호 비활성화 코드(☆★☆★배포 시 삭제하기!!!!!!!!!!!!!!!!!!!!☆★☆★) ▲▲▲
 
-        http.formLogin(config -> {
-            config.loginPage("/api/member/login");
-        });
-        
         return http.build();
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-
+    public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
@@ -67,5 +63,4 @@ public class CustomerSecurityConfig {
         return new BCryptPasswordEncoder();
     }
     // ▲▲▲ 비밀번호 암호화 ▲▲▲
-
 }
