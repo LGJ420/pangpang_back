@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.pangpang.dto.ArticleDTO;
@@ -30,25 +31,27 @@ public class ArticleController {
         return ResponseEntity.ok(articleId);
     }
 
-    @GetMapping 
-    public ResponseEntity<List<Article>> getAllArticles() {
-        List<Article> articles = articleService.getAllArticles();
-        return ResponseEntity.ok(articles);
+    @GetMapping
+    public ResponseEntity<Map<String,Object>> getAllArticles(
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "12") int size){
+        Map<String,Object> response = articleService.getAllArticles(page,size);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/list/{id}")
     public ResponseEntity<Article> getArticleById(@PathVariable Long id){
         Article article = articleService.getArticleById(id);
         return ResponseEntity.ok(article);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/list/{id}")
     public ResponseEntity<Void> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO){
         articleService.updateArticle(id, articleDTO);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/list/{id}")
     public ResponseEntity<Void> deleteArticle(@PathVariable Long id){
         articleService.deleteArticle(id);
         return ResponseEntity.noContent().build();
