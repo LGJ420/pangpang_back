@@ -11,8 +11,6 @@ import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.dto.MemberInFindPwDTO;
 import com.example.pangpang.dto.MemberInFindPwForResetDTO;
 import com.example.pangpang.dto.MemberInLoginDTO;
-import com.example.pangpang.dto.MemberInLoginResponseDTO;
-import com.example.pangpang.dto.MemberResponseDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.repository.MemberRepository;
 
@@ -107,42 +105,4 @@ public class MemberService {
     // ===================================================
 
     // 로그인 서비스
-    // public Optional<Member> login(MemberInLoginDTO memberInLoginDTO){
-    //     Optional<Member> memberInfo = memberRepository.findByMemberIdAndMemberPw(memberInLoginDTO.getMemberIdInLogin(), memberInLoginDTO.getMemberPwInLogin());
-
-    //     return memberInfo;
-    // }
-
-    public MemberResponseDTO<MemberInLoginResponseDTO> login(MemberInLoginDTO memberInLoginDTO){
-        String memberId = memberInLoginDTO.getMemberIdInLogin();
-        String memberPw = memberInLoginDTO.getMemberPwInLogin();
-
-        try {
-            // memberId, memberPw 일치하는지 확인
-            boolean existed = memberRepository.existsByMemberIdAndMemberPw(memberId, memberPw);
-            if (!existed) {
-                return MemberResponseDTO.setFailed("아이디, 비밀번호가 존재하지 않습니다.");
-            }
-        } catch (Exception e) {
-            return MemberResponseDTO.setFailed("데이터베이스 연결에 실패했습니다.");
-        }
-
-        Member member = null;
-
-        try {
-            // 값이 존재하는 경우, memberId를 기준으로 사용자 정보 불러옴
-            member = memberRepository.findByMemberId(memberId).get();
-        } catch (Exception e) {
-            return MemberResponseDTO.setFailed("데이터베이스 연결에 실패했습니다.");
-        }
-
-        member.setMemberPw("");
-
-        String token="";
-        int exprTime = 3600000; // 1시간
-        
-        MemberInLoginResponseDTO memberInLoginResponseDTO = new MemberInLoginResponseDTO(token, exprTime, member);
-
-        return MemberResponseDTO.setSuccessData("로그인에 성공했습니다", memberInLoginResponseDTO);
-    }
 }
