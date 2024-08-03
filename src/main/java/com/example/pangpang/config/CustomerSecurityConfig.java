@@ -39,10 +39,18 @@ public class CustomerSecurityConfig {
         // ▲▲▲ CSRF 보호 비활성화 코드(☆★☆★배포 시 삭제하기!!!!!!!!!!!!!!!!!!!!☆★☆★) ▲▲▲
 
         // ▼▼▼ 경로 허용 설정 ▼▼▼
+        // 로그인, 회원가입, 아이디찾기, 비밀번호 찾기->비밀번호 변경 경로 허용
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/api/member/**").permitAll() // 로그인, 회원가입, 아이디찾기, 비밀번호 찾기->비밀번호 변경 경로 허용
+                .requestMatchers("/api/member/**").permitAll()
                 .anyRequest().authenticated());
         // ▲▲▲ 경로 허용 설정 ▲▲▲
+
+        // 스프링 시큐리티는 username, password를 쓰게 강요하는데, 그 이름을 내가 쓰는 DTO이름으로 바꿔준 것
+        http.formLogin(login -> login
+                // .loginPage("/api/member/login")
+                // .loginProcessingUrl("/api/member/login")
+                .usernameParameter("memberIdInLogin")
+                .passwordParameter("memberPwInLogin"));
 
         return http.build();
     }
