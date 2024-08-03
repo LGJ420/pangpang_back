@@ -40,11 +40,7 @@ public class CustomerSecurityConfig {
 
         // ▼▼▼ 경로 허용 설정 ▼▼▼
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/api/member/login").permitAll() // 로그인 경로 허용
-                .requestMatchers("/api/member/signup").permitAll() // 회원가입 경로 허용
-                .requestMatchers("/api/member/find_id").permitAll() // 아이디 찾기 경로 허용
-                .requestMatchers("/api/member/find_pw").permitAll() // 비밀번호 찾기 경로 허용
-                .requestMatchers("/api/member/find_pw/reset").permitAll() // 비밀번호 찾기 경로 허용
+                .requestMatchers("/api/member/**").permitAll() // 로그인, 회원가입, 아이디찾기, 비밀번호 찾기->비밀번호 변경 경로 허용
                 .anyRequest().authenticated());
         // ▲▲▲ 경로 허용 설정 ▲▲▲
 
