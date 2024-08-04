@@ -5,6 +5,8 @@ import java.security.Key;
 import java.util.Date;
 import java.util.Optional;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -111,15 +113,12 @@ public class MemberService {
 
     // ===================================================
 
-    // 비밀 키 (비밀 키는 환경 변수나 설정 파일에서 관리하는 것이 좋습니다)
-    private final String secretKey = "your_secret_key";
+    // 256비트 비밀 키 (비밀 키는 환경 변수나 설정 파일에서 관리하는 것이 좋음)
+    private final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private final long expirationTime = 86400000; // 1일 (밀리초 단위)
 
     // 로그인 서비스
     public String login(MemberInLoginDTO memberInLoginDTO) {
-
-        // 비밀 키
-        Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
         // 회원 존재 여부 확인 - 아이디
         Member member = memberRepository.findByMemberId(memberInLoginDTO.getMemberIdInLogin())
@@ -139,7 +138,7 @@ public class MemberService {
                 .setSubject(memberInLoginDTO.getMemberIdInLogin()) // 2. JWT 주제 설정(사용자 식별)
                 .setIssuedAt(new Date()) // 3. JWT 발급 시간 설정(현재 시간)
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime)) // 4. JWT 만료 시간 설정
-                .signWith(key, SignatureAlgorithm.HS256) // 5. JWT 서명 추가(무결성 보장)
+                .signWith(secretKey, SignatureAlgorithm.HS256) // 5. JWT 서명 추가(무결성 보장)
                 .compact(); // 6. 설정된 JWT를 압축
 
         return token; // 생성된 JWT 반환
