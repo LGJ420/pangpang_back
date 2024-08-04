@@ -1,5 +1,8 @@
 package com.example.pangpang.service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +17,9 @@ import com.example.pangpang.entity.Member;
 import com.example.pangpang.exception.MemberNotFoundException;
 import com.example.pangpang.repository.MemberRepository;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -105,21 +111,37 @@ public class MemberService {
 
     // ===================================================
 
-    // 로그인 서비스
-    public void login(MemberInLoginDTO memberInLoginDTO) {
-        // memberId, memberPw로 회원 존재 유무 확인
-        boolean existingMember = memberRepository.existsByMemberIdAndMemberPw(
-                memberInLoginDTO.getMemberIdInLogin(),
-                memberInLoginDTO.getMemberPwInLogin());
+    // 비밀 키 (비밀 키는 환경 변수나 설정 파일에서 관리하는 것이 좋습니다)
+    private final String secretKey = "your_secret_key";
+    private final long expirationTime = 86400000; // 1일 (밀리초 단위)
 
-        // boolean existingMember = false면 예외 메세지
-        if (!existingMember) {
-            throw new MemberNotFoundException("회원이 존재하지 않습니다.");
+    // 로그인 서비스
+    public String login(MemberInLoginDTO memberInLoginDTO) {
+
+        // 비밀 키
+        Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+
+        // 회원 존재 여부 확인 - 아이디
+        Member member = memberRepository.findByMemberId(memberInLoginDTO.getMemberIdInLogin())
+                .orElseThrow(() -> new MemberNotFoundException("아이디 혹은 비밀번호가 틀렸습니다."));
+
+        // 회원 존재 여부 확인 - 비밀번호
+        if (!passwordEncoder.matches(memberInLoginDTO.getMemberPwInLogin(), member.getMemberPw())) {
+            throw new MemberNotFoundException("아이디 혹은 비밀번호가 틀렸습니다.");
         }
 
-        // boolean existingMember = true인 거 확인
+        // 회원 존재 여부 확인 - 아이디, 비밀번호 전부 확인 완료
         System.out.println("memberId, memberPw로 회원 존재 확인");
 
         // // memberId, memberPw로 회원이 존재하면 로그인하기
+        // 회원 인증 성공 후 JWT 생성
+        String token = Jwts.builder() // 1. JWT 생성을 위한 빌더 초기화
+                .setSubject(memberInLoginDTO.getMemberIdInLogin()) // 2. JWT 주제 설정(사용자 식별)
+                .setIssuedAt(new Date()) // 3. JWT 발급 시간 설정(현재 시간)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime)) // 4. JWT 만료 시간 설정
+                .signWith(key, SignatureAlgorithm.HS256) // 5. JWT 서명 추가(무결성 보장)
+                .compact(); // 6. 설정된 JWT를 압축
+
+        return token; // 생성된 JWT 반환
     }
 }

@@ -10,6 +10,7 @@ import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.dto.MemberInFindPwDTO;
 import com.example.pangpang.dto.MemberInFindPwForResetDTO;
 import com.example.pangpang.dto.MemberInLoginDTO;
+import com.example.pangpang.dto.MemberInLoginResponseDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.MemberService;
 
@@ -77,9 +78,10 @@ public class MemberController {
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody MemberInLoginDTO memberInLoginDTO) {
+        String token = memberService.login(memberInLoginDTO);
 
-        memberService.login(memberInLoginDTO);
-        return ResponseEntity.ok().body("로그인 컨트롤러 실행");
+        // 200 OK 상태 코드와 함께 JWT 포함 응답 반환
+        return ResponseEntity.ok().body(new MemberInLoginResponseDTO(token));
     }
 
 }
