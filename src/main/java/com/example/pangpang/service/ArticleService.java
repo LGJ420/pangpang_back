@@ -2,7 +2,10 @@ package com.example.pangpang.service;
 
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +33,17 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public List<Article> getAllArticles() {
-        return articleRepository.findAll();
+    public Map<String, Object> getAllArticles(int page, int size) {
+        //Pageable 객체 생성
+        Pageable pageable = PageRequest.of(page-1, size,Sort.by(Sort.Order.desc("articleCreated")));
+        Page<Article> articlePage = articleRepository.findAll(pageable);
+        
+        //결과를 담을 Map 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("articles", articlePage.getContent());
+        response.put("totalPages", articlePage.getTotalPages());
+        response.put("totalElements", articlePage.getTotalElements());
+        return response;
     }
 
     @Transactional(readOnly = true)
