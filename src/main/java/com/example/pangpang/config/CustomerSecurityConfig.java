@@ -50,6 +50,13 @@ public class CustomerSecurityConfig {
                 .usernameParameter("memberIdInLogin")
                 .passwordParameter("memberPwInLogin"));
 
+        // 로그아웃 설정 추가
+        http.logout(logout -> logout
+                .logoutUrl("/api/member/logout") // 로그아웃 요청 URL
+                .logoutSuccessUrl("/") // 로그아웃 성공 후 이동할 URL
+                .invalidateHttpSession(true) // 세션 무효화
+                .clearAuthentication(true)); // 인증 정보 초기화
+
         // JWT 필터 추가
         http.addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class);
 
