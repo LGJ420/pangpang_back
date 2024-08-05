@@ -18,7 +18,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberDTO implements UserDetails {
+public class MemberDTO{
 
     @NotNull(message = "아이디는 필수 항목입니다.")
     private String memberId;
@@ -34,21 +34,4 @@ public class MemberDTO implements UserDetails {
     private String memberBirth;
 
     private String memberRole;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // 권한 설정 로직 (필요 시 구현)
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return memberId;
-    }
-
-    @Override
-    public String getPassword() {
-        return memberPw;
-    }
-
 }

@@ -25,4 +25,7 @@ public class Product {
     // 상품 주문
     @OneToMany(mappedBy = "product")
     private List<Cart> carts;
+
+    @OneToMany(mappedBy = "product")
+    private List<OrdersProduct> ordersProducts;
 }

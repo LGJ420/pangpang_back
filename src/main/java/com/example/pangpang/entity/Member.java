@@ -1,6 +1,5 @@
 package com.example.pangpang.entity;
 
-import java.util.*;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -45,13 +44,4 @@ public class Member {
         private String memberRole;
 
         // ▲▲▲ 회원가입, ID/PW찾기 때 필요한 데이터 ▲▲▲
-
-        @OneToMany(mappedBy = "member")
-        private List<Orders> orders;
-
-        @OneToMany(mappedBy = "member")
-        private List<Article> articles;
-
-        @OneToMany(mappedBy = "member")
-        private List<Comment> comment;
 }
