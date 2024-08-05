@@ -42,6 +42,4 @@ public class ProductController {
   public ProductDTO getDetail(@PathVariable(name = "id") Long id) {
     return productService.getDetail(id);
   }
-
-
 }
