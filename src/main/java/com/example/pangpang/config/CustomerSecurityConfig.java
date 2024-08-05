@@ -35,7 +35,7 @@ public class CustomerSecurityConfig {
         // ▼▼▼ 경로 허용 설정 ▼▼▼
         // 로그인, 회원가입, 아이디찾기, 비밀번호 찾기->비밀번호 변경 경로 허용
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/api/member/**").permitAll()
+                .requestMatchers("/**").permitAll()
                 // Role에 따른 역할 부여
                 .requestMatchers("/admin/**").hasRole("ADMIN") // "ROLE_ADMIN"을 기대
                 .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // "ROLE_USER"와 "ROLE_ADMIN"을 기대
