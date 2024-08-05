@@ -41,6 +41,9 @@ public class ProductController {
   }
 
 
+  
+
+
   /* 상품 목록 보기 */
   @GetMapping("/list")
   public PageResponseDTO<ProductDTO> list(

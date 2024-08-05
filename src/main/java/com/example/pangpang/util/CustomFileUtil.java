@@ -66,7 +66,11 @@ public class CustomFileUtil {
             // 각 파일에 대해 고유한 이름 생성
             // UUID(범용 고유 식별자)를 사용하여 파일 이름의 충돌을 방지하고, 원본 파일 이름을 유지
             String savedName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
-            
+
+
+            // 시간 사용하는 경우
+            // String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            // String savedName = timeStamp + "_" + multipartFile.getOriginalFilename();
 
             // 파일이 저장될 서버의 경로를 설정
             // uploadPath(파일이 저장될 기본 경로)와 생성된 파일 이름을 조합하여 전체 경로를 설정
