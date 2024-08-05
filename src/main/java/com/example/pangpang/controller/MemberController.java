@@ -47,28 +47,20 @@ public class MemberController {
 
     // 아이디 찾기
     @PostMapping("/find_id")
-    public ResponseEntity<?> findId(@Valid @RequestBody MemberInFindIdDTO memberInFindIdDTO) {
+    public Member findId(@Valid @RequestBody MemberInFindIdDTO memberInFindIdDTO) {
 
-        Optional<Member> memberInfo = memberService.findId(memberInFindIdDTO);
+        Member memberInfo = memberService.findId(memberInFindIdDTO);
 
-        if (memberInfo.isPresent()) {
-            return ResponseEntity.ok(memberInfo.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("아이디를 찾을 수 없습니다.");
-        }
+        return memberInfo;
     }
 
     // 비밀번호 찾기
     @PostMapping("/find_pw")
-    public ResponseEntity<?> findPw(@RequestBody MemberInFindPwDTO memberInFindPwDTO) {
+    public Member findPw(@RequestBody MemberInFindPwDTO memberInFindPwDTO) {
 
-        Optional<Member> memberInfo = memberService.findPw(memberInFindPwDTO);
+        Member memberInfo = memberService.findPw(memberInFindPwDTO);
 
-        if (memberInfo.isPresent()) {
-            return ResponseEntity.ok(memberInfo.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("비밀번호를 찾을 수 없습니다.");
-        }
+        return memberInfo;
     }
 
     // 비밀번호 찾기->비밀번호 변경

@@ -10,11 +10,19 @@ public interface MemberRepository extends JpaRepository<Member, Long>{
     Optional<Member> findByMemberId(String memberId);
 
     // 아이디 찾기에 멤버이름, 멤버생년월일이 필요함
-    Optional<Member> findByMemberNameAndMemberBirth(String memberName, String memberBirth);
+    public boolean existsByMemberNameAndMemberBirth(String memberName, String memberBirth);
 
+    Member findByMemberNameAndMemberBirth(String memberName, String memberBirth);
+
+    // ===============================================================
+    
     // 비밀번호 찾기에 멤버아이디, 멤버이름, 멤버생년월일이 필요함
-    Optional<Member> findByMemberIdAndMemberNameAndMemberBirth(String memberId, String memberName, String memberBirth);
-
+    public boolean existsByMemberIdAndMemberNameAndMemberBirth(String memberId, String memberName, String memberBirth);
+    
+    Member findByMemberIdAndMemberNameAndMemberBirth(String memberId, String memberName, String memberBirth);
+    
+    // ===============================================================
+    
     // 로그인에 멤버 아이디, 멤버 비밀번호 필요함
     Optional<Member> findByMemberIdAndMemberPw(String memberId, String MemberPw);
 

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import javax.crypto.SecretKey;
+import javax.naming.NameNotFoundException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -61,54 +62,66 @@ public class MemberService {
     // ===================================================
 
     // 아이디 찾기 서비스
-    public Optional<Member> findId(MemberInFindIdDTO memberInFindIdDTO) {
-        // 리액트 입력값을 레포지토리를 통해 데이터 확인
-        Optional<Member> memberInfo = memberRepository.findByMemberNameAndMemberBirth(
-                memberInFindIdDTO.getMemberNameInFindId(),
-                memberInFindIdDTO.getMemberBirthInFindId());
+    public Member findId(MemberInFindIdDTO memberInFindIdDTO) {
+        // 회원 이름, 회원 생년월일로 데이터베이스에 데이터가 있는지 조회(참, 거짓)
+        boolean existingMember = memberRepository.existsByMemberNameAndMemberBirth(memberInFindIdDTO.getMemberNameInFindId(), memberInFindIdDTO.getMemberBirthInFindId());
 
-        // 위에서 데이터를 확인했을 때 데이터의 유무 확인
-        if (memberInfo.isPresent()) {
-            return Optional.of(memberInfo.get());
+        if (existingMember) {
+            // 조회했을 때 참이면 해당 데이터로 조회해서 entitiy를 반환
+            Member memberInfo = memberRepository.findByMemberNameAndMemberBirth(memberInFindIdDTO.getMemberNameInFindId(), memberInFindIdDTO.getMemberBirthInFindId());
+            return memberInfo;
         } else {
-            return Optional.empty();
+            // 조회했을 때 거짓이면 예외 메세지 반환
+            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다");
         }
     }
 
     // ===================================================
 
     // 비밀번호 찾기 서비스
-    public Optional<Member> findPw(MemberInFindPwDTO memberInFindPwDTO) {
-        // 리액트 입력값을 레포지토리를 통해 데이터 확인
-        Optional<Member> memberInfo = memberRepository.findByMemberIdAndMemberNameAndMemberBirth(
-                memberInFindPwDTO.getMemberIdInFindPw(),
-                memberInFindPwDTO.getMemberNameInFindPw(),
-                memberInFindPwDTO.getMemberBirthInFindPw());
+    public Member findPw(MemberInFindPwDTO memberInFindPwDTO) {
+        // 회원 아이디, 회원 이름, 회원 생년월일로 데이터베이스에 데이터가 있는지 조회(참, 거짓)
+        boolean existingMember = memberRepository
+            .existsByMemberIdAndMemberNameAndMemberBirth(
+                memberInFindPwDTO.getMemberIdInFindPw(), 
+                memberInFindPwDTO.getMemberNameInFindPw(), 
+                memberInFindPwDTO.getMemberBirthInFindPw()
+            );
 
-        // 위에서 데이터를 확인했을 때 데이터의 유무 확인
-        if (memberInfo.isPresent()) {
-            return Optional.of(memberInfo.get());
+        // 조회했을 때 거짓이면 예외 메세지 반환
+        if (existingMember){
+            Member memberInfo = memberRepository.findByMemberIdAndMemberNameAndMemberBirth(
+                memberInFindPwDTO.getMemberIdInFindPw(), 
+                memberInFindPwDTO.getMemberNameInFindPw(),
+                memberInFindPwDTO.getMemberBirthInFindPw()
+                );
+            return memberInfo;
         } else {
-            return Optional.empty();
+            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
         }
     }
 
     // 비밀번호 변경 서비스
     public void resetPw(MemberInFindPwForResetDTO memberInFindPwResetForDTO) {
 
-        // 회원번호(id)로 회원 존재 유무 확인
-        Member existingMember = memberRepository.findById(memberInFindPwResetForDTO.getIdInFindPwForReset())
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+        // 회원번호(id)로 회원 찾기
+        Optional<Member> existingMemberOptional = memberRepository.findById(memberInFindPwResetForDTO.getIdInFindPwForReset());
 
-        // 비밀번호 암호화
-        String encoderedPw = passwordEncoder.encode(memberInFindPwResetForDTO.getMemberPwInFindPwForReset());
+        if (existingMemberOptional.isPresent()) {
+            Member existingMember = existingMemberOptional.get();
+            // 비밀번호 암호화
+            String encoderedPw = passwordEncoder.encode(memberInFindPwResetForDTO.getMemberPwInFindPwForReset());
+            
+            // 기존 엔티티 비밀번호만 변경
+            // 세터를 쓴 이유 : 빌더를 쓰면 id, memberId, memberPw... 등 다 적어야함
+            // 귀찮아서 세터씀 ^^)>
+            existingMember.setMemberPw(encoderedPw);
 
-        // 기존 엔티티 비밀번호만 변경
-        // 세터를 쓴 이유 : 빌더를 쓰면 id, memberId, memberPw... 등 다 적어야함
-        // 귀찮아서 세터씀 ^^)>
-        existingMember.setMemberPw(encoderedPw);
+            memberRepository.save(existingMember);
+        } else {
+            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
+        }
 
-        memberRepository.save(existingMember);
     }
 
     // ===================================================
