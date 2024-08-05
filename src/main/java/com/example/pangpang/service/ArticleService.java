@@ -16,13 +16,16 @@ import com.example.pangpang.dto.PageResponseDTO;
 import com.example.pangpang.entity.Article;
 import com.example.pangpang.repository.ArticleRepository;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ArticleService {
+    private final ArticleRepository articleRepository;
     private final ModelMapper modelMapper = new ModelMapper();
-    private ArticleRepository articleRepository;
 
     public PageResponseDTO<ArticleDTO> list(PageRequestDTO pageRequestDTO){
         Pageable pageable = PageRequest.of(pageRequestDTO.getPage() -1 , pageRequestDTO.getSize(), Sort.by("id").descending());
