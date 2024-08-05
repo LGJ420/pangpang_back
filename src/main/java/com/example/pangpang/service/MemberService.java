@@ -63,42 +63,34 @@ public class MemberService {
 
     // 아이디 찾기 서비스
     public Member findId(MemberInFindIdDTO memberInFindIdDTO) {
-        // 회원 이름, 회원 생년월일로 데이터베이스에 데이터가 있는지 조회(참, 거짓)
-        boolean existingMember = memberRepository.existsByMemberNameAndMemberBirth(memberInFindIdDTO.getMemberNameInFindId(), memberInFindIdDTO.getMemberBirthInFindId());
+        // 회원 이름과 생년월일로 데이터베이스에서 회원 정보를 조회
+        Member memberInfo = memberRepository.findByMemberNameAndMemberBirth(memberInFindIdDTO.getMemberNameInFindId(), memberInFindIdDTO.getMemberBirthInFindId());
 
-        if (existingMember) {
-            // 조회했을 때 참이면 해당 데이터로 조회해서 entitiy를 반환
-            Member memberInfo = memberRepository.findByMemberNameAndMemberBirth(memberInFindIdDTO.getMemberNameInFindId(), memberInFindIdDTO.getMemberBirthInFindId());
-            return memberInfo;
-        } else {
-            // 조회했을 때 거짓이면 예외 메세지 반환
+        // 조회된 회원 정보가 없으면 예외 발생
+        if (memberInfo == null) {
             throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다");
         }
+
+        return memberInfo;
     }
 
     // ===================================================
 
     // 비밀번호 찾기 서비스
     public Member findPw(MemberInFindPwDTO memberInFindPwDTO) {
-        // 회원 아이디, 회원 이름, 회원 생년월일로 데이터베이스에 데이터가 있는지 조회(참, 거짓)
-        boolean existingMember = memberRepository
-            .existsByMemberIdAndMemberNameAndMemberBirth(
-                memberInFindPwDTO.getMemberIdInFindPw(), 
-                memberInFindPwDTO.getMemberNameInFindPw(), 
-                memberInFindPwDTO.getMemberBirthInFindPw()
-            );
+        // 회원 아이디, 회원 이름, 회원 생년월일로 데이터베이스에서 회원 정보를 조회
+        Member memberInfo = memberRepository.findByMemberIdAndMemberNameAndMemberBirth(
+            memberInFindPwDTO.getMemberIdInFindPw(), 
+            memberInFindPwDTO.getMemberNameInFindPw(), 
+            memberInFindPwDTO.getMemberBirthInFindPw()
+        );
 
-        // 조회했을 때 거짓이면 예외 메세지 반환
-        if (existingMember){
-            Member memberInfo = memberRepository.findByMemberIdAndMemberNameAndMemberBirth(
-                memberInFindPwDTO.getMemberIdInFindPw(), 
-                memberInFindPwDTO.getMemberNameInFindPw(),
-                memberInFindPwDTO.getMemberBirthInFindPw()
-                );
-            return memberInfo;
-        } else {
+        // 조회된 회원 정보가 없으면 예외 발생
+        if (memberInfo == null) {
             throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
         }
+
+        return memberInfo;
     }
 
     // 비밀번호 변경 서비스
