@@ -4,9 +4,7 @@ import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Data
@@ -15,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 public class OrdersDTO {
     
-    @Positive(message = "배송지 이름은 필수입니다.")
+    @NotEmpty(message = "배송지 이름은 필수입니다.")
     private String name;
 
     @NotEmpty(message = "배송지 주소는 필수입니다.")
@@ -28,6 +26,5 @@ public class OrdersDTO {
     @JsonProperty("dtoList")
     private List<OrdersProductDTO> ordersProducts;
 
-    @Positive
     private Long memberId;
 }
