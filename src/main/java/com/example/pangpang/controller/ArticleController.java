@@ -46,12 +46,12 @@ public class ArticleController {
         return articleService.list(pageRequestDTO);
     }
 
-    @GetMapping("/list/{id}")
+    @GetMapping("/read/{id}")
     public ArticleDTO getArticleById(@PathVariable(name = "id") Long id){
         return articleService.getArticleById(id);
     }
 
-    @PutMapping("/list/{id}")
+    @PutMapping("/modify/{id}")
     public ResponseEntity<Void> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO){
         articleService.updateArticle(id, articleDTO);
         return ResponseEntity.noContent().build();

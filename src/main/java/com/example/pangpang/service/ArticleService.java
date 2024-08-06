@@ -27,24 +27,27 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ModelMapper modelMapper = new ModelMapper();
 
-    public PageResponseDTO<ArticleDTO> list(PageRequestDTO pageRequestDTO){
-        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() -1 , pageRequestDTO.getSize(), Sort.by("id").descending());
+    public PageResponseDTO<ArticleDTO> list(PageRequestDTO pageRequestDTO) {
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
+                Sort.by("id").descending());
 
         String search = pageRequestDTO.getSearch();
 
         Page<Article> result;
 
-        if(search != null && !search.isEmpty()){
+        if (search != null && !search.isEmpty()) {
             result = articleRepository.findByArticleTitleContaining(search, pageable);
-        }else{
+        } else {
             result = articleRepository.findAll(pageable);
         }
 
-        List<ArticleDTO> dtoList = result.getContent().stream().map(article -> modelMapper.map(article, ArticleDTO.class)).collect(Collectors.toList());
+        List<ArticleDTO> dtoList = result.getContent().stream()
+                .map(article -> modelMapper.map(article, ArticleDTO.class)).collect(Collectors.toList());
 
         long totalCount = result.getTotalElements();
 
-        PageResponseDTO<ArticleDTO> responseDTO = PageResponseDTO.<ArticleDTO>withAll().dtoList(dtoList).pageRequestDTO(pageRequestDTO).totalCount(totalCount).build();
+        PageResponseDTO<ArticleDTO> responseDTO = PageResponseDTO.<ArticleDTO>withAll().dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO).totalCount(totalCount).build();
 
         return responseDTO;
     }
@@ -52,25 +55,26 @@ public class ArticleService {
     public List<ArticleDTO> mainArticleList() {
         List<Article> result = articleRepository.findAll();
 
-        List<ArticleDTO> dtoList = result.stream().map(article -> modelMapper.map(article, ArticleDTO.class)).collect(Collectors.toList());
+        List<ArticleDTO> dtoList = result.stream().map(article -> modelMapper.map(article, ArticleDTO.class))
+                .collect(Collectors.toList());
 
         return dtoList;
     }
 
     @Transactional
-    public Long createArticle(ArticleDTO articleDTO){
+    public Long createArticle(ArticleDTO articleDTO) {
         Article article = Article.builder()
-        .articleTitle(articleDTO.getArticleTitle())
-        .articleContent(articleDTO.getArticleContent())
-        .articleAuthor(articleDTO.getArticleAuthor())
-        .articleCreated(LocalDateTime.now())
-        .build();
+                .articleTitle(articleDTO.getArticleTitle())
+                .articleContent(articleDTO.getArticleContent())
+                .articleAuthor(articleDTO.getArticleAuthor())
+                .articleCreated(LocalDateTime.now())
+                .build();
         article = articleRepository.save(article);
         return article.getId();
     }
 
     @Transactional
-    public ArticleDTO getArticleById(Long id){
+    public ArticleDTO getArticleById(Long id) {
         Optional<Article> result = articleRepository.findById(id);
         Article article = result.orElseThrow();
         ArticleDTO articleDTO = modelMapper.map(article, ArticleDTO.class);
@@ -78,21 +82,20 @@ public class ArticleService {
     }
 
     @Transactional
-    public void updateArticle(Long id, ArticleDTO articleDTO){
+    public void updateArticle(Long id, ArticleDTO articleDTO) {
         Article article = articleRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("글을 찾지 못했습니다." + id));
+                .orElseThrow(() -> new RuntimeException("글을 찾지 못했습니다." + id));
 
         article.setArticleTitle(articleDTO.getArticleTitle());
         article.setArticleContent(articleDTO.getArticleContent());
-        article.setArticleAuthor(articleDTO.getArticleAuthor());
         article.setArticleUpdated(LocalDateTime.now());
         articleRepository.save(article);
     }
 
     @Transactional
-    public void deleteArticle(Long id){
-        if (!articleRepository.existsById(id)){
-           throw new RuntimeException("글을 찾지 못했습니다. " + id);
+    public void deleteArticle(Long id) {
+        if (!articleRepository.existsById(id)) {
+            throw new RuntimeException("글을 찾지 못했습니다. " + id);
         }
         articleRepository.deleteById(id);
     }
