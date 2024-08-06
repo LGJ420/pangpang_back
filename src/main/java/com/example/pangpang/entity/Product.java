@@ -31,6 +31,8 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<OrdersProduct> ordersProducts;
 
+    
+
     // @ElementCollection
     // @Builder.Default
     // private List<ProductImage> imageList = new ArrayList<>();
