@@ -56,6 +56,8 @@ public class CartService {
     }
 
 
+
+
     public List<CartListDTO> list(){
 
         List<CartListDTO> cartListDTOs = cartRepository.findAll()
@@ -73,6 +75,8 @@ public class CartService {
     }
 
     
+
+
     public void delete(Long memberId, CartListDTO cartListDTO){
 
         Member member = memberRepository.findById(memberId)
@@ -90,7 +94,7 @@ public class CartService {
     public void deletes(Long memberId, List<CartListDTO> cartListDTOs){
 
         Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+            .orElseThrow(() -> new EntityNotFoundException("Member not found"));
 
 
         for (CartListDTO dto : cartListDTOs) {
@@ -102,4 +106,21 @@ public class CartService {
     }
 
 
+
+
+    public void update(Long memberId, CartListDTO cartListDTO){
+
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+        Product product = productRepository.findById(cartListDTO.getProductId())
+            .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+        Cart findCart = cartRepository.findByMemberAndProduct(member, product).orElse(null);
+
+        findCart.changeCartCount(cartListDTO.getCartCount());
+
+        cartRepository.save(findCart);
+
+    }
 }
