@@ -5,6 +5,7 @@ import java.util.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.pangpang.dto.MemberCheckIdInSignupDTO;
 import com.example.pangpang.dto.MemberDTO;
 import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.dto.MemberInFindPwDTO;
@@ -14,19 +15,14 @@ import com.example.pangpang.dto.MemberInLoginResponseDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.MemberService;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -35,6 +31,15 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 public class MemberController {
 
     private final MemberService memberService;
+
+    // 회원가입 - 아이디 중복 확인
+    @PostMapping("/signup/checkMemberId")
+    public Map<String, String> chechMemberId(@Valid @RequestBody MemberCheckIdInSignupDTO memberCheckIdInSignupDTO) {
+        
+        memberService.checkMemberId(memberCheckIdInSignupDTO);
+
+        return Map.of("result", "아이디 중복 확인 성공");
+    }
 
     // 회원가입
     @PostMapping("/signup")

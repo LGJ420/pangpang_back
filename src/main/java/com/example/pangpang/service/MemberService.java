@@ -11,6 +11,7 @@ import javax.naming.NameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.pangpang.dto.MemberCheckIdInSignupDTO;
 import com.example.pangpang.dto.MemberDTO;
 import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.dto.MemberInFindPwDTO;
@@ -39,6 +40,16 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     // ===================================================
+
+    // 아이디 중복 확인
+    public void checkMemberId(MemberCheckIdInSignupDTO memberCheckIdInSignupDTO){
+        // 아이디 중복 확인
+        Optional<Member> memberIdCheck = memberRepository.findByMemberId(memberCheckIdInSignupDTO.getMemberId());
+
+        if (memberIdCheck.isPresent()) {
+            throw new IllegalArgumentException("중복된 아이디가 존재합니다.");
+        }
+    }
 
     // 회원가입 서비스
     public void createMember(MemberDTO memberDTO) {
