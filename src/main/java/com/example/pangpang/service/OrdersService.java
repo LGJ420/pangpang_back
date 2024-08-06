@@ -8,13 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.pangpang.dto.OrdersDTO;
-import com.example.pangpang.entity.Member;
-import com.example.pangpang.entity.Orders;
-import com.example.pangpang.entity.OrdersProduct;
-import com.example.pangpang.entity.Product;
-import com.example.pangpang.repository.MemberRepository;
-import com.example.pangpang.repository.OrdersRepository;
-import com.example.pangpang.repository.ProductRepository;
+import com.example.pangpang.entity.*;
+import com.example.pangpang.repository.*;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +22,7 @@ public class OrdersService {
     private final OrdersRepository ordersRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+    private final CartRepository cartRepository;
     private final ModelMapper modelMapper;
 
     public List<OrdersDTO> list(){
@@ -65,8 +61,8 @@ public class OrdersService {
                     .count(dto.getCartCount())
                     .build();
                     
+                cartRepository.deleteByMemberAndProduct(member, product);
                 return ordersProduct;
-
             })
             .collect(Collectors.toList());
 

@@ -53,15 +53,16 @@ public class CartController {
     }
     
 
-    @DeleteMapping("/pay")
-    public Map<String, String> deletes(@RequestBody List<CartListDTO> cartListDTOs){
+    //현재 사용 안함
+    // @DeleteMapping("/pay")
+    // public Map<String, String> deletes(@RequestBody List<CartListDTO> cartListDTOs){
 
-        Long memberId = 1L;
+    //     Long memberId = 1L;
 
-        cartService.deletes(memberId, cartListDTOs);
+    //     cartService.deletes(memberId, cartListDTOs);
 
-        return Map.of("result", "삭제 완료");
-    }
+    //     return Map.of("result", "삭제 완료");
+    // }
 
 
 
