@@ -3,6 +3,8 @@ package com.example.pangpang.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +31,7 @@ public class ProductController {
   private final ProductService productService;
   private final CustomFileUtil fileUtil;
 
+  /* 이미지 저장 */
   @PostMapping("/")
   public Map<String, String> register(ProductDTO productDTO) {
     log.info("register : " + productDTO);
@@ -40,10 +43,15 @@ public class ProductController {
     return Map.of("RESULT", "SUCCESS");
   }
 
+  /* 이미지 조회 */
+  @GetMapping("/view/{fileName}")
+  public ResponseEntity<Resource> viewFileGET(@PathVariable(name = "fileName") String fileName) {
+    return fileUtil.getFile(fileName);
+  }
+
+
 
   
-
-
   /* 상품 목록 보기 */
   @GetMapping("/list")
   public PageResponseDTO<ProductDTO> list(
@@ -66,6 +74,5 @@ public class ProductController {
   public ProductDTO getDetail(@PathVariable(name = "id") Long id) {
     return productService.getDetail(id);
   }
-
 
 }
