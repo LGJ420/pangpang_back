@@ -2,6 +2,8 @@ package com.example.pangpang.controller;
 
 import java.util.*;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.pangpang.dto.CartDTO;
@@ -59,6 +61,18 @@ public class CartController {
         cartService.deletes(memberId, cartListDTOs);
 
         return Map.of("result", "삭제 완료");
+    }
+
+
+
+    @PutMapping("")
+    public Map<String, String> update(@RequestBody CartListDTO cartListDTO) {
+
+        Long memberId = 1L;
+
+        cartService.update(memberId, cartListDTO);
+
+        return Map.of("result", "수정 완료");
     }
     
 }

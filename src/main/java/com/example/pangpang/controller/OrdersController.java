@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.pangpang.dto.OrdersDTO;
 import com.example.pangpang.service.OrdersService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,7 +31,7 @@ public class OrdersController {
 
 
     @PostMapping("")
-    public Map<String, String> add(@RequestBody OrdersDTO ordersDTO){
+    public Map<String, String> add(@Valid @RequestBody OrdersDTO ordersDTO){
 
         //지금은 유저를 1도 지정
         Long memberId = 1L;
