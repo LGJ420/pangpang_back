@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// 로그인 DTO
+
 @Data
 @Builder
 @AllArgsConstructor
