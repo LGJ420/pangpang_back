@@ -161,12 +161,4 @@ public class MemberService {
 
     // ===================================================
 
-    public Boolean test(Principal principal) {
-        Optional<Member> member = memberRepository.findByMemberId(principal.getName());
-
-        if (member != null) {
-            return true;
-        } else
-            return false;
-    }
 }

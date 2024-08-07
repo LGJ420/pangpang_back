@@ -115,14 +115,16 @@ public class MemberController {
     // 테스트
     @GetMapping("/test")
     public String test(Principal principal) {
-        Boolean existMember = memberService.test(principal);
-        if (!existMember) {
-            throw new MemberNotFoundException("프린시팔 false뜸");
-        }
+        // memberId만 뽑기
+        // 수많은 토큰끼리 식별하기 위해 subject라는 것을 설정함(토큰의 이름표라고 보면 될듯)
+        // 내가 subject(토큰의 이름표)를 memberId라고 설정함
+        // 프린시펄은 로그인 한 사용자 식별자를 알 수 있음
+        // 즉 프린시펄을 쓰면 subject로 설정한 memberId를 반환한다는 뜻
+        String memberId = principal.getName();
+        return memberId;
 
-        // String memberName = principal.toString();
-        String memberName = principal.getName();
-        return memberName;
+        // toString으로 전부 보기
+        // String memberInfo = principal.toString();
+        // return memberInfo;
     }
-
 }
