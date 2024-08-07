@@ -31,6 +31,13 @@ public class ProductService {
   private final ModelMapper modelMapper;
   private final ProductRepository productRepository;
 
+
+
+  /* 상품 등록 */
+
+
+
+
   /* 목록 보기 - 페이징 처리 */
   public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
 
@@ -70,6 +77,8 @@ public class ProductService {
     return responseDTO;
   }
 
+
+
   /* 메인 페이지 상품 목록 */
   public PageResponseDTO<ProductDTO> mainList(PageRequestDTO pageRequestDTO) {
 
@@ -89,6 +98,8 @@ public class ProductService {
 
     return responseDTO;
   }
+
+
 
   /* 상품 상세보기 */
   public ProductDTO getDetail(Long id) {

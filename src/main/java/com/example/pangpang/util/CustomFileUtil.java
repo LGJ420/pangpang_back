@@ -2,7 +2,6 @@ package com.example.pangpang.util;
 
 import java.io.*;
 import java.nio.file.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Value;

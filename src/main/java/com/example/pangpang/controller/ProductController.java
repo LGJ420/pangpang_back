@@ -33,8 +33,8 @@ public class ProductController {
 
   /* 이미지 저장 */
   @PostMapping("/")
-  public Map<String, String> register(ProductDTO productDTO) {
-    log.info("register : " + productDTO);
+  public Map<String, String> saveImage(ProductDTO productDTO) {
+    log.info("save Image : " + productDTO);
     List<MultipartFile> files = productDTO.getFiles();
 
     List<String> uploadFileNames = fileUtil.saveFiles(files);
