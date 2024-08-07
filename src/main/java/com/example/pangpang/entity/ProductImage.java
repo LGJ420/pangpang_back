@@ -13,7 +13,7 @@ public class ProductImage {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Long num;
 
   private String fileName;  // 이미지 파일명
 

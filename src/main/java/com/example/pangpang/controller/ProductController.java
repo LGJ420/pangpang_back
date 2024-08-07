@@ -58,19 +58,6 @@ public class ProductController {
   }
 
 
-  // 이미지 저장
-  // @PostMapping("/")
-  // public Map<String, String> saveImage(ProductDTO productDTO) {
-  //   log.info("save Image : " + productDTO);
-  //   List<MultipartFile> files = productDTO.getFiles();
-
-  //   List<String> uploadFileNames = fileUtil.saveFiles(files);
-  //   log.info(uploadFileNames);
-
-  //   return Map.of("RESULT", "SUCCESS");
-  // }
-
-
   /* 이미지 조회 */
   @GetMapping("/view/{fileName}")
   public ResponseEntity<Resource> viewFileGET(@PathVariable(name = "fileName") String fileName) {

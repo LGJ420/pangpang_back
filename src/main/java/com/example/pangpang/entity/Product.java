@@ -8,7 +8,7 @@ import lombok.*;
 @Entity
 @Getter
 @Builder
-@ToString
+@ToString(exclude = "productImage")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
@@ -32,26 +32,5 @@ public class Product {
     // 상품 이미지
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductImage> productImage;
-
-
-    // // 가격 수정
-    // public void changePrice(int price) {
-    // this.productPrice = price;
-    // }
-
-
-    // // 내용 수정
-    // public void changeContent(String content) {
-    // this.productContent = content;
-    // }
-
-
-    // // 제목 수정
-    // public void changeTitle(String title) {
-    // this.productTitle = title;
-    // }
-
-
-    
 
 }
