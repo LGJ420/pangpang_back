@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,17 +32,44 @@ public class ProductController {
   private final ProductService productService;
   private final CustomFileUtil fileUtil;
 
-  /* 이미지 저장 */
-  @PostMapping("/")
-  public Map<String, String> saveImage(ProductDTO productDTO) {
-    log.info("save Image : " + productDTO);
-    List<MultipartFile> files = productDTO.getFiles();
+  /* 상품 등록 */
+  @PostMapping("/add")
+  public ResponseEntity<Long> addProduct(
+      @RequestParam("productTitle") String productTitle,
+      @RequestParam("productContent") String productContent,
+      @RequestParam("productPrice") int productPrice,
+      @RequestParam("files") List<MultipartFile> files) {
 
-    List<String> uploadFileNames = fileUtil.saveFiles(files);
-    log.info(uploadFileNames);
+    // DTO 생성
+    ProductDTO productDTO = ProductDTO.builder()
+        .productTitle(productTitle)
+        .productContent(productContent)
+        .productPrice(productPrice)
+        .files(files)
+        .build();
 
-    return Map.of("RESULT", "SUCCESS");
+
+
+    // 상품 등록 서비스 호출
+    Long productId = productService.addProduct(productDTO);
+
+    // 성공적인 응답 반환
+    return ResponseEntity.status(HttpStatus.CREATED).body(productId);
   }
+
+
+  // 이미지 저장
+  // @PostMapping("/")
+  // public Map<String, String> saveImage(ProductDTO productDTO) {
+  //   log.info("save Image : " + productDTO);
+  //   List<MultipartFile> files = productDTO.getFiles();
+
+  //   List<String> uploadFileNames = fileUtil.saveFiles(files);
+  //   log.info(uploadFileNames);
+
+  //   return Map.of("RESULT", "SUCCESS");
+  // }
+
 
   /* 이미지 조회 */
   @GetMapping("/view/{fileName}")

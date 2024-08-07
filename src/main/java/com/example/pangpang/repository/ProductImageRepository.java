@@ -1,6 +1,10 @@
 package com.example.pangpang.repository;
 
-public interface ProductImageRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.pangpang.entity.ProductImage;
+
+public interface ProductImageRepository extends JpaRepository<ProductImage, Long> {
 
   
 }

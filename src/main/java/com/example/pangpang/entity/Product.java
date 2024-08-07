@@ -30,7 +30,7 @@ public class Product {
     private List<OrdersProduct> ordersProducts;
 
     // 상품 이미지
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductImage> productImage;
 
 

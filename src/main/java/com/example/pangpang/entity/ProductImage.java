@@ -15,14 +15,10 @@ public class ProductImage {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-
   private String fileName;  // 이미지 파일명
-
 
   @ManyToOne
   @JoinColumn(name = "product_id")
   private Product product;
-
-
 
 }

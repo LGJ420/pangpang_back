@@ -1,5 +1,6 @@
 package com.example.pangpang.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,7 +17,10 @@ import com.example.pangpang.dto.PageRequestDTO;
 import com.example.pangpang.dto.PageResponseDTO;
 import com.example.pangpang.dto.ProductDTO;
 import com.example.pangpang.entity.Product;
+import com.example.pangpang.entity.ProductImage;
+import com.example.pangpang.repository.ProductImageRepository;
 import com.example.pangpang.repository.ProductRepository;
+import com.example.pangpang.util.CustomFileUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +34,38 @@ public class ProductService {
 
   private final ModelMapper modelMapper;
   private final ProductRepository productRepository;
-
-
+  private final CustomFileUtil customFileUtil;
+  private final ProductImageRepository productImageRepository;
 
   /* 상품 등록 */
+  @Transactional
+  public Long addProduct(ProductDTO productDTO) {
+    // 상품 생성
+    Product product = Product.builder()
+        .productTitle(productDTO.getProductTitle())
+        .productContent(productDTO.getProductContent())
+        .productPrice(productDTO.getProductPrice())
+        .build();
 
+    // 상품 저장 및 새 변수 할당
+    Product savedProduct = productRepository.save(product);
+
+    // 이미지 파일 저장 및 파일 이름 리스트 받기
+    List<String> fileNames = customFileUtil.saveFiles(productDTO.getFiles());
+
+    // 저장된 파일 이름 리스트를 ProductImage 객체로 변환
+    List<ProductImage> images = fileNames.stream()
+        .map(fileName -> ProductImage.builder()
+            .fileName(fileName)
+            .product(savedProduct) // 저장한 상품과 연관
+            .build())
+        .collect(Collectors.toList());
+
+    // 이미지 저장 (ProductImage를 별도로 저장)
+    productImageRepository.saveAll(images);
+
+    return savedProduct.getId();
+  }
 
 
 
@@ -64,8 +95,20 @@ public class ProductService {
     }
 
     // Product 엔티티를 ProductDTO로 변환하여 리스트로 만듦
-    List<ProductDTO> dtoList = result.getContent().stream().map(product -> modelMapper.map(product, ProductDTO.class))
-        .collect(Collectors.toList());
+    List<ProductDTO> dtoList = result.getContent().stream()
+    .map(product -> modelMapper.map(product, ProductDTO.class))
+    .collect(Collectors.toList());
+
+    // List<ProductDTO> dtoList = result.getContent().stream()
+    //     .map(product -> {
+    //       ProductDTO dto = modelMapper.map(product, ProductDTO.class);
+    //       List<String> imageUrls = product.getProductImage().stream()
+    //           .map(img -> "/api/product/view/" + img.getFileName())
+    //           .collect(Collectors.toList());
+    //       dto.setImageUrls(imageUrls);
+    //       return dto;
+    //     })
+    //     .collect(Collectors.toList());
 
     // 전체 상품의 개수 가져옴
     long totalCount = result.getTotalElements();
@@ -99,13 +142,18 @@ public class ProductService {
     return responseDTO;
   }
 
-
-
   /* 상품 상세보기 */
   public ProductDTO getDetail(Long id) {
     Optional<Product> result = productRepository.findById(id);
     Product product = result.orElseThrow();
     ProductDTO dto = modelMapper.map(product, ProductDTO.class);
+
+    // 상품의 이미지 URL 목록 설정
+    // List<String> imageUrls = product.getProductImage().stream()
+    // .map(img -> "/api/product/view/" + img.getFileName())
+    // .collect(Collectors.toList());
+
+    // dto.setImageUrls(imageUrls);
 
     return dto;
   }
