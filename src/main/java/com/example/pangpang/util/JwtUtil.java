@@ -12,17 +12,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Value;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 @Component
 public class JwtUtil {
     private SecretKey secretKey = Keys.hmacShaKeyFor("yourSecretKeyyourSecretKeyyourSecretKey".getBytes());
     // 키는 최소 32바이트 이상
-    
+
     private long expiration = 86400000; // 토큰 만료 시간 (예: 24시간)
 
     // 토큰 생성
