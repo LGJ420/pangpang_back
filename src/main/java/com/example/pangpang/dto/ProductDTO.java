@@ -26,8 +26,6 @@ public class ProductDTO {
     @Positive
     private int productPrice;
 
-    // private List<String> fileNames; // 이미지 파일 이름 리스트 추가
-
     // 상품에 첨부된 파일들을 나타내는 MultipartFile 객체들의 리스트
     @Builder.Default
     private List<MultipartFile> files = new ArrayList<>();
