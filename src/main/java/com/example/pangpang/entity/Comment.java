@@ -18,17 +18,23 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "article_id", nullable = false)
+    private Article article;
+
+    @Column(nullable = false)
+    private String commentAuthor;
+
+    @Column(columnDefinition = "TEXT", nullable = false, length = 3000)
     private String commentContent;
 
+    @Column(name = "comment_created", updatable = false, nullable = false)
     private LocalDateTime commentCreated;
+
+    @Column(name = "comment_updated")
     private LocalDateTime commentUpdated;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
-
-    @ManyToOne
-    @JoinColumn(name = "article_id")
-    private Article article;
 }
