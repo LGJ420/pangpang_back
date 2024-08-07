@@ -2,11 +2,7 @@ package com.example.pangpang.controller;
 
 import java.util.*;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.pangpang.dto.OrdersDTO;
 import com.example.pangpang.service.OrdersService;
@@ -23,10 +19,10 @@ public class OrdersController {
 
 
     @GetMapping("/list")
-    public List<OrdersDTO> getList(){
+    public List<OrdersDTO> getList(
+        @RequestParam(value = "search", required = false) String search){
 
-        return ordersService.list();
-
+        return ordersService.list(search);
     }
 
 

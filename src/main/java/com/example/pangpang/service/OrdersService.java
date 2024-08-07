@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.pangpang.dto.OrdersDTO;
+import com.example.pangpang.dto.OrdersProductDTO;
 import com.example.pangpang.entity.*;
 import com.example.pangpang.repository.*;
 
@@ -25,15 +26,37 @@ public class OrdersService {
     private final CartRepository cartRepository;
     private final ModelMapper modelMapper;
 
-    public List<OrdersDTO> list(){
+
+    public List<OrdersDTO> list(String search){
 
         List<Orders> orders = ordersRepository.findAll();
-        List<OrdersDTO> ordersDTOs = orders
-            .stream()
-            .map(order -> modelMapper.map(order, OrdersDTO.class))
-            .collect(Collectors.toList());
 
-        return ordersDTOs;
+        if(search != null && !search.isBlank()){
+
+            List<OrdersDTO> ordersDTOs = orders.stream()
+                .map(order -> {
+                    OrdersDTO dto = modelMapper.map(order, OrdersDTO.class);
+                    // 필터링 로직 추가
+                    List<OrdersProductDTO> filteredProducts = dto.getOrdersProducts().stream()
+                        .filter(product -> product.getProductTitle().contains(search))
+                        .collect(Collectors.toList());
+                    dto.setOrdersProducts(filteredProducts); // 필터링된 제품 목록으로 업데이트
+                    return dto;
+                })
+                .filter(dto -> !dto.getOrdersProducts().isEmpty()) // 제품 목록이 비어있지 않은 OrdersDTO만 유지
+                .collect(Collectors.toList());
+
+            return ordersDTOs;
+        }
+        else{
+
+            List<OrdersDTO> ordersDTOs = orders
+                .stream()
+                .map(order -> modelMapper.map(order, OrdersDTO.class))
+                .collect(Collectors.toList());
+
+            return ordersDTOs;
+        }
     }
 
 
