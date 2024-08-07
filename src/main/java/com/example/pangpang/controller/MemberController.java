@@ -14,6 +14,7 @@ import com.example.pangpang.dto.MemberInLoginDTO;
 import com.example.pangpang.dto.MemberInLoginResponseDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.MemberService;
+import com.example.pangpang.util.JwtUtil;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 @CrossOrigin(origins = "*")
@@ -35,7 +36,7 @@ public class MemberController {
     // 회원가입 - 아이디 중복 확인
     @PostMapping("/signup/checkMemberId")
     public Map<String, String> chechMemberId(@Valid @RequestBody MemberCheckIdInSignupDTO memberCheckIdInSignupDTO) {
-        
+
         memberService.checkMemberId(memberCheckIdInSignupDTO);
 
         return Map.of("result", "아이디 중복 확인 성공");
@@ -77,13 +78,26 @@ public class MemberController {
         return Map.of("result", "비밀번호 변경 성공!");
     }
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody MemberInLoginDTO memberInLoginDTO) {
-        String token = memberService.login(memberInLoginDTO);
+    public Map<String, String> login(@RequestBody MemberInLoginDTO memberInLoginDTO) {
+        Member member = memberService.login(memberInLoginDTO);
 
-        // 200 OK 상태 코드와 함께 JWT 포함 응답 반환
-        return ResponseEntity.ok().body(new MemberInLoginResponseDTO(token));
+        String memberId = member.getMemberId();
+        String memberName = member.getMemberName();
+        String memberRole = member.getMemberRole();
+
+        // JWT 토큰 생성
+        String token = jwtUtil.generateToken(memberId, memberName, memberRole);
+
+        // 응답 반환
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        System.out.println(response);
+        return response;
     }
 
     // 로그아웃
