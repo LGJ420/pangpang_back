@@ -1,5 +1,7 @@
 package com.example.pangpang.service;
 
+import java.security.Principal;
+
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
@@ -155,5 +157,16 @@ public class MemberService {
         Member memberInfo = memberRepository.findByMemberId(memberInLoginDTO.getMemberIdInLogin()).get();
 
         return memberInfo; // 아이디, 비밀번호 일치하는 멤버 반환
+    }
+
+    // ===================================================
+
+    public Boolean test(Principal principal) {
+        Optional<Member> member = memberRepository.findByMemberId(principal.getName());
+
+        if (member != null) {
+            return true;
+        } else
+            return false;
     }
 }

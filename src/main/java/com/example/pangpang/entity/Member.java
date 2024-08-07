@@ -2,10 +2,14 @@ package com.example.pangpang.entity;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Collections;
+import java.util.Arrays;
 import java.util.stream.Collectors;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -61,12 +65,12 @@ public class Member implements UserDetails {
         // 추가 필드
         private String roles; // 역할을 저장하는 필드
 
-        // Getters and setters
-
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
-                return List.of(roles.split(","))
-                                .stream()
+                if (roles == null || roles.isEmpty()) {
+                        return Collections.emptyList();
+                }
+                return Arrays.stream(roles.split(","))
                                 .map(SimpleGrantedAuthority::new)
                                 .collect(Collectors.toList());
         }

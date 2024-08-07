@@ -1,6 +1,7 @@
 package com.example.pangpang.controller;
 
 import java.util.*;
+import java.security.Principal;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import com.example.pangpang.dto.MemberInFindPwForResetDTO;
 import com.example.pangpang.dto.MemberInLoginDTO;
 import com.example.pangpang.dto.MemberInLoginResponseDTO;
 import com.example.pangpang.entity.Member;
+import com.example.pangpang.exception.MemberNotFoundException;
 import com.example.pangpang.service.MemberService;
 import com.example.pangpang.util.JwtUtil;
 
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -106,6 +110,19 @@ public class MemberController {
 
         // 로그아웃 성공 메세지
         return "로그아웃 성공";
+    }
+
+    // 테스트
+    @GetMapping("/test")
+    public String test(Principal principal) {
+        Boolean existMember = memberService.test(principal);
+        if (!existMember) {
+            throw new MemberNotFoundException("프린시팔 false뜸");
+        }
+
+        // String memberName = principal.toString();
+        String memberName = principal.getName();
+        return memberName;
     }
 
 }

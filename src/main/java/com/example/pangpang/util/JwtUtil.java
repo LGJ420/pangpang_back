@@ -22,6 +22,7 @@ import java.util.function.Function;
 public class JwtUtil {
     private SecretKey secretKey = Keys.hmacShaKeyFor("yourSecretKeyyourSecretKeyyourSecretKey".getBytes());
     // 키는 최소 32바이트 이상
+    
     private long expiration = 86400000; // 토큰 만료 시간 (예: 24시간)
 
     // 토큰 생성
@@ -47,19 +48,24 @@ public class JwtUtil {
                 .getBody();
     }
 
+    // 토큰 유효기간(참/거짓)
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = parseToken(token).getSubject();
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    // 토큰이 만료되었는지 확인(참/거짓)
     private boolean isTokenExpired(String token) {
         return parseToken(token).getExpiration().before(new Date());
     }
 
+    // JWT 토큰에서 사용자 이름을 추출
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
+    // 위의 메소드를 위해 이 메소드가 실행됨
+    // 여기서 토큰의 모든 클레임을 가져옴->위 메소드에서 사용자 이름을 추출함
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
