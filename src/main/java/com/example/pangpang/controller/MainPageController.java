@@ -12,20 +12,21 @@ import com.example.pangpang.service.ProductService;
 
 import lombok.RequiredArgsConstructor;
 
-/* 메인페이지에 사용하는 상품 목록 리스트 입니다 */
+/* 메인페이지에 사용하는 컨트롤러 입니다 */
 
 @RestController
 @RequiredArgsConstructor
 public class MainPageController {
-  
 
   private final ProductService productService;
 
   @GetMapping("/")
   public PageResponseDTO<ProductDTO> mainList(@RequestParam(value = "size", defaultValue = "3") int size) {
 
-    PageRequestDTO pageRequestDTO = PageRequestDTO.builder().size(size).build();
+    PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+        .size(size)
+        .build();
     return productService.mainList(pageRequestDTO);
   }
-  
+
 }

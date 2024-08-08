@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,8 +14,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
   // 상세 보기 - 상품 이미지 포함
   // 주어진 id에 해당하는 Product 조회. 조회 결과에는 ProductImage도 포함
-  @EntityGraph(attributePaths = "productImage")
-  @Query("select p from Product p where p.id = :id")
+  @Query("SELECT p FROM Product p LEFT JOIN FETCH p.productImage WHERE p.id = :id")
   Optional<Product> selectOne(@Param("id") Long id);
 
 
@@ -44,5 +42,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
   // 상품 랜덤으로 가져오기 (메인에서 사용)
   @Query(value = "SELECT p.*, pi.* FROM product p LEFT JOIN product_image pi ON p.id = pi.product_id ORDER BY RAND()", nativeQuery = true)
-  Page<Product> findAllRandom(Pageable pageable);
+  Page<Object[]> findAllRandomWithImages(Pageable pageable);
+
 }

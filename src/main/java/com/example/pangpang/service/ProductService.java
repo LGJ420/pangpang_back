@@ -158,32 +158,58 @@ public class ProductService {
     Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
         Sort.by("id").descending());
 
-    Page<Product> result = productRepository.findAllRandom(pageable);
+    Page<Object[]> result = productRepository.findAllRandomWithImages(pageable);
 
-    List<ProductDTO> dtoList = result.getContent().stream()
-        .map(product -> modelMapper.map(product, ProductDTO.class))
-        .collect(Collectors.toList());
+
+    List<ProductDTO> dtoList = result.getContent().stream() 
+        .map(arr -> { 
+          Product product = (Product) arr[0]; 
+          ProductImage productImage = (ProductImage) arr[1]; 
+
+          ProductDTO productDTO = ProductDTO.builder()
+              .id(product.getId())
+              .productTitle(product.getProductTitle())
+              .productContent(product.getProductContent())
+              .productPrice(product.getProductPrice())
+              .build();
+
+          // 이미지 파일 이름 설정
+          if (productImage != null) { 
+            String imageStr = productImage.getFileName(); 
+            productDTO.setUploadFileNames(List.of(imageStr));
+          } else {
+            productDTO.setUploadFileNames(Collections.emptyList()); 
+          }
+
+          return productDTO; 
+        })
+        .collect(Collectors.toList()); 
+
 
     long totalCount = result.getTotalElements();
 
-    PageResponseDTO<ProductDTO> responseDTO = PageResponseDTO.<ProductDTO>withAll().dtoList(dtoList)
-        .pageRequestDTO(pageRequestDTO).totalCount(totalCount).build();
+    PageResponseDTO<ProductDTO> responseDTO = PageResponseDTO.<ProductDTO>withAll()
+        .dtoList(dtoList)
+        .pageRequestDTO(pageRequestDTO)
+        .totalCount(totalCount)
+        .build();
 
     return responseDTO;
   }
 
+
+  
   /* 상품 상세보기 */
   public ProductDTO getDetail(Long id) {
-    Optional<Product> result = productRepository.findById(id);
+
+    Optional<Product> result = productRepository.selectOne(id);
     Product product = result.orElseThrow();
     ProductDTO dto = modelMapper.map(product, ProductDTO.class);
 
-    // 상품의 이미지 URL 목록 설정
-    // List<String> imageUrls = product.getProductImage().stream()
-    // .map(img -> "/api/product/view/" + img.getFileName())
-    // .collect(Collectors.toList());
-
-    // dto.setImageUrls(imageUrls);
+    List<String> imageNames = product.getProductImage().stream()
+        .map(ProductImage::getFileName)
+        .collect(Collectors.toList());
+    dto.setUploadFileNames(imageNames);
 
     return dto;
   }
