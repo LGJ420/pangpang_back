@@ -1,6 +1,6 @@
 package com.example.pangpang.repository;
 
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +41,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
   // 상품 랜덤으로 가져오기 (메인에서 사용)
-  @Query(value = "SELECT p.*, pi.* FROM product p LEFT JOIN product_image pi ON p.id = pi.product_id ORDER BY RAND()", nativeQuery = true)
-  Page<Object[]> findAllRandomWithImages(Pageable pageable);
+  @Query(value = "SELECT p.*, pi.* FROM product p LEFT JOIN product_image pi ON p.id = pi.product_id ORDER BY RAND() LiMIT 3", nativeQuery = true)
+  List<Object[]> findAllRandomWithImages();
 
 }

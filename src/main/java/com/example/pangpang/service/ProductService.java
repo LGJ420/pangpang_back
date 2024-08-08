@@ -72,6 +72,8 @@ public class ProductService {
     return savedProduct.getId();
   }
 
+
+
   /* 상품 목록 보기 */
   public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
 
@@ -92,20 +94,17 @@ public class ProductService {
       result = productRepository.selectList(pageable);
     }
 
-
     // result = Page 객체 (페이징 된 데이터와 관련된 정보 담고 있음)
     // 여기서 Object[] 배열 사용하여 각 데이터 항목 표현
     // 배열의 각 요소는 Product와 ProductImage 객체를 포함
     // arr[0]: Product 객체
     // arr[1]: ProductImage 객체 (이미지가 없는 경우 null일 수 있음)
 
-
     // Product 엔티티를 ProductDTO로 변환하여 리스트로 만듦
-    List<ProductDTO> dtoList = result.getContent().stream()   // 현재 페이지의 상품 목록 가져와 스트림으로 변환
-        .map(arr -> {         // // 각 항목(arr)은 Product와 ProductImage를 포함하는 배열
-          Product product = (Product) arr[0];                   // 배열의 첫 번째 요소가 Product
-          ProductImage productImage = (ProductImage) arr[1];    // 배열의 두 번째 요소가 ProductImage
-
+    List<ProductDTO> dtoList = result.getContent().stream() // 현재 페이지의 상품 목록 가져와 스트림으로 변환
+        .map(arr -> { // // 각 항목(arr)은 Product와 ProductImage를 포함하는 배열
+          Product product = (Product) arr[0]; // 배열의 첫 번째 요소가 Product
+          ProductImage productImage = (ProductImage) arr[1]; // 배열의 두 번째 요소가 ProductImage
 
           // ProductDTO.builder()를 사용하여 ProductDTO 객체를 생성, product에서 가져온 정보로 초기화
           ProductDTO productDTO = ProductDTO.builder()
@@ -116,28 +115,29 @@ public class ProductService {
               .build();
 
           // 이미지 파일 이름 설정
-          if (productImage != null) {     // productImage가 null이 아닌 경우,
-            String imageStr = productImage.getFileName();   // 이미지 파일 이름을 가져와서 ProductDTO에 설정
+          if (productImage != null) { // productImage가 null이 아닌 경우,
+            String imageStr = productImage.getFileName(); // 이미지 파일 이름을 가져와서 ProductDTO에 설정
             productDTO.setUploadFileNames(List.of(imageStr));
           } else {
             productDTO.setUploadFileNames(Collections.emptyList()); // 이미지가 없으면 빈 리스트를 설정
           }
 
-          return productDTO;    // 스트림의 각 항목을 ProductDTO로 변환 후,
+          return productDTO; // 스트림의 각 항목을 ProductDTO로 변환 후,
         })
-        .collect(Collectors.toList());    // 리스트로 형 변환
+        .collect(Collectors.toList()); // 리스트로 형 변환
 
-
-   /*    dtoList는 이런 모양이 됨 :   
-   [ ProductDTO(id=1, productTitle="Title1", productContent="Content1", productPrice=100, uploadFileNames=["image1.jpg"]),
-     ProductDTO(id=2, productTitle="Title2", productContent="Content2", productPrice=200, uploadFileNames=["image2.jpg"]),
-     ProductDTO(id=3, productTitle="Title3", productContent="Content3", productPrice=300, uploadFileNames=[]) ] */
-
-
+    /*
+     * dtoList는 이런 모양이 됨 :
+     * [ ProductDTO(id=1, productTitle="Title1", productContent="Content1",
+     * productPrice=100, uploadFileNames=["image1.jpg"]),
+     * ProductDTO(id=2, productTitle="Title2", productContent="Content2",
+     * productPrice=200, uploadFileNames=["image2.jpg"]),
+     * ProductDTO(id=3, productTitle="Title3", productContent="Content3",
+     * productPrice=300, uploadFileNames=[]) ]
+     */
 
     // 전체 상품의 개수 가져옴 (페이지 네비게이션에 필요함)
     long totalCount = result.getTotalElements();
-
 
     // PageResponseDTO를 생성하여 dtoList, pageRequestDTO, totalCount를 포함하여 반환
     PageResponseDTO<ProductDTO> responseDTO = PageResponseDTO.<ProductDTO>withAll()
@@ -146,25 +146,22 @@ public class ProductService {
         .totalCount(totalCount)
         .build();
 
-
     return responseDTO;
   }
 
 
-  
+
   /* 메인 페이지 상품 목록 */
-  public PageResponseDTO<ProductDTO> mainList(PageRequestDTO pageRequestDTO) {
+  public List<ProductDTO> mainList() {
 
-    Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
-        Sort.by("id").descending());
+    List<Object[]> result = productRepository.findAllRandomWithImages();
 
-    Page<Object[]> result = productRepository.findAllRandomWithImages(pageable);
+    log.info("가져온 데이터 : " + result);
 
-
-    List<ProductDTO> dtoList = result.getContent().stream() 
-        .map(arr -> { 
-          Product product = (Product) arr[0]; 
-          ProductImage productImage = (ProductImage) arr[1]; 
+    return result.stream()
+        .map(arr -> {
+          Product product = (Product) arr[0];
+          ProductImage productImage = (ProductImage) arr[1];
 
           ProductDTO productDTO = ProductDTO.builder()
               .id(product.getId())
@@ -174,31 +171,22 @@ public class ProductService {
               .build();
 
           // 이미지 파일 이름 설정
-          if (productImage != null) { 
-            String imageStr = productImage.getFileName(); 
+          if (productImage != null) {
+            String imageStr = productImage.getFileName();
             productDTO.setUploadFileNames(List.of(imageStr));
           } else {
-            productDTO.setUploadFileNames(Collections.emptyList()); 
+            productDTO.setUploadFileNames(Collections.emptyList());
           }
 
-          return productDTO; 
+          log.info("가져온 데이터 : " + productDTO);
+          return productDTO;
         })
-        .collect(Collectors.toList()); 
+        .collect(Collectors.toList());
 
-
-    long totalCount = result.getTotalElements();
-
-    PageResponseDTO<ProductDTO> responseDTO = PageResponseDTO.<ProductDTO>withAll()
-        .dtoList(dtoList)
-        .pageRequestDTO(pageRequestDTO)
-        .totalCount(totalCount)
-        .build();
-
-    return responseDTO;
   }
 
 
-  
+
   /* 상품 상세보기 */
   public ProductDTO getDetail(Long id) {
 
