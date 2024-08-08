@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// 아이디찾기 DTO
+
 @Data
 @Builder
 @AllArgsConstructor

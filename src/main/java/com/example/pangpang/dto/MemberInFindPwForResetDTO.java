@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// 비밀번호찾기에서 비밀번호 변경하는 DTO
+
 @Data
 @Builder
 @AllArgsConstructor
