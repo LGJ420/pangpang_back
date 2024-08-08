@@ -62,9 +62,13 @@ public class Member implements UserDetails {
 
         // ▲▲▲ 회원가입, ID/PW찾기 때 필요한 데이터 ▲▲▲
 
-        // 추가 필드
-        private String roles; // 역할을 저장하는 필드
+        // ==============================================
 
+        // 유저 역할 (콤마로 구분된 문자열, 예: "ADMIN,USER")
+        // Security에 권한주는 ROLE 저장
+        private String roles;
+
+        // 밑으로 UserDetails 인터페이스 상속 메서드
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
                 if (roles == null || roles.isEmpty()) {
