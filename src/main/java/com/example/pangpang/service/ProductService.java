@@ -1,6 +1,5 @@
 package com.example.pangpang.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -39,22 +38,29 @@ public class ProductService {
   private final ProductImageRepository productImageRepository;
 
   /* 상품 등록 */
-  @Transactional
   public Long addProduct(ProductDTO productDTO) {
-    // 상품 생성
+
+    // ProductDTO로부터 전달받은 데이터를 사용하여 Product 엔티티를 생성
+    // Builder 패턴을 사용하여 productTitle, productContent, productPrice를 설정
     Product product = Product.builder()
         .productTitle(productDTO.getProductTitle())
         .productContent(productDTO.getProductContent())
         .productPrice(productDTO.getProductPrice())
         .build();
 
-    // 상품 저장 및 새 변수 할당
+
+    // 생성한 Product 객체를 ProductRepository를 사용하여 데이터베이스에 저장
+    // 저장 후 반환되는 savedProduct 객체에는 데이터베이스에서 생성된 id와 같은 추가 정보가 포함됨
     Product savedProduct = productRepository.save(product);
 
-    // 이미지 파일 저장 및 파일 이름 리스트 받기
+
+    // customFileUtil을 사용하여 상품에 첨부된 이미지 파일들을 저장,
+    // 각 파일의 이름을 리스트로 받아옴
     List<String> fileNames = customFileUtil.saveFiles(productDTO.getFiles());
 
-    // 저장된 파일 이름 리스트를 ProductImage 객체로 변환
+
+    // 각 이미지 파일 이름을 ProductImage 엔티티로 변환
+    // 각 ProductImage 객체는 fileName과 savedProduct (상품 엔티티)와의 관계를 설정
     List<ProductImage> images = fileNames.stream()
         .map(fileName -> ProductImage.builder()
             .fileName(fileName)
@@ -62,9 +68,12 @@ public class ProductService {
             .build())
         .collect(Collectors.toList());
 
-    // 이미지 저장 (ProductImage를 별도로 저장)
+
+    // 변환한 ProductImage 객체들을 ProductImageRepository를 통해 데이터베이스에 저장
     productImageRepository.saveAll(images);
 
+
+    // 등록된 상품의 ID를 반환
     return savedProduct.getId();
   }
 
