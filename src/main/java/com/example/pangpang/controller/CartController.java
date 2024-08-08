@@ -2,6 +2,8 @@ package com.example.pangpang.controller;
 
 import java.util.*;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.pangpang.dto.CartDTO;
@@ -51,14 +53,27 @@ public class CartController {
     }
     
 
-    @DeleteMapping("/pay")
-    public Map<String, String> deletes(@RequestBody List<CartListDTO> cartListDTOs){
+    //현재 사용 안함
+    // @DeleteMapping("/pay")
+    // public Map<String, String> deletes(@RequestBody List<CartListDTO> cartListDTOs){
+
+    //     Long memberId = 1L;
+
+    //     cartService.deletes(memberId, cartListDTOs);
+
+    //     return Map.of("result", "삭제 완료");
+    // }
+
+
+
+    @PutMapping("")
+    public Map<String, String> update(@RequestBody CartListDTO cartListDTO) {
 
         Long memberId = 1L;
 
-        cartService.deletes(memberId, cartListDTOs);
+        cartService.update(memberId, cartListDTO);
 
-        return Map.of("result", "삭제 완료");
+        return Map.of("result", "수정 완료");
     }
     
 }

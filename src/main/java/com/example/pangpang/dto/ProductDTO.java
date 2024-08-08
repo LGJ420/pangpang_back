@@ -1,5 +1,9 @@
 package com.example.pangpang.dto;
 
+import java.util.*;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -10,7 +14,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductDTO {
-    
+
     private Long id;
 
     @NotEmpty
@@ -22,10 +26,12 @@ public class ProductDTO {
     @Positive
     private int productPrice;
 
-    // @Builder.Default
-    // private List<MultipartFile> files = new ArrayList<>();
+    // 상품에 첨부된 파일들을 나타내는 MultipartFile 객체들의 리스트
+    @Builder.Default
+    private List<MultipartFile> files = new ArrayList<>();
 
-    // @Builder.Default
-    // private List<String> uploadFileNames = new ArrayList<>();
+    // 업로드된 파일 이름들을 나타내는 문자열 리스트
+    @Builder.Default
+    private List<String> uploadFileNames = new ArrayList<>();
 
 }

@@ -1,25 +1,72 @@
 package com.example.pangpang.controller;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.pangpang.dto.PageRequestDTO;
 import com.example.pangpang.dto.PageResponseDTO;
 import com.example.pangpang.dto.ProductDTO;
 import com.example.pangpang.service.ProductService;
+import com.example.pangpang.util.CustomFileUtil;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @RestController
 @RequiredArgsConstructor
+@Log4j2
 @RequestMapping("/api/product")
 public class ProductController {
 
   private final ProductService productService;
+  private final CustomFileUtil fileUtil;
 
+  /* 상품 등록 */
+  @PostMapping("/add")
+  public ResponseEntity<Long> addProduct(
+      @RequestParam("productTitle") String productTitle,
+      @RequestParam("productContent") String productContent,
+      @RequestParam("productPrice") int productPrice,
+      @RequestParam("files") List<MultipartFile> files) {
+
+    // DTO 생성
+    ProductDTO productDTO = ProductDTO.builder()
+        .productTitle(productTitle)
+        .productContent(productContent)
+        .productPrice(productPrice)
+        .files(files)
+        .build();
+
+
+
+    // 상품 등록 서비스 호출
+    Long productId = productService.addProduct(productDTO);
+
+    // 성공적인 응답 반환
+    return ResponseEntity.status(HttpStatus.CREATED).body(productId);
+  }
+
+
+  /* 이미지 조회 */
+  @GetMapping("/view/{fileName}")
+  public ResponseEntity<Resource> viewFileGET(@PathVariable(name = "fileName") String fileName) {
+    return fileUtil.getFile(fileName);
+  }
+
+
+
+  
   /* 상품 목록 보기 */
   @GetMapping("/list")
   public PageResponseDTO<ProductDTO> list(
@@ -42,4 +89,6 @@ public class ProductController {
   public ProductDTO getDetail(@PathVariable(name = "id") Long id) {
     return productService.getDetail(id);
   }
+
+
 }

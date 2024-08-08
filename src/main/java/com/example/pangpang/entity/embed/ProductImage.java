@@ -12,8 +12,15 @@
 // @AllArgsConstructor
 // @NoArgsConstructor
 // public class ProductImage {
-    
-//     private Long id;
-//     private String fileName;
-//     private Product product;
+
+// private Long num; // 이미지 넘버 (이미지 아이디같은거)
+// private String fileName; // 이미지 파일명
+
+// public void setNum(Long num) {
+// this.num = num;
 // }
+
+// }
+
+
+

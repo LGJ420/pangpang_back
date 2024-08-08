@@ -8,19 +8,19 @@ import lombok.*;
 @Entity
 @Getter
 @Builder
-@ToString
+@ToString(exclude = "productImage")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
-    
+
     // 기본키
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;    
+    private Long id;
 
-    private String productTitle;    // 상품 이름
-    private String productContent;  // 상품 설명
-    private int productPrice;       // 상품 가격
+    private String productTitle; // 상품 이름
+    private String productContent; // 상품 설명
+    private int productPrice; // 상품 가격
 
     // 상품 주문
     @OneToMany(mappedBy = "product")
@@ -28,4 +28,9 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private List<OrdersProduct> ordersProducts;
+
+    // 상품 이미지
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductImage> productImage;
+
 }
