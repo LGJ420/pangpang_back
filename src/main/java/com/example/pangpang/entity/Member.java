@@ -64,18 +64,14 @@ public class Member implements UserDetails {
 
         // ==============================================
 
-        // 유저 역할 (콤마로 구분된 문자열, 예: "ADMIN,USER")
-        // Security에 권한주는 ROLE 저장
-        private String roles;
-
         // 밑으로 UserDetails 인터페이스 상속 메서드
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
-                if (roles == null || roles.isEmpty()) {
+                if (memberRole == null || memberRole.isEmpty()) {
                         return Collections.emptyList();
                 }
-                return Arrays.stream(roles.split(","))
-                                .map(SimpleGrantedAuthority::new)
+                return Arrays.stream(memberRole.split(","))
+                                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.trim().toUpperCase()))
                                 .collect(Collectors.toList());
         }
 
