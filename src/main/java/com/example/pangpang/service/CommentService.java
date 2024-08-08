@@ -1,43 +1,61 @@
 package com.example.pangpang.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.example.pangpang.dto.CommentDTO;
 import com.example.pangpang.entity.Comment;
 import com.example.pangpang.repository.CommentRepository;
+import lombok.RequiredArgsConstructor;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
-    @Autowired
-    private CommentRepository commentRepository;
+    
+    private final CommentRepository commentRepository;
 
-    public Comment createComment(Comment comment){
-        return commentRepository.save(comment);
+    public CommentDTO createComment(CommentDTO commentDTO) {
+        Comment comment = Comment.builder()
+        .commentAuthor(commentDTO.getCommentAuthor())
+        .commentContent(commentDTO.getCommentContent())
+        .commentCreated(commentDTO.getCommentCreated())
+        .build();
+    comment = commentRepository.save(comment);
+    return convertToDTO(comment);
     }
 
-    public List<Comment> getComments() {
-        return commentRepository.findAll();
+    private CommentDTO convertToDTO(Comment comment){
+        return CommentDTO.builder()
+        .id(comment.getId())
+        .articleId(comment.getArticle().getId())
+        .commentAuthor(comment.getCommentAuthor())
+        .commentContent(comment.getCommentContent())
+        .commentCreated(comment.getCommentCreated())
+        .build();
     }
 
-    public Optional<Comment> getCommentById(Long id){
-        return commentRepository.findById(id);
+    public List<CommentDTO> getCommentsByArticleId(Long articleId){
+        List<Comment> comments = commentRepository.findByArticleId(articleId);
+        return comments.stream().map(this::convertToDTO).toList();
     }
 
-    public Optional<Comment> updateComment(Long id, Comment commentDetails){
-        if (commentRepository.existsById(id)){
-            commentDetails.setId(id);
-            return Optional.of(commentRepository.save(commentDetails));
+    public Optional<CommentDTO> getCommentById(Long id){
+        return commentRepository.findById(id).map(this::convertToDTO);
+    }
+
+    public void updateComment(Long id, CommentDTO commentDTO){
+        Comment comment = commentRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("답변을 찾을 수 없습니다."));
+        comment.setCommentAuthor(commentDTO.getCommentAuthor());
+        comment.setCommentContent(commentDTO.getCommentContent());
+        commentRepository.save(comment);
+    }
+
+    public void deleteComment(Long id) {
+        if (!commentRepository.existsById(id)) {
+            throw new RuntimeException("글을 찾지 못했습니다. " + id);
         }
-        return Optional.empty();
-    }
-
-    public boolean deleteComment(Long id){
-        if (commentRepository.existsById(id)){
-            commentRepository.deleteById(id);
-            return true;
-        }
-        return false;
+        commentRepository.deleteById(id);
     }
 }

@@ -1,15 +1,19 @@
 package com.example.pangpang.service;
 
+import java.security.Principal;
+
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.Optional;
 
 import javax.crypto.SecretKey;
+import javax.naming.NameNotFoundException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.pangpang.dto.MemberCheckIdInSignupDTO;
 import com.example.pangpang.dto.MemberDTO;
 import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.dto.MemberInFindPwDTO;
@@ -39,6 +43,23 @@ public class MemberService {
 
     // ===================================================
 
+    // 아이디 중복 확인
+    public void checkMemberId(MemberCheckIdInSignupDTO memberCheckIdInSignupDTO) {
+
+        // 아이디에 아무것도 안 적혀있을 때
+        if (memberCheckIdInSignupDTO.getMemberId().isBlank()) {
+            throw new IllegalArgumentException("아이디는 공백일 수 없습니다.");
+        }
+
+        // 아이디 중복 확인
+        Optional<Member> memberIdCheck = memberRepository.findByMemberId(memberCheckIdInSignupDTO.getMemberId());
+
+        // 아이디가 존재할 때
+        if (memberIdCheck.isPresent()) {
+            throw new IllegalArgumentException("중복된 아이디가 존재합니다.");
+        }
+    }
+
     // 회원가입 서비스
     public void createMember(MemberDTO memberDTO) {
 
@@ -61,64 +82,65 @@ public class MemberService {
     // ===================================================
 
     // 아이디 찾기 서비스
-    public Optional<Member> findId(MemberInFindIdDTO memberInFindIdDTO) {
-        // 리액트 입력값을 레포지토리를 통해 데이터 확인
-        Optional<Member> memberInfo = memberRepository.findByMemberNameAndMemberBirth(
-                memberInFindIdDTO.getMemberNameInFindId(),
+    public Member findId(MemberInFindIdDTO memberInFindIdDTO) {
+        // 회원 이름과 생년월일로 데이터베이스에서 회원 정보를 조회
+        Member memberInfo = memberRepository.findByMemberNameAndMemberBirth(memberInFindIdDTO.getMemberNameInFindId(),
                 memberInFindIdDTO.getMemberBirthInFindId());
 
-        // 위에서 데이터를 확인했을 때 데이터의 유무 확인
-        if (memberInfo.isPresent()) {
-            return Optional.of(memberInfo.get());
-        } else {
-            return Optional.empty();
+        // 조회된 회원 정보가 없으면 예외 발생
+        if (memberInfo == null) {
+            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다");
         }
+
+        return memberInfo;
     }
 
     // ===================================================
 
     // 비밀번호 찾기 서비스
-    public Optional<Member> findPw(MemberInFindPwDTO memberInFindPwDTO) {
-        // 리액트 입력값을 레포지토리를 통해 데이터 확인
-        Optional<Member> memberInfo = memberRepository.findByMemberIdAndMemberNameAndMemberBirth(
+    public Member findPw(MemberInFindPwDTO memberInFindPwDTO) {
+        // 회원 아이디, 회원 이름, 회원 생년월일로 데이터베이스에서 회원 정보를 조회
+        Member memberInfo = memberRepository.findByMemberIdAndMemberNameAndMemberBirth(
                 memberInFindPwDTO.getMemberIdInFindPw(),
                 memberInFindPwDTO.getMemberNameInFindPw(),
                 memberInFindPwDTO.getMemberBirthInFindPw());
 
-        // 위에서 데이터를 확인했을 때 데이터의 유무 확인
-        if (memberInfo.isPresent()) {
-            return Optional.of(memberInfo.get());
-        } else {
-            return Optional.empty();
+        // 조회된 회원 정보가 없으면 예외 발생
+        if (memberInfo == null) {
+            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
         }
+
+        return memberInfo;
     }
 
     // 비밀번호 변경 서비스
     public void resetPw(MemberInFindPwForResetDTO memberInFindPwResetForDTO) {
 
-        // 회원번호(id)로 회원 존재 유무 확인
-        Member existingMember = memberRepository.findById(memberInFindPwResetForDTO.getIdInFindPwForReset())
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+        // 회원번호(id)로 회원 찾기
+        Optional<Member> existingMemberOptional = memberRepository
+                .findById(memberInFindPwResetForDTO.getIdInFindPwForReset());
 
-        // 비밀번호 암호화
-        String encoderedPw = passwordEncoder.encode(memberInFindPwResetForDTO.getMemberPwInFindPwForReset());
+        if (existingMemberOptional.isPresent()) {
+            Member existingMember = existingMemberOptional.get();
+            // 비밀번호 암호화
+            String encoderedPw = passwordEncoder.encode(memberInFindPwResetForDTO.getMemberPwInFindPwForReset());
 
-        // 기존 엔티티 비밀번호만 변경
-        // 세터를 쓴 이유 : 빌더를 쓰면 id, memberId, memberPw... 등 다 적어야함
-        // 귀찮아서 세터씀 ^^)>
-        existingMember.setMemberPw(encoderedPw);
+            // 기존 엔티티 비밀번호만 변경
+            // 세터를 쓴 이유 : 빌더를 쓰면 id, memberId, memberPw... 등 다 적어야함
+            // 귀찮아서 세터씀 ^^)>
+            existingMember.setMemberPw(encoderedPw);
 
-        memberRepository.save(existingMember);
+            memberRepository.save(existingMember);
+        } else {
+            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
+        }
+
     }
 
     // ===================================================
 
-    // 256비트 비밀 키 (비밀 키는 환경 변수나 설정 파일에서 관리하는 것이 좋음)
-    private final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private final long expirationTime = 86400000; // 1일 (밀리초 단위)
-
     // 로그인 서비스
-    public String login(MemberInLoginDTO memberInLoginDTO) {
+    public Member login(MemberInLoginDTO memberInLoginDTO) {
 
         // 회원 존재 여부 확인 - 아이디
         Member member = memberRepository.findByMemberId(memberInLoginDTO.getMemberIdInLogin())
@@ -132,15 +154,11 @@ public class MemberService {
         // 회원 존재 여부 확인 - 아이디, 비밀번호 전부 확인 완료
         System.out.println("memberId, memberPw로 회원 존재 확인");
 
-        // // memberId, memberPw로 회원이 존재하면 로그인하기
-        // 회원 인증 성공 후 JWT 생성
-        String token = Jwts.builder() // 1. JWT 생성을 위한 빌더 초기화
-                .setSubject(memberInLoginDTO.getMemberIdInLogin()) // 2. JWT 주제 설정(사용자 식별)
-                .setIssuedAt(new Date()) // 3. JWT 발급 시간 설정(현재 시간)
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime)) // 4. JWT 만료 시간 설정
-                .signWith(secretKey, SignatureAlgorithm.HS256) // 5. JWT 서명 추가(무결성 보장)
-                .compact(); // 6. 설정된 JWT를 압축
+        Member memberInfo = memberRepository.findByMemberId(memberInLoginDTO.getMemberIdInLogin()).get();
 
-        return token; // 생성된 JWT 반환
+        return memberInfo; // 아이디, 비밀번호 일치하는 멤버 반환
     }
+
+    // ===================================================
+
 }
