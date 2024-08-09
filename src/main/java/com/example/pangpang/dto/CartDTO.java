@@ -13,9 +13,6 @@ public class CartDTO {
     private int cartCount;
     
     @Positive
-    private Long memberId;
-
-    @Positive
     private Long productId;
 
 }

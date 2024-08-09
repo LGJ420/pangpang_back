@@ -27,9 +27,12 @@ public class OrdersService {
     private final ModelMapper modelMapper;
 
 
-    public List<OrdersDTO> list(String search){
+    public List<OrdersDTO> list(Long memberId, String search){
 
-        List<Orders> orders = ordersRepository.findAll();
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(()->new EntityNotFoundException("Member not found"));
+
+        List<Orders> orders = ordersRepository.findByMember(member);
 
         if(search != null && !search.isBlank()){
 
