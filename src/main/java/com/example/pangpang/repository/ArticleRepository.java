@@ -10,5 +10,6 @@ import com.example.pangpang.entity.Article;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpecificationExecutor<Article>{
-    Page<Article> findByArticleTitleContaining(String search, Pageable pageable);
+    Page<Article> findByArticleTitleContaining(String title, Pageable pageable);
+    Page<Article> findByArticleAuthorContaining(String author, Pageable pageable);
 }

@@ -31,7 +31,7 @@ public class CommentController {
         return ResponseEntity.ok(createdComment);
     }
 
-    @GetMapping("/article/{id}")
+    @GetMapping("/article/{articleId}")
     public ResponseEntity<List<CommentDTO>> getCommentsByArticleId(@PathVariable Long articleId){
         List<CommentDTO> comments = commentService.getCommentsByArticleId(articleId);
         return ResponseEntity.ok(comments);
@@ -40,8 +40,8 @@ public class CommentController {
     @GetMapping("/{id}")
     public ResponseEntity<CommentDTO> getCommentById(@PathVariable Long id){
         return commentService.getCommentById(id)
-        .map(ResponseEntity::ok)
-        .orElseGet(() -> ResponseEntity.notFound().build());
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
