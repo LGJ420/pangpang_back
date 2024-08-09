@@ -2,12 +2,12 @@ package com.example.pangpang.controller;
 
 import java.util.*;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.pangpang.dto.CartDTO;
 import com.example.pangpang.dto.CartListDTO;
+import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.CartService;
 
 import jakarta.validation.Valid;
@@ -24,28 +24,36 @@ public class CartController {
 
     // 나중에 장바구니 누르면 그 로그인한 사용자의 장바구니가 보이게 해야함
     @GetMapping("")
-    public List<CartListDTO> list(){
+    public List<CartListDTO> list(Authentication auth){
 
-        return cartService.list();
+        Member member = (Member)auth.getPrincipal();
+        Long memberId = member.getId();
+
+        return cartService.list(memberId);
     }
 
-    // 나중에 로그인한 사용자 id를 넘겨주어야함
-    // 지금은 cartDTO안에 1로 고정되있음
-    @PostMapping("")
-    public Map<String, String> add(@Valid @RequestBody CartDTO cartDTO){
 
-        cartService.add(cartDTO);
+    @PostMapping("")
+    public Map<String, String> add(
+        @RequestBody CartDTO cartDTO,
+        Authentication auth){
+
+        Member member = (Member)auth.getPrincipal();
+        Long memberId = member.getId();
+
+        cartService.add(memberId, cartDTO);
 
         return Map.of("result", "추가 완료");
     }
 
 
-    // 나중에 로그인한 사용자 id를 넘겨주어야함
-    // 지금은 1로 강제로 고정
     @DeleteMapping("")
-    public Map<String, String> delete(@RequestBody CartListDTO cartListDTO){
+    public Map<String, String> delete(
+        @RequestBody CartListDTO cartListDTO,
+        Authentication auth){
 
-        Long memberId = 1L;
+        Member member = (Member)auth.getPrincipal();
+        Long memberId = member.getId();    
 
         cartService.delete(memberId, cartListDTO);
 
@@ -53,27 +61,30 @@ public class CartController {
     }
     
 
-    //현재 사용 안함
-    // @DeleteMapping("/pay")
-    // public Map<String, String> deletes(@RequestBody List<CartListDTO> cartListDTOs){
-
-    //     Long memberId = 1L;
-
-    //     cartService.deletes(memberId, cartListDTOs);
-
-    //     return Map.of("result", "삭제 완료");
-    // }
-
-
 
     @PutMapping("")
-    public Map<String, String> update(@RequestBody CartListDTO cartListDTO) {
+    public Map<String, String> update(
+        @RequestBody CartListDTO cartListDTO,
+        Authentication auth){
 
-        Long memberId = 1L;
-
+        Member member = (Member)auth.getPrincipal();
+        Long memberId = member.getId();
+    
         cartService.update(memberId, cartListDTO);
 
         return Map.of("result", "수정 완료");
+    }
+
+
+
+    // 테스트용
+    @GetMapping("/test")
+    public Map<String, Long> test(Authentication auth){
+
+        Member member = (Member)auth.getPrincipal();
+        Long memberId = member.getId();
+
+        return Map.of("result", memberId);
     }
     
 }
