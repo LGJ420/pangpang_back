@@ -1,8 +1,6 @@
 package com.example.pangpang.service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -36,6 +34,7 @@ public class ProductService {
   private final ProductRepository productRepository;
   private final CustomFileUtil customFileUtil;
   private final ProductImageRepository productImageRepository;
+
 
   /* 상품 등록 */
   public Long addProduct(ProductDTO productDTO) {
@@ -156,34 +155,33 @@ public class ProductService {
 
     List<Object[]> result = productRepository.findAllRandomWithImages();
 
-    log.info("가져온 데이터 : " + result);
-
     return result.stream()
         .map(arr -> {
-          Product product = (Product) arr[0];
-          ProductImage productImage = (ProductImage) arr[1];
+          Long id = ((Number) arr[0]).longValue();
+          String title = (String) arr[1];
+          String content = (String) arr[2];
+          Integer price = ((Number) arr[3]).intValue();
+          String imageFileName = (String) arr[4];
 
           ProductDTO productDTO = ProductDTO.builder()
-              .id(product.getId())
-              .productTitle(product.getProductTitle())
-              .productContent(product.getProductContent())
-              .productPrice(product.getProductPrice())
+              .id(id)
+              .productTitle(title)
+              .productContent(content)
+              .productPrice(price)
               .build();
 
-          // 이미지 파일 이름 설정
-          if (productImage != null) {
-            String imageStr = productImage.getFileName();
-            productDTO.setUploadFileNames(List.of(imageStr));
+          if (imageFileName != null) {
+            productDTO.setUploadFileNames(List.of(imageFileName));
           } else {
             productDTO.setUploadFileNames(Collections.emptyList());
           }
 
-          log.info("가져온 데이터 : " + productDTO);
           return productDTO;
         })
         .collect(Collectors.toList());
-
+  
   }
+
 
 
 

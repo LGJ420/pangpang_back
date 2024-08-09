@@ -41,7 +41,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
   // 상품 랜덤으로 가져오기 (메인에서 사용)
-  @Query(value = "SELECT p.*, pi.* FROM product p LEFT JOIN product_image pi ON p.id = pi.product_id ORDER BY RAND() LiMIT 3", nativeQuery = true)
+  @Query(value = "SELECT p.id, p.product_title, p.product_content, p.product_price, pi.file_name " +
+      "FROM product p LEFT JOIN product_image pi ON p.id = pi.product_id " +
+      "ORDER BY RAND() LIMIT 3", nativeQuery = true)
   List<Object[]> findAllRandomWithImages();
+
+
+
+  
 
 }
