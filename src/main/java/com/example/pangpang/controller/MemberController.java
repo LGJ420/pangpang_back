@@ -91,11 +91,12 @@ public class MemberController {
         Member member = memberService.login(memberInLoginDTO);
 
         String memberId = member.getMemberId();
+        Long id = member.getId();
         String memberName = member.getMemberName();
         String memberRole = member.getMemberRole();
 
         // JWT 토큰 생성
-        String token = jwtUtil.generateToken(memberId, memberName, memberRole);
+        String token = jwtUtil.generateToken(memberId, id, memberName, memberRole);
 
         // 응답 반환
         Map<String, String> response = new HashMap<>();
@@ -120,11 +121,11 @@ public class MemberController {
         // 내가 subject(토큰의 이름표)를 memberId라고 설정함
         // 프린시펄은 로그인 한 사용자 식별자를 알 수 있음
         // 즉 프린시펄을 쓰면 subject로 설정한 memberId를 반환한다는 뜻
-        String memberId = principal.getName();
-        return memberId;
+        // String memberId = principal.getName();
+        // return memberId;
 
         // toString으로 전부 보기
-        // String memberInfo = principal.toString();
-        // return memberInfo;
+        String memberInfo = principal.toString();
+        return memberInfo;
     }
 }

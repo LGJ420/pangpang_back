@@ -22,8 +22,9 @@ public class JwtUtil {
     private long expiration = 86400000; // 토큰 만료 시간 (예: 24시간)
 
     // 토큰 생성
-    public String generateToken(String memberId, String memberName, String memberRole) {
+    public String generateToken(String memberId, Long id, String memberName, String memberRole) {
         Claims claims = Jwts.claims().setSubject(memberId);
+        claims.put("id", id);
         claims.put("memberName", memberName);
         claims.put("memberRole", memberRole);
 
@@ -63,15 +64,15 @@ public class JwtUtil {
     // 위의 메소드를 위해 이 메소드가 실행됨
     // 여기서 토큰의 모든 클레임을 가져옴->위 메소드에서 사용자 이름을 추출함
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaimsFromToken(token);
+        final Claims claims = parseToken(token);
         return claimsResolver.apply(claims);
     }
 
-    private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
+    // private Claims getAllClaimsFromToken(String token) {
+    // return Jwts.parserBuilder()
+    // .setSigningKey(secretKey)
+    // .build()
+    // .parseClaimsJws(token)
+    // .getBody();
+    // }
 }

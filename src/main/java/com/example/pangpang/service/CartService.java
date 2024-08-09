@@ -15,7 +15,9 @@ import com.example.pangpang.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -25,9 +27,9 @@ public class CartService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
 
-    public void add(CartDTO cartDTO){
+    public void add(Long memberId, CartDTO cartDTO){
 
-        Member member = memberRepository.findById(cartDTO.getMemberId())
+        Member member = memberRepository.findById(memberId)
             .orElseThrow(()->new EntityNotFoundException("Member not found"));
         Product product = productRepository.findById(cartDTO.getProductId())
             .orElseThrow(()->new EntityNotFoundException("Product not found"));
@@ -58,9 +60,12 @@ public class CartService {
 
 
 
-    public List<CartListDTO> list(){
+    public List<CartListDTO> list(Long memberId){
 
-        List<CartListDTO> cartListDTOs = cartRepository.findAll()
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다"));
+
+        List<CartListDTO> cartListDTOs = cartRepository.findByMember(member)
             .stream()
             .map(cart->CartListDTO.builder()
                 .productId(cart.getProduct().getId())
@@ -90,20 +95,6 @@ public class CartService {
 
 
 
-
-    public void deletes(Long memberId, List<CartListDTO> cartListDTOs){
-
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new EntityNotFoundException("Member not found"));
-
-
-        for (CartListDTO dto : cartListDTOs) {
-            Product product = productRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
-        
-            cartRepository.deleteByMemberAndProduct(member, product);
-        }
-    }
 
 
 

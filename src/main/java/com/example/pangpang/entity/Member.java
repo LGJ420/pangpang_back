@@ -62,16 +62,16 @@ public class Member implements UserDetails {
 
         // ▲▲▲ 회원가입, ID/PW찾기 때 필요한 데이터 ▲▲▲
 
-        // 추가 필드
-        private String roles; // 역할을 저장하는 필드
+        // ==============================================
 
+        // 밑으로 UserDetails 인터페이스 상속 메서드
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
-                if (roles == null || roles.isEmpty()) {
+                if (memberRole == null || memberRole.isEmpty()) {
                         return Collections.emptyList();
                 }
-                return Arrays.stream(roles.split(","))
-                                .map(SimpleGrantedAuthority::new)
+                return Arrays.stream(memberRole.split(","))
+                                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.trim().toUpperCase()))
                                 .collect(Collectors.toList());
         }
 
