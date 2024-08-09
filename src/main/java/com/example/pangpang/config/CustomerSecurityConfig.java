@@ -47,8 +47,8 @@ public class CustomerSecurityConfig {
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers("/**").permitAll()
                 // Role에 따른 역할 부여
-                .requestMatchers("/admin/**").hasRole("ADMIN") // "ROLE_ADMIN"을 기대
-                .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // "ROLE_USER"와 "ROLE_ADMIN"을 기대
+                .requestMatchers("/manager/**").hasRole("ADMIN") // 알아서 ROLE_ADMIN으로 반환
+                .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // 알아서 ROLE_USER, ROLE_ADMIN으로 반환
 
                 .anyRequest().authenticated());
         // ▲▲▲ 경로 허용 설정 ▲▲▲
