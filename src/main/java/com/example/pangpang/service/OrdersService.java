@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,9 @@ public class OrdersService {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(()->new EntityNotFoundException("Member not found"));
 
-        List<Orders> orders = ordersRepository.findByMember(member);
+        // Sort 객체를 생성하여 주문 날짜 기준으로 내림차순 정렬
+        Sort sort = Sort.by("orderDate").descending();
+        List<Orders> orders = ordersRepository.findByMember(member, sort);
 
         if(search != null && !search.isBlank()){
 

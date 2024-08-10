@@ -90,5 +90,4 @@ public class ProductController {
     return productService.getDetail(id);
   }
 
-
 }

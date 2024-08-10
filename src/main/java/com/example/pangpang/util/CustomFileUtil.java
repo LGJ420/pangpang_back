@@ -67,10 +67,6 @@ public class CustomFileUtil {
             String savedName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
 
 
-            // 시간 사용하는 경우
-            // String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-            // String savedName = timeStamp + "_" + multipartFile.getOriginalFilename();
-
             // 파일이 저장될 서버의 경로를 설정
             // uploadPath(파일이 저장될 기본 경로)와 생성된 파일 이름을 조합하여 전체 경로를 설정
             Path savePath = Paths.get(uploadPath, savedName);
