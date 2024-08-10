@@ -1,14 +1,6 @@
 package com.example.pangpang.service;
 
-import java.security.Principal;
-
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.Date;
 import java.util.Optional;
-
-import javax.crypto.SecretKey;
-import javax.naming.NameNotFoundException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,14 +10,10 @@ import com.example.pangpang.dto.MemberDTO;
 import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.dto.MemberInFindPwDTO;
 import com.example.pangpang.dto.MemberInFindPwForResetDTO;
-import com.example.pangpang.dto.MemberInLoginDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.exception.MemberNotFoundException;
 import com.example.pangpang.repository.MemberRepository;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -139,26 +127,12 @@ public class MemberService {
 
     // ===================================================
 
-    // 로그인 서비스
-    public Member login(MemberInLoginDTO memberInLoginDTO) {
-
-        // 회원 존재 여부 확인 - 아이디
-        Member member = memberRepository.findByMemberId(memberInLoginDTO.getMemberIdInLogin())
+    // // 로그인 서비스
+    // 토큰을 만들기 위해 로그인에서 findByMemberId가 필요함
+    public Member findByMemberId(String memberId) {
+        Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("아이디 혹은 비밀번호가 틀렸습니다."));
 
-        // 회원 존재 여부 확인 - 비밀번호
-        if (!passwordEncoder.matches(memberInLoginDTO.getMemberPwInLogin(), member.getMemberPw())) {
-            throw new MemberNotFoundException("아이디 혹은 비밀번호가 틀렸습니다.");
-        }
-
-        // 회원 존재 여부 확인 - 아이디, 비밀번호 전부 확인 완료
-        System.out.println("memberId, memberPw로 회원 존재 확인");
-
-        Member memberInfo = memberRepository.findByMemberId(memberInLoginDTO.getMemberIdInLogin()).get();
-
-        return memberInfo; // 아이디, 비밀번호 일치하는 멤버 반환
+        return member;
     }
-
-    // ===================================================
-
 }

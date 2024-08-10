@@ -1,13 +1,12 @@
 package com.example.pangpang.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,8 +15,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.pangpang.security.JwtAuthenticationFilter;
+import com.example.pangpang.service.UserDetailsServiceImpl;
 
 import lombok.RequiredArgsConstructor;
+
 import lombok.extern.log4j.Log4j2;
 
 @Configuration
@@ -85,4 +86,16 @@ public class CustomerSecurityConfig {
                 return new BCryptPasswordEncoder();
         }
         // ▲▲▲ 비밀번호 암호화 ▲▲▲
+
+        // 권한 빈으로 등록
+        @Bean
+        public AuthenticationManager authenticationManager(HttpSecurity http,
+                        BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsServiceImpl userDetailService)
+                        throws Exception {
+                return http.getSharedObject(AuthenticationManagerBuilder.class)
+                                .userDetailsService(userDetailsService)
+                                .passwordEncoder(bCryptPasswordEncoder)
+                                .and()
+                                .build();
+        }
 }
