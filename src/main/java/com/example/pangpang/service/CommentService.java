@@ -11,6 +11,7 @@ import com.example.pangpang.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,6 +49,10 @@ public class CommentService {
 
     public Optional<CommentDTO> getCommentById(Long id){
         return commentRepository.findById(id).map(this::convertToDTO);
+    }
+
+    public List<CommentDTO> getCommentsByArticleId(Long articleId){
+        return commentRepository.findByArticleId(articleId).stream().map(this::convertToDTO).toList();
     }
 
     @Transactional
