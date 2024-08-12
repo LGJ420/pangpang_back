@@ -13,11 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.pangpang.dto.CommentDTO;
 import com.example.pangpang.service.CommentService;
 
+import java.util.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
-import java.util.*;
-
 
 @RestController
 @RequestMapping("/api/comment")
@@ -31,17 +29,17 @@ public class CommentController {
         return ResponseEntity.ok(createdComment);
     }
 
-    @GetMapping("/article/{articleId}")
-    public ResponseEntity<List<CommentDTO>> getCommentsByArticleId(@PathVariable Long articleId){
-        List<CommentDTO> comments = commentService.getCommentsByArticleId(articleId);
-        return ResponseEntity.ok(comments);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<CommentDTO> getCommentById(@PathVariable Long id){
         return commentService.getCommentById(id)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/article/{articleId}")
+    public ResponseEntity<List<CommentDTO>> getCommentsByArticleId(@PathVariable Long articleId){
+        List<CommentDTO> comments = commentService.getCommentsByArticleId(articleId);
+        return ResponseEntity.ok(comments);
     }
 
     @PutMapping("/{id}")
