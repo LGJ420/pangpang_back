@@ -149,28 +149,28 @@ public class ProductService {
   }
 
 
+  
 
   /* 메인 페이지 상품 목록 */
   public List<ProductDTO> mainList() {
 
     List<Object[]> result = productRepository.findAllRandomWithImages();
 
-    return result.stream()
+    List<ProductDTO> dtoList = result.stream()
         .map(arr -> {
-          Long id = ((Number) arr[0]).longValue();
-          String title = (String) arr[1];
-          String content = (String) arr[2];
-          Integer price = ((Number) arr[3]).intValue();
-          String imageFileName = (String) arr[4];
+          Product product = (Product) arr[0]; // 배열의 첫 번째 요소가 Product
+          ProductImage productImage = (ProductImage) arr[1]; // 배열의 두 번째 요소가 ProductImage
 
           ProductDTO productDTO = ProductDTO.builder()
-              .id(id)
-              .productTitle(title)
-              .productContent(content)
-              .productPrice(price)
+              .id(product.getId())
+              .productTitle(product.getProductTitle())
+              .productContent(product.getProductContent())
+              .productPrice(product.getProductPrice())
               .build();
 
-          if (imageFileName != null) {
+          // 이미지 파일 이름 설정
+          if (productImage != null) {
+            String imageFileName = productImage.getFileName();
             productDTO.setUploadFileNames(List.of(imageFileName));
           } else {
             productDTO.setUploadFileNames(Collections.emptyList());
@@ -179,9 +179,10 @@ public class ProductService {
           return productDTO;
         })
         .collect(Collectors.toList());
+
+    return dtoList;
   
   }
-
 
 
 
