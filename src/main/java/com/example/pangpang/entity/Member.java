@@ -71,6 +71,14 @@ public class Member implements UserDetails {
 
         // ==============================================
 
+        // 내정보 변경으로 바꿀 수 있는 내용
+
+        // 프로필 사진
+        private String memberImage;
+
+        // 기본 배송지
+        private String memberAddress;
+
         // 밑으로 UserDetails 인터페이스 상속 메서드
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
