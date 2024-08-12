@@ -3,6 +3,8 @@ package com.example.pangpang.entity;
 import java.util.Collection;
 import java.util.List;
 import java.util.Collections;
+import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -29,7 +31,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Member implements UserDetails {
 
-        // ▼▼▼ 로그인할 때 필요한 데이터 ▼▼▼
+        // 로그인할 때 필요한 데이터
 
         // 고유식별번호
         @Id
@@ -44,23 +46,28 @@ public class Member implements UserDetails {
         @Column(nullable = false)
         private String memberPw;
 
-        // ▲▲▲ 로그인할 때 필요한 데이터 ▲▲▲
+        // 활동(true), 활동정지(isActive) 구분
+        private boolean isActive = true;
 
         // =============================================
 
-        // ▼▼▼ 회원가입, ID/PW찾기 때 필요한 데이터 ▼▼▼
+        // 회원가입, ID/PW찾기 때 필요한 데이터
 
         // 유저 이름
         private String memberName;
 
+        // 유저 닉네임
+        private String memberNickname;
+
         // 유저 생년월일(주민번호 6자리)
         private String memberBirth;
+
+        // 유저 가입 날짜
+        private LocalDateTime memberSignupDate;
 
         // 유저 역할 (admin(관리자), user(일반유저))
         // 사람들이 회원가입할 때 <input type="hidden"> 로 숨겨두기
         private String memberRole;
-
-        // ▲▲▲ 회원가입, ID/PW찾기 때 필요한 데이터 ▲▲▲
 
         // ==============================================
 

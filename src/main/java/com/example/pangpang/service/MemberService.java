@@ -1,5 +1,7 @@
 package com.example.pangpang.service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -62,8 +64,10 @@ public class MemberService {
                 // 비밀번호만 암호화 된 거 사용
                 .memberPw(encoderedPw)
                 .memberName(memberDTO.getMemberName())
+                .memberNickname(memberDTO.getMemberNickname())
                 .memberBirth(memberDTO.getMemberBirth())
                 .memberRole(memberDTO.getMemberRole())
+                .memberSignupDate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
