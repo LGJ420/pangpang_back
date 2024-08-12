@@ -2,6 +2,8 @@ package com.example.pangpang.service;
 
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -70,15 +72,10 @@ public class MemberService {
     // ===================================================
 
     // 아이디 찾기 서비스
-    public Member findId(MemberInFindIdDTO memberInFindIdDTO) {
-        // 회원 이름과 생년월일로 데이터베이스에서 회원 정보를 조회
-        Member memberInfo = memberRepository.findByMemberNameAndMemberBirth(memberInFindIdDTO.getMemberNameInFindId(),
+    public Optional<Member> findId(MemberInFindIdDTO memberInFindIdDTO) {
+        Optional<Member> memberInfo = memberRepository.findByMemberNameAndMemberBirth(
+                memberInFindIdDTO.getMemberNameInFindId(),
                 memberInFindIdDTO.getMemberBirthInFindId());
-
-        // 조회된 회원 정보가 없으면 예외 발생
-        if (memberInfo == null) {
-            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다");
-        }
 
         return memberInfo;
     }

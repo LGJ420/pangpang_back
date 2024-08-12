@@ -13,6 +13,7 @@ import com.example.pangpang.dto.MemberInFindPwDTO;
 import com.example.pangpang.dto.MemberInFindPwForResetDTO;
 import com.example.pangpang.dto.MemberInLoginDTO;
 import com.example.pangpang.entity.Member;
+import com.example.pangpang.exception.MemberNotFoundException;
 import com.example.pangpang.service.MemberService;
 import com.example.pangpang.util.JwtUtil;
 
@@ -63,11 +64,10 @@ public class MemberController {
 
     // 아이디 찾기
     @PostMapping("/find_id")
-    public Member findId(@Valid @RequestBody MemberInFindIdDTO memberInFindIdDTO) {
-
-        Member memberInfo = memberService.findId(memberInFindIdDTO);
-
-        return memberInfo;
+    public ResponseEntity<Member> findId(@Valid @RequestBody MemberInFindIdDTO memberInFindIdDTO) {
+            Member memberInfo = memberService.findId(memberInFindIdDTO)
+                .orElseThrow(()->new MemberNotFoundException("회원을 찾을 수 없습니다."));
+            return ResponseEntity.ok(memberInfo);
     }
 
     // 비밀번호 찾기
