@@ -16,9 +16,6 @@ import com.example.pangpang.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
-
-
 @RestController
 @RequestMapping("/api/comment")
 @RequiredArgsConstructor
@@ -29,12 +26,6 @@ public class CommentController {
     public ResponseEntity<CommentDTO> createComment(@Valid @RequestBody CommentDTO commentDTO){
         CommentDTO createdComment = commentService.createComment(commentDTO);
         return ResponseEntity.ok(createdComment);
-    }
-
-    @GetMapping("/article/{articleId}")
-    public ResponseEntity<List<CommentDTO>> getCommentsByArticleId(@PathVariable Long articleId){
-        List<CommentDTO> comments = commentService.getCommentsByArticleId(articleId);
-        return ResponseEntity.ok(comments);
     }
 
     @GetMapping("/{id}")
