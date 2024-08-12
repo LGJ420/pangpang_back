@@ -35,12 +35,16 @@ public class ProductService {
   private final CustomFileUtil customFileUtil;
   private final ProductImageRepository productImageRepository;
 
-
   /* 상품 등록 */
   public Long addProduct(ProductDTO productDTO) {
 
-    // modelMapper 사용해서 엔티티 객체를 dto로 변환
-    Product product = modelMapper.map(productDTO, Product.class);
+    // ProductDTO로부터 전달받은 데이터를 사용하여 Product 엔티티를 생성
+    // Builder 패턴을 사용하여 productTitle, productContent, productPrice를 설정
+    Product product = Product.builder()
+        .productTitle(productDTO.getProductTitle())
+        .productContent(productDTO.getProductContent())
+        .productPrice(productDTO.getProductPrice())
+        .build();
 
     // 생성한 Product 객체를 ProductRepository를 사용하여 데이터베이스에 저장
     // 저장 후 반환되는 savedProduct 객체에는 데이터베이스에서 생성된 id와 같은 추가 정보가 포함됨
@@ -65,8 +69,6 @@ public class ProductService {
     // 등록된 상품의 ID를 반환
     return savedProduct.getId();
   }
-
-
 
   /* 상품 목록 보기 */
   public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
@@ -100,8 +102,13 @@ public class ProductService {
           Product product = (Product) arr[0]; // 배열의 첫 번째 요소가 Product
           ProductImage productImage = (ProductImage) arr[1]; // 배열의 두 번째 요소가 ProductImage
 
-          // modelMapper 사용해서 엔티티 객체를 dto로 변환
-          ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+          // ProductDTO.builder()를 사용하여 ProductDTO 객체를 생성, product에서 가져온 정보로 초기화
+          ProductDTO productDTO = ProductDTO.builder()
+              .id(product.getId())
+              .productTitle(product.getProductTitle())
+              .productContent(product.getProductContent())
+              .productPrice(product.getProductPrice())
+              .build();
 
           // 이미지 파일 이름 설정
           if (productImage != null) { // productImage가 null이 아닌 경우,
@@ -138,9 +145,6 @@ public class ProductService {
     return responseDTO;
   }
 
-
-  
-
   /* 메인 페이지 상품 목록 */
   public List<ProductDTO> mainList() {
 
@@ -151,8 +155,12 @@ public class ProductService {
           Product product = (Product) arr[0]; // 배열의 첫 번째 요소가 Product
           ProductImage productImage = (ProductImage) arr[1]; // 배열의 두 번째 요소가 ProductImage
 
-          // modelMapper 사용해서 엔티티 객체를 dto로 변환
-          ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+          ProductDTO productDTO = ProductDTO.builder()
+              .id(product.getId())
+              .productTitle(product.getProductTitle())
+              .productContent(product.getProductContent())
+              .productPrice(product.getProductPrice())
+              .build();
 
           // 이미지 파일 이름 설정
           if (productImage != null) {
@@ -167,10 +175,8 @@ public class ProductService {
         .collect(Collectors.toList());
 
     return dtoList;
-  
+
   }
-
-
 
   /* 상품 상세보기 */
   public ProductDTO getDetail(Long id) {
