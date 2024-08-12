@@ -32,11 +32,13 @@ public class ArticleService {
                 Sort.by("id").descending());
 
         String search = pageRequestDTO.getSearch();
+        String searchBy = pageRequestDTO.getSearchBy();
 
         Page<Article> result;
-
-        if (search != null && !search.isEmpty()) {
+        if("title".equalsIgnoreCase(searchBy)){
             result = articleRepository.findByArticleTitleContaining(search, pageable);
+        }else if ("author".equalsIgnoreCase(searchBy)) {
+            result = articleRepository.findByArticleAuthorContaining(search, pageable);
         } else {
             result = articleRepository.findAll(pageable);
         }

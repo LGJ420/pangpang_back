@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class ArticleController {
     private final ArticleService articleService;
 
-    @PostMapping("create")
+    @PostMapping("/create")
     public ResponseEntity<Long> createArticle(@Valid @RequestBody ArticleDTO articleDTO){
         Long articleId = articleService.createArticle(articleDTO);
         return ResponseEntity.ok(articleId);
@@ -35,12 +35,14 @@ public class ArticleController {
     public PageResponseDTO<ArticleDTO> list(
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "size", defaultValue = "12") int size,
-        @RequestParam(value = "search", required = false) String search){
+        @RequestParam(value = "search", required = false) String search,
+        @RequestParam(value = "searchBy", defaultValue = "title") String searchBy){
         
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
         .page(page)
         .size(size)
         .search(search)
+        .searchBy(searchBy)
         .build();
 
         return articleService.list(pageRequestDTO);

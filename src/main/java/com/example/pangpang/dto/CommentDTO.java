@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentDTO {
     
-    private Long id;
+    private Long id; // Comment 자체의 ID
 
-    private Long articleId;
+    private Long articleId; // 관련된 Article의 ID
 
     @Size(max = 20, message = "20자 이상은 입력되지 않습니다.")
     private String commentAuthor;
@@ -23,4 +23,6 @@ public class CommentDTO {
     private String commentContent;
 
     private LocalDateTime commentCreated;
+
+    private LocalDateTime commentUpdated;
 }
