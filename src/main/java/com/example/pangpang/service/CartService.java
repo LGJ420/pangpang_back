@@ -74,6 +74,7 @@ public class CartService {
                 .productPrice(cart.getProduct().getProductPrice())
                 .cartCount(cart.getCartCount())
                 .build())
+                
             .collect(Collectors.toList());
         
         return cartListDTOs;
