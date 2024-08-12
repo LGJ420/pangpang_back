@@ -65,9 +65,9 @@ public class MemberController {
     // 아이디 찾기
     @PostMapping("/find_id")
     public ResponseEntity<Member> findId(@Valid @RequestBody MemberInFindIdDTO memberInFindIdDTO) {
-            Member memberInfo = memberService.findId(memberInFindIdDTO)
-                .orElseThrow(()->new MemberNotFoundException("회원을 찾을 수 없습니다."));
-            return ResponseEntity.ok(memberInfo);
+        Member memberInfo = memberService.findId(memberInFindIdDTO)
+                .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
+        return ResponseEntity.ok(memberInfo);
     }
 
     // 비밀번호 찾기
@@ -102,7 +102,11 @@ public class MemberController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             Member member = memberService.findByMemberId(memberInLoginDTO.getMemberIdInLogin());
-            String jwt = jwtUtil.generateToken(member.getMemberId(), member.getId(), member.getMemberName(),
+            String jwt = jwtUtil.generateToken(
+                    member.getMemberId(),
+                    member.getId(),
+                    member.getMemberName(),
+                    member.getMemberNickname(),
                     member.getMemberRole());
             return ResponseEntity.ok(jwt);
 
