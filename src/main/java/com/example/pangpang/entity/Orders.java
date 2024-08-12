@@ -1,6 +1,7 @@
 package com.example.pangpang.entity;
 
 import java.util.*;
+import java.time.*;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,6 +21,9 @@ public class Orders {
     private String orderName;
     private String orderAddress;
     private String orderPhone;
+
+    @Builder.Default
+    private LocalDateTime orderDate = LocalDateTime.now();
 
     @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
     private List<OrdersProduct> ordersProducts;
