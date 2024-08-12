@@ -1,39 +1,53 @@
 package com.example.pangpang.repository;
 
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.example.pangpang.entity.Product;
 
-public interface ProductRepository extends JpaRepository<Product, Long>{
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
-
-  /* 상세 보기 - 상품 이미지 포함 */
-  @EntityGraph(attributePaths = "productImage")
-  @Query("select p from Product p where p.id = :id")
+  // 상세 보기 - 상품 이미지 포함
+  // 주어진 id에 해당하는 Product 조회. 조회 결과에는 ProductImage도 포함
+  @Query("SELECT p FROM Product p LEFT JOIN FETCH p.productImage WHERE p.id = :id")
   Optional<Product> selectOne(@Param("id") Long id);
 
-  /* 목록 보기 - 상품 이미지 포함 */
+
+
+  // 목록 보기 - 상품 이미지 포함
+  // 모든 Product와 각 Product에 연결된 ProductImage도 함께 조회. 결과는 페이지로 반환
+  /*
+   * 쿼리 결과 : [
+   * [Product1, ProductImage1],
+   * [Product2, ProductImage2],
+   * [Product3, null] ] // 이미지가 없는 경우
+   * 이런 식으로 반환 됨
+   */
   @Query("select p, pi from Product p left join p.productImage pi")
   Page<Object[]> selectList(Pageable pageable);
 
 
-  /* 상품명 기준으로 검색하고, 이미지도 함께 로딩 */
+
+  // 상품명 기준으로 검색
+  // 조회된 Product들과 각 Product에 연결된 ProductImage를 함꼐 로딩하여 페이지로 반환
   @Query("select p, pi from Product p left join p.productImage pi where p.productTitle like %:search%")
   Page<Object[]> findByProductTitleContainingWithImage(@Param("search") String search, Pageable pageable);
 
-    
-  /* 상품명 기준으로 검색 */
-  Page<Product> findByProductTitleContaining(String search, Pageable pageable);
 
 
-  /* 상품 랜덤으로 가져오기 (메인에서 사용) */
-  @Query(value = "SELECT * FROM product ORDER BY RAND()", nativeQuery = true)
-  Page<Product> findAllRandom(Pageable pageable);
+  // 상품 랜덤으로 가져오기 (메인에서 사용)
+  @Query(value = "SELECT p.id, p.product_title, p.product_content, p.product_price, pi.file_name " +
+      "FROM product p LEFT JOIN product_image pi ON p.id = pi.product_id " +
+      "ORDER BY RAND() LIMIT 3", nativeQuery = true)
+  List<Object[]> findAllRandomWithImages();
+
+
+
+  
+
 }
