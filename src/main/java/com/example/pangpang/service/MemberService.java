@@ -1,11 +1,12 @@
 package com.example.pangpang.service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,8 @@ import com.example.pangpang.dto.MemberInFindPwForResetDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.exception.MemberNotFoundException;
 import com.example.pangpang.repository.MemberRepository;
+
+import java.security.Principal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -135,5 +138,30 @@ public class MemberService {
                 .orElseThrow(() -> new MemberNotFoundException("아이디 혹은 비밀번호가 틀렸습니다."));
 
         return member;
+    }
+
+    // 마이페이지 내정보변경 전 비밀번호 확인
+    public Member confirmBeforeProfile(String memberId, String memberPw) {
+
+        // 로그인된 사용자의 비밀번호와 입력된 비밀번호 비교하기
+        // 1. 로그인된 사용자 찾기
+        Optional<Member> memberInfo = memberRepository.findByMemberId(memberId);
+
+        // 2. 사용자가 존재하지 않으면 예외 처리(예외가 뜰리가 없음...!)
+        if (memberInfo.isEmpty()) {
+            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
+        }
+
+        // 3. 사용자 GET
+        Member member = memberInfo.get();
+
+        // 4. 입력된 비밀번호와 저장된 비밀번호 비교하기
+        boolean checkPw = passwordEncoder.matches(memberPw, member.getMemberPw());
+
+        if (checkPw) {
+            return member;
+        } else {
+            throw new MemberNotFoundException("비밀번호 일치하지 않음");
+        }
     }
 }

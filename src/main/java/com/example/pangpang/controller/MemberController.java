@@ -12,6 +12,7 @@ import com.example.pangpang.dto.MemberInFindIdDTO;
 import com.example.pangpang.dto.MemberInFindPwDTO;
 import com.example.pangpang.dto.MemberInFindPwForResetDTO;
 import com.example.pangpang.dto.MemberInLoginDTO;
+import com.example.pangpang.dto.MemberMypageComfirmBeforeProfileDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.exception.MemberNotFoundException;
 import com.example.pangpang.service.MemberService;
@@ -121,6 +122,26 @@ public class MemberController {
 
         // 로그아웃 성공 메세지
         return "로그아웃 성공";
+    }
+
+    // 마이페이지에서 내정보변경할때, 비밀번호로 한번 확인
+    @PostMapping("confirm_before_profile")
+    public ResponseEntity<?> confirmBeforeProfile(Principal principal,
+            @RequestBody MemberMypageComfirmBeforeProfileDTO memberMypageComfirmBeforeProfileDTO) {
+
+        // 현재 로그인된 사용자 정보 가져오기
+        String loginedMemberId = principal.getName();
+
+        // 로그인된 사용자의 비밀번호 = 입력된 비밀번호 값 따짐
+        try {
+            Member member = memberService.confirmBeforeProfile(loginedMemberId,
+                    memberMypageComfirmBeforeProfileDTO.getMemberPwInConfirmBeforeProfile());
+            // 참이면 return Repository.ok(해당 멤버의 entity 값 전송)
+            return ResponseEntity.ok(member);
+        } catch (Exception e) {
+            // 거짓이면 에러메세지 띄움
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
     }
 
     // 테스트
