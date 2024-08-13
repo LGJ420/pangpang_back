@@ -48,6 +48,8 @@ public class OrdersService {
                         .collect(Collectors.toList());
                     dto.setOrdersProducts(filteredProducts); // 필터링된 제품 목록으로 업데이트
                     return dto;
+
+                    
                 })
                 .filter(dto -> !dto.getOrdersProducts().isEmpty()) // 제품 목록이 비어있지 않은 OrdersDTO만 유지
                 .collect(Collectors.toList());

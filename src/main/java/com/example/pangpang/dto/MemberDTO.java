@@ -1,6 +1,7 @@
 package com.example.pangpang.dto;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +21,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberDTO{
+public class MemberDTO {
 
     @NotNull(message = "아이디는 필수 항목입니다.")
     private String memberId;
@@ -30,6 +31,9 @@ public class MemberDTO{
 
     @NotNull(message = "비밀번호 확인은 필수 항목입니다.")
     private String memberName;
+
+    @NotNull(message = "닉네임은 필수 항목입니다")
+    private String memberNickname;
 
     @NotNull(message = "생년월일은 필수 항목입니다.")
     @Size(min = 6, max = 6, message = "생년월일은 숫자 6자리로 입력해주세요.")
