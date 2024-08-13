@@ -12,13 +12,14 @@ import com.example.pangpang.entity.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+
   // 상세 보기 - 상품 이미지 포함
   // 주어진 id에 해당하는 Product 조회. 조회 결과에는 ProductImage도 포함
   @Query("SELECT p FROM Product p LEFT JOIN FETCH p.productImage WHERE p.id = :id")
   Optional<Product> selectOne(@Param("id") Long id);
 
 
-
+  
   // 목록 보기 - 상품 이미지 포함
   // 모든 Product와 각 Product에 연결된 ProductImage도 함께 조회. 결과는 페이지로 반환
   /*
@@ -41,13 +42,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
   // 상품 랜덤으로 가져오기 (메인에서 사용)
-  @Query(value = "SELECT p.id, p.product_title, p.product_content, p.product_price, pi.file_name " +
-      "FROM product p LEFT JOIN product_image pi ON p.id = pi.product_id " +
-      "ORDER BY RAND() LIMIT 3", nativeQuery = true)
+  @Query("SELECT p, pi FROM Product p LEFT JOIN p.productImage pi ORDER BY RAND() LIMIT 3")
   List<Object[]> findAllRandomWithImages();
-
-
-
-  
 
 }
