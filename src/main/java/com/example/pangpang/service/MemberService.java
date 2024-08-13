@@ -69,6 +69,8 @@ public class MemberService {
                 .memberName(memberDTO.getMemberName())
                 .memberNickname(memberDTO.getMemberNickname())
                 .memberBirth(memberDTO.getMemberBirth())
+                .memberPhone(memberDTO.getMemberPhone())
+                .memberAddress(memberDTO.getMemberAddress())
                 .memberRole(memberDTO.getMemberRole())
                 .memberSignupDate(LocalDateTime.now())
                 .build();

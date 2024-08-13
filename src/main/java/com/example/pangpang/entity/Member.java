@@ -76,6 +76,9 @@ public class Member implements UserDetails {
         // 프로필 사진
         private String memberImage;
 
+        // 핸드폰 번호
+        private String memberPhone;
+
         // 기본 배송지
         private String memberAddress;
 
