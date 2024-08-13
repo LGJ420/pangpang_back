@@ -22,7 +22,7 @@ public class ProductReview {
   private String reviewFileName;
 
   @Builder.Default
-  private LocalDateTime reviewData = LocalDateTime.now();
+  private LocalDateTime reviewDate = LocalDateTime.now();
   
   @ManyToOne
   @JoinColumn(name = "product_id")
