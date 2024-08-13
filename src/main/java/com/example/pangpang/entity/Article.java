@@ -34,6 +34,7 @@ public class Article {
     private LocalDateTime articleUpdated;
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE)
+    @OrderBy("id asc") // 댓글 정렬
     private List<Comment> comments;
 
     @ManyToOne
