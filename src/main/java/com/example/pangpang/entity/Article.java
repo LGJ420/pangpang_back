@@ -34,6 +34,7 @@ public class Article {
     private LocalDateTime articleUpdated;
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE)
+    @OrderBy("commentCreated asc") // 댓글을 작성 시간 기준으로 정렬
     private List<Comment> comments;
 
     @ManyToOne
