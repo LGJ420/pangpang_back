@@ -39,36 +39,39 @@ public class OrdersService {
                 Sort sort = Sort.by("orderDate").descending();
                 List<Orders> orders = ordersRepository.findByMember(member, sort);
 
-                if (search != null && !search.isBlank()) {
+                return orders.stream()
+                                .map(order -> {
+                                        OrdersDTO dto = modelMapper.map(order, OrdersDTO.class);
 
-                        List<OrdersDTO> ordersDTOs = orders.stream()
-                                        .map(order -> {
-                                                OrdersDTO dto = modelMapper.map(order, OrdersDTO.class);
-                                                // 필터링 로직 추가
-                                                List<OrdersProductDTO> filteredProducts = dto.getOrdersProducts()
-                                                                .stream()
-                                                                .filter(product -> product.getProductTitle()
-                                                                                .contains(search))
-                                                                .collect(Collectors.toList());
-                                                dto.setOrdersProducts(filteredProducts); // 필터링된 제품 목록으로 업데이트
-                                                return dto;
+                                        List<OrdersProductDTO> productDTOs = order.getOrdersProducts().stream()
+                                                        .map(ordersProduct -> {
+                                                                OrdersProductDTO productDTO = modelMapper.map(ordersProduct, OrdersProductDTO.class);
 
-                                        })
-                                        .filter(dto -> !dto.getOrdersProducts().isEmpty()) // 제품 목록이 비어있지 않은 OrdersDTO만
-                                                                                           // 유지
-                                        .collect(Collectors.toList());
+                                                                // 이미지 리스트 수동 매핑
+                                                                List<String> imageFileNames = ordersProduct.getProduct()
+                                                                                .getProductImage().stream()
+                                                                                .map(ProductImage::getFileName)
+                                                                                .collect(Collectors.toList());
 
-                        return ordersDTOs;
-                } else {
+                                                                productDTO.setUploadFileNames(imageFileNames);
 
-                        List<OrdersDTO> ordersDTOs = orders
-                                        .stream()
-                                        .map(order -> modelMapper.map(order, OrdersDTO.class))
-                                        .collect(Collectors.toList());
+                                                                return productDTO;
+                                                        })
+                                                        .filter(productDTO -> search == null || search.isBlank()
+                                                                        || productDTO.getProductTitle()
+                                                                                        .contains(search))
+                                                        .collect(Collectors.toList());
 
-                        return ordersDTOs;
-                }
+                                        dto.setOrdersProducts(productDTOs);
+
+                                        return dto;
+                                })
+                                .filter(dto -> !dto.getOrdersProducts().isEmpty()) // 제품 목록이 비어있지 않은 OrdersDTO만 유지
+                                .collect(Collectors.toList());
         }
+        
+
+
 
         public void add(Long memberId, OrdersDTO ordersDTO) {
 
