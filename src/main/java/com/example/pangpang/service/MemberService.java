@@ -114,8 +114,6 @@ public class MemberService {
             String encoderedPw = passwordEncoder.encode(memberInFindPwResetForDTO.getMemberPwInFindPwForReset());
 
             // 기존 엔티티 비밀번호만 변경
-            // 세터를 쓴 이유 : 빌더를 쓰면 id, memberId, memberPw... 등 다 적어야함
-            // 귀찮아서 세터씀 ^^)>
             existingMember.setMemberPw(encoderedPw);
 
             memberRepository.save(existingMember);
@@ -159,5 +157,34 @@ public class MemberService {
         } else {
             throw new MemberNotFoundException("비밀번호 일치하지 않음");
         }
+    }
+
+    // =========================================================
+
+    // 내 정보 변경(수정)
+    public void modifyProfile(String memberId, MemberDTO memberDTO) {
+        // 1. 로그인된 사용자 찾기
+        Member modifyMember = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("Member Not Found"));
+
+        // 2. 내 정보 수정 진행
+        modifyMember.setMemberNickname(memberDTO.getMemberNickname());
+        modifyMember.setMemberPhone(memberDTO.getMemberPhone());
+        modifyMember.setPostcode(memberDTO.getPostcode());
+        modifyMember.setPostAddress(memberDTO.getPostAddress());
+        modifyMember.setDetailAddress(memberDTO.getDetailAddress());
+        modifyMember.setExtraAddress(memberDTO.getExtraAddress());
+
+        // 2-1. 비밀번호가 변경된 경우에만 암호화하여 저장
+        if (memberDTO.getMemberPw() != null) {
+            // String beforeEncodePw = (String) memberDTO.getMemberPw();
+
+            // 비밀번호 암호화
+            String encoderedPw = passwordEncoder.encode(memberDTO.getMemberPw());
+            modifyMember.setMemberPw(encoderedPw);
+        }
+
+        memberRepository.save(modifyMember);
+
     }
 }
