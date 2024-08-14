@@ -115,7 +115,7 @@ public class MemberController {
     // 마이페이지에서 내정보변경할때, 비밀번호로 한번 확인
     @PostMapping("confirm_before_profile")
     public ResponseEntity<?> confirmBeforeProfile(Principal principal,
-            @RequestBody MemberMypageComfirmBeforeProfileDTO memberMypageComfirmBeforeProfileDTO) {
+            @RequestBody MemberDTO memberDTO) {
 
         // 현재 로그인된 사용자 정보 가져오기
         String loginedMemberId = principal.getName();
@@ -123,7 +123,7 @@ public class MemberController {
         // 로그인된 사용자의 비밀번호 = 입력된 비밀번호 값 따짐
         try {
             Member member = memberService.confirmBeforeProfile(loginedMemberId,
-                    memberMypageComfirmBeforeProfileDTO.getMemberPwInConfirmBeforeProfile());
+            memberDTO.getMemberPw());
             // 참이면 return Repository.ok(해당 멤버의 entity 값 전송)
             return ResponseEntity.ok(member);
         } catch (Exception e) {
