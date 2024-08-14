@@ -8,7 +8,7 @@ import lombok.*;
 @Entity
 @Getter
 @Builder
-@ToString(exclude = "productImage")
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
