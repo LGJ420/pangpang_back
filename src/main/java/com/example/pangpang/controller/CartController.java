@@ -10,7 +10,6 @@ import com.example.pangpang.dto.CartListDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.CartService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController

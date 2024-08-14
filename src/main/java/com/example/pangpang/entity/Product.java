@@ -23,14 +23,18 @@ public class Product {
     private int productPrice; // 상품 가격
 
     // 상품 주문
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Cart> carts;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<OrdersProduct> ordersProducts;
 
     // 상품 이미지
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductImage> productImage;
+
+    // 상품 리뷰
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductReview> productReviews;
 
 }
