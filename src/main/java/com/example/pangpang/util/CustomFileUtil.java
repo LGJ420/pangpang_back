@@ -47,7 +47,52 @@ public class CustomFileUtil {
     }
 
 
-    // 파일 저장 메서드
+    // 새로 추가한 메서드 (작동 실패시 점검필요)
+    // 파일 하나 저장 메서드
+    // 파일 하나를 서버에 저장하며, 이미지 파일일 경우 썸네일 생성
+    public String saveFile(MultipartFile file) throws RuntimeException {
+        
+        if (file == null) { 
+            return "";
+        }
+
+        String savedName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+
+        // 파일이 저장될 서버의 경로를 설정
+        Path savePath = Paths.get(uploadPath, savedName);
+
+        try {
+            // 파일의 입력 스트림을 읽어 서버의 지정된 경로에 파일을 저장
+            // 클라이언트에서 업로드한 파일을 서버에 저장
+            Files.copy(file.getInputStream(), savePath);
+
+            // 파일의 MIME 타입을 확인
+            String contentType = file.getContentType();
+
+            // 이미지 파일인 경우 썸네일 생성
+            if(contentType != null && contentType.startsWith("image")){
+
+                // 썸네일은 s_ 접두사를 붙여서 원본 파일과 구분
+                Path thumbnailPath = Paths.get(uploadPath, "s_" + savedName);
+
+                Thumbnails.of(savePath.toFile())
+                    .size(200, 200)
+                    .toFile(thumbnailPath.toFile());
+            }
+        }
+        catch (IOException e) {
+            // 파일 저장 중 오류 발생 시 RuntimeException 발생
+            throw new RuntimeException(e.getMessage());
+        }
+        
+        // 저장된 파일의 이름을 반환
+        return savedName;
+    }
+
+
+
+
+    // 여러 파일 저장 메서드
     // 여러 파일을 서버에 저장하며, 이미지 파일일 경우 썸네일 생성
     public List<String> saveFiles(List<MultipartFile> files) throws RuntimeException {
         
@@ -100,6 +145,8 @@ public class CustomFileUtil {
         // 저장된 파일의 이름을 담고 있는 리스트 반환
         return uploadNames;
     }
+
+
 
 
     // 파일 다운로드 메서드
