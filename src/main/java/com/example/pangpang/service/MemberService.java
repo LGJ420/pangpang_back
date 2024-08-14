@@ -56,15 +56,17 @@ public class MemberService {
         // 리액트 입력값 -> 엔티티 등록값 변경(매핑비스무리)
         Member member = Member.builder()
                 .memberId(memberDTO.getMemberId())
-                // 비밀번호만 암호화 된 거 사용
-                .memberPw(encoderedPw)
+                .memberPw(encoderedPw) // 비밀번호만 암호화 된 거 사용
                 .memberName(memberDTO.getMemberName())
                 .memberNickname(memberDTO.getMemberNickname())
                 .memberBirth(memberDTO.getMemberBirth())
                 .memberPhone(memberDTO.getMemberPhone())
-                .memberAddress(memberDTO.getMemberAddress())
-                .memberRole(memberDTO.getMemberRole())
-                .memberSignupDate(LocalDateTime.now())
+                .postcode(memberDTO.getPostcode()) // 우편번호
+                .postAddress(memberDTO.getPostAddress()) // 경기도 성남시 어쩌고저쩌고
+                .detailAddress(memberDTO.getDetailAddress()) // 101동 505호
+                .extraAddress(memberDTO.getExtraAddress()) // (미금동)
+                .memberRole(memberDTO.getMemberRole()) // Admin, User
+                .memberSignupDate(LocalDateTime.now()) // 회원가입 시간
                 .build();
 
         memberRepository.save(member);

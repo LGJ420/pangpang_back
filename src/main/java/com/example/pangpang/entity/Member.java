@@ -2,7 +2,6 @@ package com.example.pangpang.entity;
 
 import java.util.*;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -68,8 +67,11 @@ public class Member implements UserDetails {
         // 핸드폰 번호
         private String memberPhone;
 
-        // 기본 배송지
-        private String memberAddress;
+        // 기본 배송지 
+        private String postcode; // 우편번호
+        private String postAddress; // 경기도 성남시 어쩌고저쩌고
+        private String detailAddress; // 101동 505호
+        private String extraAddress; // (미금동?)
 
         // 밑으로 UserDetails 인터페이스 상속 메서드
         @Override

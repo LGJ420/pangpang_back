@@ -37,7 +37,10 @@ public class MemberDTO {
     private String memberPhone;
 
     @NotNull(message = "주소는 필수 항목입니다")
-    private String memberAddress;
+    private String postcode; // 우편번호
+    private String postAddress; // 경기도 성남시 어쩌고저쩌고
+    private String detailAddress; // 101동 505호
+    private String extraAddress; // (미금동?)
 
     private String memberRole;
 }
