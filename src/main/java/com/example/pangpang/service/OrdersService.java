@@ -15,7 +15,10 @@ import com.example.pangpang.repository.*;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
+@Log4j2
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -95,10 +98,20 @@ public class OrdersService {
                                                         .count(dto.getCartCount())
                                                         .build();
 
+                                                        log.info("product Result: ID = {}, productTitle = {}, price = {}, image = {}",
+                                                        product.getId(),
+                                                        product.getProductTitle(),
+                                                        product.getProductPrice(),
+                                                        product.getProductImage() != null
+                                                                        ? product.getProductImage().size()
+                                                                        : 0); // productImage 필드가 출력됨
+
                                         cartRepository.deleteByMemberAndProduct(member, product);
                                         return ordersProduct;
                                 })
                                 .collect(Collectors.toList());
+
+                                // log.info("ordersProducts result : " + ordersProducts);
 
                 // 이어준 상품들을 생성한 주문 내역에 다시 설정
                 orders.addOrdersProducts(ordersProducts);
