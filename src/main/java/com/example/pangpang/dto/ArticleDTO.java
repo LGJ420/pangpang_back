@@ -24,4 +24,7 @@ public class ArticleDTO {
     private String articleAuthor;
 
     private LocalDateTime articleCreated; 
+    private LocalDateTime articleUpdated;
+
+    private Long viewCount;
 }

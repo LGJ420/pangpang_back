@@ -70,6 +70,7 @@ public class ArticleService {
                 .articleContent(articleDTO.getArticleContent())
                 .articleAuthor(articleDTO.getArticleAuthor())
                 .articleCreated(LocalDateTime.now())
+                .viewCount(0L) // 조회수 초기화
                 .build();
         article = articleRepository.save(article);
         return article.getId();
@@ -77,8 +78,10 @@ public class ArticleService {
 
     @Transactional
     public ArticleDTO getArticleById(Long id) {
+        // 게시글 조회
         Optional<Article> result = articleRepository.findById(id);
         Article article = result.orElseThrow();
+
         ArticleDTO articleDTO = modelMapper.map(article, ArticleDTO.class);
         return articleDTO;
     }
@@ -100,5 +103,10 @@ public class ArticleService {
             throw new RuntimeException("글을 찾지 못했습니다. " + id);
         }
         articleRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void incrementViewCount(Long id) {
+        articleRepository.incrementViewCount(id);
     }
 }

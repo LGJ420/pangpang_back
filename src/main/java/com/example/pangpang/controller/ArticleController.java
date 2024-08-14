@@ -42,6 +42,9 @@ public class ArticleController {
 
     @GetMapping("/read/{id}")
     public ArticleDTO getArticleById(@PathVariable(name = "id") Long id){
+        // 조회수 증가
+        articleService.incrementViewCount(id);
+        
         return articleService.getArticleById(id);
     }
 
