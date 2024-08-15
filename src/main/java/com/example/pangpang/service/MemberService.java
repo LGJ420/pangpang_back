@@ -75,10 +75,10 @@ public class MemberService {
     // ===================================================
 
     // 아이디 찾기 서비스
-    public Optional<Member> findId(MemberInFindIdDTO memberInFindIdDTO) {
+    public Optional<Member> findId(MemberDTO memberDTO) {
         Optional<Member> memberInfo = memberRepository.findByMemberNameAndMemberBirth(
-                memberInFindIdDTO.getMemberNameInFindId(),
-                memberInFindIdDTO.getMemberBirthInFindId());
+                memberDTO.getMemberName(),
+                memberDTO.getMemberBirth());
 
         return memberInfo;
     }

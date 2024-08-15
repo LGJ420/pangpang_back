@@ -55,8 +55,8 @@ public class MemberController {
 
     // 아이디 찾기
     @PostMapping("/find_id")
-    public ResponseEntity<Member> findId(@Valid @RequestBody MemberInFindIdDTO memberInFindIdDTO) {
-        Member memberInfo = memberService.findId(memberInFindIdDTO)
+    public ResponseEntity<Member> findId(@RequestBody MemberDTO memberDTO) {
+        Member memberInfo = memberService.findId(memberDTO)
                 .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
         return ResponseEntity.ok(memberInfo);
     }
