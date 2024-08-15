@@ -37,9 +37,9 @@ public class MemberController {
 
     // 회원가입 - 아이디 중복 확인
     @PostMapping("/signup/checkMemberId")
-    public Map<String, String> chechMemberId(@Valid @RequestBody MemberCheckIdInSignupDTO memberCheckIdInSignupDTO) {
+    public Map<String, String> chechMemberId(@RequestBody MemberDTO memberDTO) {
 
-        memberService.checkMemberId(memberCheckIdInSignupDTO);
+        memberService.checkMemberId(memberDTO);
 
         return Map.of("result", "아이디 중복 확인 성공");
     }
@@ -55,44 +55,44 @@ public class MemberController {
 
     // 아이디 찾기
     @PostMapping("/find_id")
-    public ResponseEntity<Member> findId(@Valid @RequestBody MemberInFindIdDTO memberInFindIdDTO) {
-        Member memberInfo = memberService.findId(memberInFindIdDTO)
+    public ResponseEntity<Member> findId(@RequestBody MemberDTO memberDTO) {
+        Member memberInfo = memberService.findId(memberDTO)
                 .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
         return ResponseEntity.ok(memberInfo);
     }
 
     // 비밀번호 찾기
     @PostMapping("/find_pw")
-    public Member findPw(@RequestBody MemberInFindPwDTO memberInFindPwDTO) {
+    public Member findPw(@RequestBody MemberDTO memberDTO) {
 
-        Member memberInfo = memberService.findPw(memberInFindPwDTO);
+        Member memberInfo = memberService.findPw(memberDTO);
 
         return memberInfo;
     }
 
     // 비밀번호 찾기->비밀번호 변경
     @PostMapping("/find_pw/reset")
-    public Map<String, String> resetPw(@Valid @RequestBody MemberInFindPwForResetDTO memberInFindPwResetForDTO) {
+    public Map<String, String> resetPw(@RequestBody MemberDTO memberDTO) {
 
-        memberService.resetPw(memberInFindPwResetForDTO);
+        memberService.resetPw(memberDTO);
 
         return Map.of("result", "비밀번호 변경 성공!");
     }
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody MemberInLoginDTO memberInLoginDTO) {
+    public ResponseEntity<String> login(@RequestBody MemberDTO memberDTO) {
         try {
             // authenticationManager는 스프링 시큐리티에서 제공하는 객체
             // 사용자의 자격 증명을 검증하는 역할
             // authenticate()은 전달된 자격 증명이 유효한지 확인
             // => ★요약 : 굳이 로그인 컨트롤러에 로그인 과정을 직접 만들 필요가 없다는 소리★
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    memberInLoginDTO.getMemberIdInLogin(), memberInLoginDTO.getMemberPwInLogin()));
+                    memberDTO.getMemberId(), memberDTO.getMemberPw()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            Member member = memberService.findByMemberId(memberInLoginDTO.getMemberIdInLogin());
+            Member member = memberService.findByMemberId(memberDTO.getMemberId());
             String jwt = jwtUtil.generateToken(
                     member.getMemberId(),
                     member.getId(),

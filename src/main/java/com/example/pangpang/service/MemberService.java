@@ -31,15 +31,15 @@ public class MemberService {
     // ===================================================
 
     // 아이디 중복 확인
-    public void checkMemberId(MemberCheckIdInSignupDTO memberCheckIdInSignupDTO) {
+    public void checkMemberId(MemberDTO memberDTO) {
 
         // 아이디에 아무것도 안 적혀있을 때
-        if (memberCheckIdInSignupDTO.getMemberId().isBlank()) {
+        if (memberDTO.getMemberId().isBlank()) {
             throw new IllegalArgumentException("아이디는 공백일 수 없습니다.");
         }
 
         // 아이디 중복 확인
-        Optional<Member> memberIdCheck = memberRepository.findByMemberId(memberCheckIdInSignupDTO.getMemberId());
+        Optional<Member> memberIdCheck = memberRepository.findByMemberId(memberDTO.getMemberId());
 
         // 아이디가 존재할 때
         if (memberIdCheck.isPresent()) {
@@ -75,10 +75,10 @@ public class MemberService {
     // ===================================================
 
     // 아이디 찾기 서비스
-    public Optional<Member> findId(MemberInFindIdDTO memberInFindIdDTO) {
+    public Optional<Member> findId(MemberDTO memberDTO) {
         Optional<Member> memberInfo = memberRepository.findByMemberNameAndMemberBirth(
-                memberInFindIdDTO.getMemberNameInFindId(),
-                memberInFindIdDTO.getMemberBirthInFindId());
+                memberDTO.getMemberName(),
+                memberDTO.getMemberBirth());
 
         return memberInfo;
     }
@@ -86,12 +86,12 @@ public class MemberService {
     // ===================================================
 
     // 비밀번호 찾기 서비스
-    public Member findPw(MemberInFindPwDTO memberInFindPwDTO) {
+    public Member findPw(MemberDTO memberDTO) {
         // 회원 아이디, 회원 이름, 회원 생년월일로 데이터베이스에서 회원 정보를 조회
         Member memberInfo = memberRepository.findByMemberIdAndMemberNameAndMemberBirth(
-                memberInFindPwDTO.getMemberIdInFindPw(),
-                memberInFindPwDTO.getMemberNameInFindPw(),
-                memberInFindPwDTO.getMemberBirthInFindPw());
+                memberDTO.getMemberId(),
+                memberDTO.getMemberName(),
+                memberDTO.getMemberBirth());
 
         // 조회된 회원 정보가 없으면 예외 발생
         if (memberInfo == null) {
@@ -102,16 +102,16 @@ public class MemberService {
     }
 
     // 비밀번호 변경 서비스
-    public void resetPw(MemberInFindPwForResetDTO memberInFindPwResetForDTO) {
+    public void resetPw(MemberDTO memberDTO) {
 
         // 회원번호(id)로 회원 찾기
         Optional<Member> existingMemberOptional = memberRepository
-                .findById(memberInFindPwResetForDTO.getIdInFindPwForReset());
+                .findByMemberId(memberDTO.getMemberId());
 
         if (existingMemberOptional.isPresent()) {
             Member existingMember = existingMemberOptional.get();
             // 비밀번호 암호화
-            String encoderedPw = passwordEncoder.encode(memberInFindPwResetForDTO.getMemberPwInFindPwForReset());
+            String encoderedPw = passwordEncoder.encode(memberDTO.getMemberPw());
 
             // 기존 엔티티 비밀번호만 변경
             existingMember.setMemberPw(encoderedPw);
