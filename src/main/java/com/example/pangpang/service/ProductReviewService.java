@@ -1,6 +1,7 @@
 package com.example.pangpang.service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,5 +45,53 @@ public class ProductReviewService {
             .build();
 
         productReviewRepository.save(productReview);
+    }
+
+
+
+    public List<ProductReviewDTO> list(Long id){
+
+        List<ProductReview> productReviews = productReviewRepository.findByProductId(id);
+
+        List<ProductReviewDTO> productReviewDTOs = productReviews.stream()
+            .map(review->{
+                ProductReviewDTO productReviewDTO = ProductReviewDTO.builder()
+                    .rating(review.getRating())
+                    .reviewContent(review.getReviewContent())
+                    .reviewFileName(review.getReviewFileName())
+                    .reviewDate(review.getReviewDate())
+                    .productId(review.getProduct().getId())
+                    .memberId(review.getMember().getId())
+                    .build();
+                
+                return productReviewDTO;
+            })
+            .collect(Collectors.toList());
+        
+        return productReviewDTOs;
+    }
+
+
+
+    public List<ProductReviewDTO> mylist(Long id){
+
+        List<ProductReview> productReviews = productReviewRepository.findByMemberId(id);
+
+        List<ProductReviewDTO> productReviewDTOs = productReviews.stream()
+            .map(review->{
+                ProductReviewDTO productReviewDTO = ProductReviewDTO.builder()
+                    .rating(review.getRating())
+                    .reviewContent(review.getReviewContent())
+                    .reviewFileName(review.getReviewFileName())
+                    .reviewDate(review.getReviewDate())
+                    .productId(review.getProduct().getId())
+                    .memberId(review.getMember().getId())
+                    .build();
+                
+                return productReviewDTO;
+            })
+            .collect(Collectors.toList());
+
+        return productReviewDTOs;
     }
 }
