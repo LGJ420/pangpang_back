@@ -11,6 +11,8 @@ import com.example.pangpang.entity.Member;
 import com.example.pangpang.exception.MemberNotFoundException;
 import com.example.pangpang.repository.MemberRepository;
 
+import java.security.Principal;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -54,13 +56,17 @@ public class MemberService {
         // 리액트 입력값 -> 엔티티 등록값 변경(매핑비스무리)
         Member member = Member.builder()
                 .memberId(memberDTO.getMemberId())
-                // 비밀번호만 암호화 된 거 사용
-                .memberPw(encoderedPw)
+                .memberPw(encoderedPw) // 비밀번호만 암호화 된 거 사용
                 .memberName(memberDTO.getMemberName())
                 .memberNickname(memberDTO.getMemberNickname())
                 .memberBirth(memberDTO.getMemberBirth())
-                .memberRole(memberDTO.getMemberRole())
-                .memberSignupDate(LocalDateTime.now())
+                .memberPhone(memberDTO.getMemberPhone())
+                .postcode(memberDTO.getPostcode()) // 우편번호
+                .postAddress(memberDTO.getPostAddress()) // 경기도 성남시 어쩌고저쩌고
+                .detailAddress(memberDTO.getDetailAddress()) // 101동 505호
+                .extraAddress(memberDTO.getExtraAddress()) // (미금동)
+                .memberRole(memberDTO.getMemberRole()) // Admin, User
+                .memberSignupDate(LocalDateTime.now()) // 회원가입 시간
                 .build();
 
         memberRepository.save(member);
@@ -108,8 +114,6 @@ public class MemberService {
             String encoderedPw = passwordEncoder.encode(memberInFindPwResetForDTO.getMemberPwInFindPwForReset());
 
             // 기존 엔티티 비밀번호만 변경
-            // 세터를 쓴 이유 : 빌더를 쓰면 id, memberId, memberPw... 등 다 적어야함
-            // 귀찮아서 세터씀 ^^)>
             existingMember.setMemberPw(encoderedPw);
 
             memberRepository.save(existingMember);
@@ -128,5 +132,59 @@ public class MemberService {
                 .orElseThrow(() -> new MemberNotFoundException("아이디 혹은 비밀번호가 틀렸습니다."));
 
         return member;
+    }
+
+    // 마이페이지 내정보변경 전 비밀번호 확인
+    public Member confirmBeforeProfile(String memberId, String memberPw) {
+
+        // 로그인된 사용자의 비밀번호와 입력된 비밀번호 비교하기
+        // 1. 로그인된 사용자 찾기
+        Optional<Member> memberInfo = memberRepository.findByMemberId(memberId);
+
+        // 2. 사용자가 존재하지 않으면 예외 처리(예외가 뜰리가 없음...!)
+        if (memberInfo.isEmpty()) {
+            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
+        }
+
+        // 3. 사용자 GET
+        Member member = memberInfo.get();
+
+        // 4. 입력된 비밀번호와 저장된 비밀번호 비교하기
+        boolean checkPw = passwordEncoder.matches(memberPw, member.getMemberPw());
+
+        if (checkPw) {
+            return member;
+        } else {
+            throw new MemberNotFoundException("비밀번호 일치하지 않음");
+        }
+    }
+
+    // =========================================================
+
+    // 내 정보 변경(수정)
+    public void modifyProfile(String memberId, MemberDTO memberDTO) {
+        // 1. 로그인된 사용자 찾기
+        Member modifyMember = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("Member Not Found"));
+
+        // 2. 내 정보 수정 진행
+        modifyMember.setMemberNickname(memberDTO.getMemberNickname());
+        modifyMember.setMemberPhone(memberDTO.getMemberPhone());
+        modifyMember.setPostcode(memberDTO.getPostcode());
+        modifyMember.setPostAddress(memberDTO.getPostAddress());
+        modifyMember.setDetailAddress(memberDTO.getDetailAddress());
+        modifyMember.setExtraAddress(memberDTO.getExtraAddress());
+
+        // 2-1. 비밀번호가 변경된 경우에만 암호화하여 저장
+        if (memberDTO.getMemberPw() != null) {
+            // String beforeEncodePw = (String) memberDTO.getMemberPw();
+
+            // 비밀번호 암호화
+            String encoderedPw = passwordEncoder.encode(memberDTO.getMemberPw());
+            modifyMember.setMemberPw(encoderedPw);
+        }
+
+        memberRepository.save(modifyMember);
+
     }
 }

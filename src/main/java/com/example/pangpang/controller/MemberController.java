@@ -20,6 +20,8 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -110,6 +112,50 @@ public class MemberController {
 
         // 로그아웃 성공 메세지
         return "로그아웃 성공";
+    }
+
+    // 마이페이지에서 내정보변경할때, 비밀번호로 한번 확인
+    @PostMapping("/confirm_before_profile")
+    public ResponseEntity<?> confirmBeforeProfile(Principal principal,
+            @RequestBody MemberDTO memberDTO) {
+
+        // 현재 로그인된 사용자 정보 가져오기
+        String loginedMemberId = principal.getName();
+
+        // 로그인된 사용자의 비밀번호 = 입력된 비밀번호 값 따짐
+        try {
+            Member member = memberService.confirmBeforeProfile(loginedMemberId,
+                    memberDTO.getMemberPw());
+            // 참이면 return Repository.ok(해당 멤버의 entity 값 전송)
+            return ResponseEntity.ok(member);
+        } catch (Exception e) {
+            // 거짓이면 에러메세지 띄움
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/mypage/modify")
+    public ResponseEntity<String> modifyProfile(Principal principal, @RequestBody MemberDTO memberDTO) {
+
+        // 현재 로그인된 사용자 정보 가져오기
+        String loginedMemberId = principal.getName();
+
+        try {
+            memberService.modifyProfile(loginedMemberId, memberDTO);
+
+            Member member = memberService.findByMemberId(loginedMemberId);
+            String jwt = jwtUtil.generateToken(
+                    member.getMemberId(),
+                    member.getId(),
+                    member.getMemberName(),
+                    member.getMemberNickname(),
+                    member.getMemberRole());
+            return ResponseEntity.ok(jwt);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
+
     }
 
     // 테스트

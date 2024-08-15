@@ -33,5 +33,14 @@ public class MemberDTO {
     @Size(min = 6, max = 6, message = "생년월일은 숫자 6자리로 입력해주세요.")
     private String memberBirth;
 
+    @NotNull(message = "핸드폰 번호는 필수 항목입니다")
+    private String memberPhone;
+
+    @NotNull(message = "주소는 필수 항목입니다")
+    private String postcode; // 우편번호
+    private String postAddress; // 경기도 성남시 어쩌고저쩌고
+    private String detailAddress; // 101동 505호
+    private String extraAddress; // (미금동?)
+
     private String memberRole;
 }
