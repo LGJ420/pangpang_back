@@ -6,4 +6,5 @@ import com.example.pangpang.entity.ProductReview;
 
 public interface ProductReviewRepository extends JpaRepository<ProductReview, Long>{
     
+    boolean existsByProductIdAndMemberId(Long productId, Long memberId);
 }

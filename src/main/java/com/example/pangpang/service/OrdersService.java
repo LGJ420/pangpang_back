@@ -27,6 +27,7 @@ public class OrdersService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
+    private final ProductReviewRepository productReviewRepository;
     private final ModelMapper modelMapper;
 
     public List<OrdersDTO> list(Long memberId, String search) {
@@ -53,6 +54,12 @@ public class OrdersService {
                                     .collect(Collectors.toList());
 
                             productDTO.setUploadFileNames(imageFileNames);
+
+
+                            // 리뷰 작성 여부 확인
+                            boolean reviewExist = productReviewRepository.existsByProductIdAndMemberId(
+                                    ordersProduct.getProduct().getId(), memberId);
+                            productDTO.setReviewExist(reviewExist);
 
                             return productDTO;
                         })

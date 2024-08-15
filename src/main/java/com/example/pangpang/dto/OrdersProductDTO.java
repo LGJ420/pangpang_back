@@ -27,6 +27,7 @@ public class OrdersProductDTO {
     @Positive
     private int cartCount;
 
+    private boolean reviewExist;
 
     // 상품 이미지 파일 이름들을 나타내는 문자열 리스트
     @Builder.Default
