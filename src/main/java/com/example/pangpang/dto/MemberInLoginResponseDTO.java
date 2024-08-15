@@ -1,6 +1,6 @@
 package com.example.pangpang.dto;
 
-// 로그인 토큰 DTO
+// 로그인하면 토큰을 발급할 때 사용하는 DTO 
 
 public class MemberInLoginResponseDTO {
 

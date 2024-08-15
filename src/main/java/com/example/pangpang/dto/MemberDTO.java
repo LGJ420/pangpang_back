@@ -9,8 +9,6 @@ import lombok.*;
  * DTO단계에서 검증을 한다 (널값인지 사이즈는 맞는지)
  */
 
-// 회원가입 DTO
-
 @Data
 @Builder
 @AllArgsConstructor
