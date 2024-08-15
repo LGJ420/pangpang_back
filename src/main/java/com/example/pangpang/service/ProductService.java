@@ -5,19 +5,12 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import com.example.pangpang.dto.PageRequestDTO;
-import com.example.pangpang.dto.PageResponseDTO;
-import com.example.pangpang.dto.ProductDTO;
-import com.example.pangpang.entity.Product;
-import com.example.pangpang.entity.ProductImage;
-import com.example.pangpang.repository.ProductImageRepository;
-import com.example.pangpang.repository.ProductRepository;
+import com.example.pangpang.dto.*;
+import com.example.pangpang.entity.*;
+import com.example.pangpang.repository.*;
 import com.example.pangpang.util.CustomFileUtil;
 
 import jakarta.transaction.Transactional;
