@@ -14,7 +14,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberDTO {
-    // 비밀번호변경
     private Long id;
 
     // 아이디 중복(회원가입), 회원가입, 아이디찾기, 비밀번호찾기, 내정보수정(마이페이지)
@@ -51,4 +50,6 @@ public class MemberDTO {
 
     // 회원가입
     private String memberRole;
+
+    private boolean isActive;
 }

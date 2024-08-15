@@ -2,6 +2,8 @@ package com.example.pangpang.service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -183,5 +185,25 @@ public class MemberService {
 
         memberRepository.save(modifyMember);
 
+    }
+
+    //
+    public List<MemberDTO> manageList() {
+        List<Member> members = memberRepository.findAll();
+
+        List<MemberDTO> memberDTOs = members.stream().map(member -> {
+            MemberDTO memberDTO = MemberDTO.builder()
+                    .id(member.getId())
+                    .memberId(member.getMemberId())
+                    .memberName(member.getMemberName())
+                    .memberNickname(member.getMemberNickname())
+                    .memberRole(member.getMemberRole())
+                    .isActive(member.isActive())
+                    .build();
+
+            return memberDTO;
+        }).collect(Collectors.toList());
+
+        return memberDTOs;
     }
 }
