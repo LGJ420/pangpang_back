@@ -14,8 +14,11 @@ import com.example.pangpang.dto.ArticleDTO;
 import com.example.pangpang.dto.PageRequestDTO;
 import com.example.pangpang.dto.PageResponseDTO;
 import com.example.pangpang.entity.Article;
+import com.example.pangpang.entity.Member;
 import com.example.pangpang.repository.ArticleRepository;
+import com.example.pangpang.repository.MemberRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleRepository articleRepository;
+    private final MemberRepository memberRepository;
     private final ModelMapper modelMapper = new ModelMapper();
 
     public PageResponseDTO<ArticleDTO> list(PageRequestDTO pageRequestDTO) {
@@ -38,7 +42,7 @@ public class ArticleService {
         if("title".equalsIgnoreCase(searchBy)){
             result = articleRepository.findByArticleTitleContaining(search, pageable);
         }else if ("author".equalsIgnoreCase(searchBy)) {
-            result = articleRepository.findByArticleAuthorContaining(search, pageable);
+            result = articleRepository.findByMemberMemberNicknameContaining(search, pageable);
         } else {
             result = articleRepository.findAll(pageable);
         }
@@ -64,13 +68,18 @@ public class ArticleService {
     }
 
     @Transactional
-    public Long createArticle(ArticleDTO articleDTO) {
+    public Long createArticle(Long memberId, ArticleDTO articleDTO) {
+
+        Member member = memberRepository.findById(memberId)
+                                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+        
+
         Article article = Article.builder()
                 .articleTitle(articleDTO.getArticleTitle())
                 .articleContent(articleDTO.getArticleContent())
-                .articleAuthor(articleDTO.getArticleAuthor())
                 .articleCreated(LocalDateTime.now())
-                .viewCount(0L) // 조회수 초기화
+                .member(member)
+                // .viewCount(0L) // 조회수 초기화
                 .build();
         article = articleRepository.save(article);
         return article.getId();
@@ -105,8 +114,8 @@ public class ArticleService {
         articleRepository.deleteById(id);
     }
 
-    @Transactional
-    public void incrementViewCount(Long id) {
-        articleRepository.incrementViewCount(id);
-    }
+    // @Transactional
+    // public void incrementViewCount(Long id) {
+    //     articleRepository.incrementViewCount(id);
+    // }
 }
