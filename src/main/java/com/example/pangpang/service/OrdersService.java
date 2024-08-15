@@ -50,13 +50,14 @@ public class OrdersService {
                                                                 // 이미지 리스트 수동 매핑
                                                                 List<String> imageFileNames = ordersProduct.getProduct()
                                                                                 .getProductImage().stream()
-                                                                                .map(ProductImage::getFileName)
+                                                                                .map(productImage -> productImage.getFileName())
                                                                                 .collect(Collectors.toList());
 
                                                                 productDTO.setUploadFileNames(imageFileNames);
 
                                                                 return productDTO;
                                                         })
+                                                        // 검색어 필터링
                                                         .filter(productDTO -> search == null || search.isBlank()
                                                                         || productDTO.getProductTitle()
                                                                                         .contains(search))
