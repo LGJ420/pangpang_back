@@ -28,6 +28,7 @@ public class ProductReview {
   @JoinColumn(name = "product_id")
   private Product product;
 
-  @OneToOne
+  @ManyToOne
+  @JoinColumn(name = "member_id")
   private Member member;
 }

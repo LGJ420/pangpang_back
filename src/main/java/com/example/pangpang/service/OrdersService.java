@@ -16,7 +16,6 @@ import com.example.pangpang.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 
 @Log4j2
 @Transactional
@@ -24,28 +23,29 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class OrdersService {
 
-        private final OrdersRepository ordersRepository;
-        private final MemberRepository memberRepository;
-        private final ProductRepository productRepository;
-        private final CartRepository cartRepository;
-        private final ModelMapper modelMapper;
+    private final OrdersRepository ordersRepository;
+    private final MemberRepository memberRepository;
+    private final ProductRepository productRepository;
+    private final CartRepository cartRepository;
+    private final ProductReviewRepository productReviewRepository;
+    private final ModelMapper modelMapper;
 
-        public List<OrdersDTO> list(Long memberId, String search) {
+    public List<OrdersDTO> list(Long memberId, String search) {
 
-                Member member = memberRepository.findById(memberId)
-                                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
 
-                // Sort 객체를 생성하여 주문 날짜 기준으로 내림차순 정렬
-                Sort sort = Sort.by("orderDate").descending();
-                List<Orders> orders = ordersRepository.findByMember(member, sort);
+        // Sort 객체를 생성하여 주문 날짜 기준으로 내림차순 정렬
+        Sort sort = Sort.by("orderDate").descending();
+        List<Orders> orders = ordersRepository.findByMember(member, sort);
 
-                return orders.stream()
-                                .map(order -> {
-                                        OrdersDTO dto = modelMapper.map(order, OrdersDTO.class);
+        return orders.stream()
+            .map(order -> {
+                OrdersDTO dto = modelMapper.map(order, OrdersDTO.class);
 
-                                        List<OrdersProductDTO> productDTOs = order.getOrdersProducts().stream()
-                                                        .map(ordersProduct -> {
-                                                                OrdersProductDTO productDTO = modelMapper.map(ordersProduct, OrdersProductDTO.class);
+                List<OrdersProductDTO> productDTOs = order.getOrdersProducts().stream()
+                        .map(ordersProduct -> {
+                            OrdersProductDTO productDTO = modelMapper.map(ordersProduct, OrdersProductDTO.class);
 
                                                                 // 이미지 리스트 수동 매핑
                                                                 List<String> imageFileNames = ordersProduct.getProduct()
@@ -53,75 +53,77 @@ public class OrdersService {
                                                                                 .map(productImage -> productImage.getFileName())
                                                                                 .collect(Collectors.toList());
 
-                                                                productDTO.setUploadFileNames(imageFileNames);
-
-                                                                return productDTO;
-                                                        })
-                                                        // 검색어 필터링
-                                                        .filter(productDTO -> search == null || search.isBlank()
-                                                                        || productDTO.getProductTitle()
-                                                                                        .contains(search))
-                                                        .collect(Collectors.toList());
-
-                                        dto.setOrdersProducts(productDTOs);
-
-                                        return dto;
-                                })
-                                .filter(dto -> !dto.getOrdersProducts().isEmpty()) // 제품 목록이 비어있지 않은 OrdersDTO만 유지
-                                .collect(Collectors.toList());
-        }
-        
+                            productDTO.setUploadFileNames(imageFileNames);
 
 
+                            // 리뷰 작성 여부 확인
+                            boolean reviewExist = productReviewRepository.existsByProductIdAndMemberId(
+                                    ordersProduct.getProduct().getId(), memberId);
+                            productDTO.setReviewExist(reviewExist);
 
-        public void add(Long memberId, OrdersDTO ordersDTO) {
+                            return productDTO;
+                        })
+                        .filter(productDTO -> search == null || search.isBlank()
+                                || productDTO.getProductTitle()
+                                        .contains(search))
+                        .collect(Collectors.toList());
 
-                Member member = memberRepository.findById(memberId)
-                                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+                dto.setOrdersProducts(productDTOs);
 
-                Orders orders = Orders.builder()
-                                .member(member)
-                                .orderName(ordersDTO.getName())
-                                .orderPhone(ordersDTO.getPhone())
-                                .orderAddress(ordersDTO.getAddress())
-                                .build();
+                return dto;
+            })
+            .filter(dto -> !dto.getOrdersProducts().isEmpty()) // 제품 목록이 비어있지 않은 OrdersDTO만 유지
+            .collect(Collectors.toList());
+    }
 
-                // 한번 주문할때 상품이 많으므로 map을 돌려서 상품을 하나하나 주문내역에 이어준다
-                List<OrdersProduct> ordersProducts = ordersDTO.getOrdersProducts().stream()
-                                .map(dto -> {
+    public void add(Long memberId, OrdersDTO ordersDTO) {
 
-                                        // 상품 찾기
-                                        Product product = productRepository.findById(dto.getProductId())
-                                                        .orElseThrow(() -> new EntityNotFoundException(
-                                                                        "Product not found"));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
 
-                                        // 주문내역과 상품 이어주기
-                                        OrdersProduct ordersProduct = OrdersProduct.builder()
-                                                        .orders(orders)
-                                                        .product(product)
-                                                        .count(dto.getCartCount())
-                                                        .build();
+        Orders orders = Orders.builder()
+                .member(member)
+                .orderName(ordersDTO.getName())
+                .orderPhone(ordersDTO.getPhone())
+                .orderAddress(ordersDTO.getAddress())
+                .build();
 
-                                                        log.info("product Result: ID = {}, productTitle = {}, price = {}, image = {}",
-                                                        product.getId(),
-                                                        product.getProductTitle(),
-                                                        product.getProductPrice(),
-                                                        product.getProductImage() != null
-                                                                        ? product.getProductImage().size()
-                                                                        : 0); // productImage 필드가 출력됨
+        // 한번 주문할때 상품이 많으므로 map을 돌려서 상품을 하나하나 주문내역에 이어준다
+        List<OrdersProduct> ordersProducts = ordersDTO.getOrdersProducts().stream()
+            .map(dto -> {
 
-                                        cartRepository.deleteByMemberAndProduct(member, product);
-                                        return ordersProduct;
-                                })
-                                .collect(Collectors.toList());
+                // 상품 찾기
+                Product product = productRepository.findById(dto.getProductId())
+                        .orElseThrow(() -> new EntityNotFoundException(
+                                "Product not found"));
 
-                                // log.info("ordersProducts result : " + ordersProducts);
+                // 주문내역과 상품 이어주기
+                OrdersProduct ordersProduct = OrdersProduct.builder()
+                        .orders(orders)
+                        .product(product)
+                        .count(dto.getCartCount())
+                        .build();
 
-                // 이어준 상품들을 생성한 주문 내역에 다시 설정
-                orders.addOrdersProducts(ordersProducts);
-                
-                // 저장
-                ordersRepository.save(orders);
+                log.info("product Result: ID = {}, productTitle = {}, price = {}, image = {}",
+                        product.getId(),
+                        product.getProductTitle(),
+                        product.getProductPrice(),
+                        product.getProductImage() != null
+                                ? product.getProductImage().size()
+                                : 0); // productImage 필드가 출력됨
 
-        }
+                cartRepository.deleteByMemberAndProduct(member, product);
+                return ordersProduct;
+            })
+            .collect(Collectors.toList());
+
+        // log.info("ordersProducts result : " + ordersProducts);
+
+        // 이어준 상품들을 생성한 주문 내역에 다시 설정
+        orders.addOrdersProducts(ordersProducts);
+
+        // 저장
+        ordersRepository.save(orders);
+
+    }
 }
