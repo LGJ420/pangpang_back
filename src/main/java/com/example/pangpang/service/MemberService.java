@@ -86,12 +86,12 @@ public class MemberService {
     // ===================================================
 
     // 비밀번호 찾기 서비스
-    public Member findPw(MemberInFindPwDTO memberInFindPwDTO) {
+    public Member findPw(MemberDTO memberDTO) {
         // 회원 아이디, 회원 이름, 회원 생년월일로 데이터베이스에서 회원 정보를 조회
         Member memberInfo = memberRepository.findByMemberIdAndMemberNameAndMemberBirth(
-                memberInFindPwDTO.getMemberIdInFindPw(),
-                memberInFindPwDTO.getMemberNameInFindPw(),
-                memberInFindPwDTO.getMemberBirthInFindPw());
+                memberDTO.getMemberId(),
+                memberDTO.getMemberName(),
+                memberDTO.getMemberBirth());
 
         // 조회된 회원 정보가 없으면 예외 발생
         if (memberInfo == null) {

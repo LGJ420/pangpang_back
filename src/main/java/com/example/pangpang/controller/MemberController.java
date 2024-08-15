@@ -63,9 +63,9 @@ public class MemberController {
 
     // 비밀번호 찾기
     @PostMapping("/find_pw")
-    public Member findPw(@RequestBody MemberInFindPwDTO memberInFindPwDTO) {
+    public Member findPw(@RequestBody MemberDTO memberDTO) {
 
-        Member memberInfo = memberService.findPw(memberInFindPwDTO);
+        Member memberInfo = memberService.findPw(memberDTO);
 
         return memberInfo;
     }
