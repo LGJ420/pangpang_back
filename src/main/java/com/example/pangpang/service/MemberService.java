@@ -31,15 +31,15 @@ public class MemberService {
     // ===================================================
 
     // 아이디 중복 확인
-    public void checkMemberId(MemberCheckIdInSignupDTO memberCheckIdInSignupDTO) {
+    public void checkMemberId(MemberDTO memberDTO) {
 
         // 아이디에 아무것도 안 적혀있을 때
-        if (memberCheckIdInSignupDTO.getMemberId().isBlank()) {
+        if (memberDTO.getMemberId().isBlank()) {
             throw new IllegalArgumentException("아이디는 공백일 수 없습니다.");
         }
 
         // 아이디 중복 확인
-        Optional<Member> memberIdCheck = memberRepository.findByMemberId(memberCheckIdInSignupDTO.getMemberId());
+        Optional<Member> memberIdCheck = memberRepository.findByMemberId(memberDTO.getMemberId());
 
         // 아이디가 존재할 때
         if (memberIdCheck.isPresent()) {

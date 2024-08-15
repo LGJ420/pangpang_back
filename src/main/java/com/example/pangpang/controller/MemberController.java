@@ -37,9 +37,9 @@ public class MemberController {
 
     // 회원가입 - 아이디 중복 확인
     @PostMapping("/signup/checkMemberId")
-    public Map<String, String> chechMemberId(@Valid @RequestBody MemberCheckIdInSignupDTO memberCheckIdInSignupDTO) {
+    public Map<String, String> chechMemberId(@RequestBody MemberDTO memberDTO) {
 
-        memberService.checkMemberId(memberCheckIdInSignupDTO);
+        memberService.checkMemberId(memberDTO);
 
         return Map.of("result", "아이디 중복 확인 성공");
     }
