@@ -102,16 +102,16 @@ public class MemberService {
     }
 
     // 비밀번호 변경 서비스
-    public void resetPw(MemberInFindPwForResetDTO memberInFindPwResetForDTO) {
+    public void resetPw(MemberDTO memberDTO) {
 
         // 회원번호(id)로 회원 찾기
         Optional<Member> existingMemberOptional = memberRepository
-                .findById(memberInFindPwResetForDTO.getIdInFindPwForReset());
+                .findByMemberId(memberDTO.getMemberId());
 
         if (existingMemberOptional.isPresent()) {
             Member existingMember = existingMemberOptional.get();
             // 비밀번호 암호화
-            String encoderedPw = passwordEncoder.encode(memberInFindPwResetForDTO.getMemberPwInFindPwForReset());
+            String encoderedPw = passwordEncoder.encode(memberDTO.getMemberPw());
 
             // 기존 엔티티 비밀번호만 변경
             existingMember.setMemberPw(encoderedPw);

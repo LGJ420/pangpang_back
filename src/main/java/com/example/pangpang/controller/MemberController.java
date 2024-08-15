@@ -72,9 +72,9 @@ public class MemberController {
 
     // 비밀번호 찾기->비밀번호 변경
     @PostMapping("/find_pw/reset")
-    public Map<String, String> resetPw(@Valid @RequestBody MemberInFindPwForResetDTO memberInFindPwResetForDTO) {
+    public Map<String, String> resetPw(@RequestBody MemberDTO memberDTO) {
 
-        memberService.resetPw(memberInFindPwResetForDTO);
+        memberService.resetPw(memberDTO);
 
         return Map.of("result", "비밀번호 변경 성공!");
     }
