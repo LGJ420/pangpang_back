@@ -81,18 +81,18 @@ public class MemberController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody MemberInLoginDTO memberInLoginDTO) {
+    public ResponseEntity<String> login(@RequestBody MemberDTO memberDTO) {
         try {
             // authenticationManager는 스프링 시큐리티에서 제공하는 객체
             // 사용자의 자격 증명을 검증하는 역할
             // authenticate()은 전달된 자격 증명이 유효한지 확인
             // => ★요약 : 굳이 로그인 컨트롤러에 로그인 과정을 직접 만들 필요가 없다는 소리★
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    memberInLoginDTO.getMemberIdInLogin(), memberInLoginDTO.getMemberPwInLogin()));
+                    memberDTO.getMemberId(), memberDTO.getMemberPw()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            Member member = memberService.findByMemberId(memberInLoginDTO.getMemberIdInLogin());
+            Member member = memberService.findByMemberId(memberDTO.getMemberId());
             String jwt = jwtUtil.generateToken(
                     member.getMemberId(),
                     member.getId(),
