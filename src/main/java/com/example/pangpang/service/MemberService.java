@@ -39,10 +39,7 @@ public class MemberService {
         }
 
         // 아이디 중복 확인
-        Optional<Member> memberIdCheck = memberRepository.findByMemberId(memberDTO.getMemberId());
-
-        // 아이디가 존재할 때
-        if (memberIdCheck.isPresent()) {
+        if (memberRepository.findByMemberId(memberDTO.getMemberId()).isPresent()) {
             throw new IllegalArgumentException("중복된 아이디가 존재합니다.");
         }
     }

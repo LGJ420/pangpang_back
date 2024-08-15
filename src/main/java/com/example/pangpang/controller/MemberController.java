@@ -37,11 +37,15 @@ public class MemberController {
 
     // 회원가입 - 아이디 중복 확인
     @PostMapping("/signup/checkMemberId")
-    public Map<String, String> chechMemberId(@RequestBody MemberDTO memberDTO) {
+    public ResponseEntity<String> checkMemberId(@RequestBody MemberDTO memberDTO) {
 
-        memberService.checkMemberId(memberDTO);
-
-        return Map.of("result", "아이디 중복 확인 성공");
+        try {
+            memberService.checkMemberId(memberDTO);
+            return ResponseEntity.ok("아이디 중복 확인 성공");
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 회원가입
