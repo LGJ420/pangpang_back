@@ -19,10 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -60,10 +56,15 @@ public class MemberController {
 
     // 아이디 찾기
     @PostMapping("/find_id")
-    public ResponseEntity<Member> findId(@RequestBody MemberDTO memberDTO) {
-        Member memberInfo = memberService.findId(memberDTO)
-                .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
-        return ResponseEntity.ok(memberInfo);
+    public ResponseEntity<?> findId(@RequestBody MemberDTO memberDTO) {
+
+        try {
+            Member memberInfo = memberService.findId(memberDTO);
+            return ResponseEntity.ok(memberInfo);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 비밀번호 찾기

@@ -74,10 +74,11 @@ public class MemberService {
     // ===================================================
 
     // 아이디 찾기 서비스
-    public Optional<Member> findId(MemberDTO memberDTO) {
-        Optional<Member> memberInfo = memberRepository.findByMemberNameAndMemberBirth(
+    public Member findId(MemberDTO memberDTO) {
+        Member memberInfo = memberRepository.findByMemberNameAndMemberBirth(
                 memberDTO.getMemberName(),
-                memberDTO.getMemberBirth());
+                memberDTO.getMemberBirth())
+                .orElseThrow(() -> new MemberNotFoundException("아이디 혹은 비밀번호가 틀렸습니다."));
 
         return memberInfo;
     }
