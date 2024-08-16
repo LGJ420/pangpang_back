@@ -2,6 +2,8 @@ package com.example.pangpang.service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,10 +41,7 @@ public class MemberService {
         }
 
         // 아이디 중복 확인
-        Optional<Member> memberIdCheck = memberRepository.findByMemberId(memberDTO.getMemberId());
-
-        // 아이디가 존재할 때
-        if (memberIdCheck.isPresent()) {
+        if (memberRepository.findByMemberId(memberDTO.getMemberId()).isPresent()) {
             throw new IllegalArgumentException("중복된 아이디가 존재합니다.");
         }
     }
@@ -75,10 +74,11 @@ public class MemberService {
     // ===================================================
 
     // 아이디 찾기 서비스
-    public Optional<Member> findId(MemberDTO memberDTO) {
-        Optional<Member> memberInfo = memberRepository.findByMemberNameAndMemberBirth(
+    public Member findId(MemberDTO memberDTO) {
+        Member memberInfo = memberRepository.findByMemberNameAndMemberBirth(
                 memberDTO.getMemberName(),
-                memberDTO.getMemberBirth());
+                memberDTO.getMemberBirth())
+                .orElseThrow(() -> new MemberNotFoundException("아이디 혹은 비밀번호가 틀렸습니다."));
 
         return memberInfo;
     }
@@ -91,12 +91,8 @@ public class MemberService {
         Member memberInfo = memberRepository.findByMemberIdAndMemberNameAndMemberBirth(
                 memberDTO.getMemberId(),
                 memberDTO.getMemberName(),
-                memberDTO.getMemberBirth());
-
-        // 조회된 회원 정보가 없으면 예외 발생
-        if (memberInfo == null) {
-            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
-        }
+                memberDTO.getMemberBirth())
+                .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다.")); // 조회된 회원 정보가 없으면 예외 발생
 
         return memberInfo;
     }
@@ -105,22 +101,17 @@ public class MemberService {
     public void resetPw(MemberDTO memberDTO) {
 
         // 회원번호(id)로 회원 찾기
-        Optional<Member> existingMemberOptional = memberRepository
-                .findByMemberId(memberDTO.getMemberId());
+        Member existingMember = memberRepository
+                .findByMemberId(memberDTO.getMemberId())
+                .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다."));
 
-        if (existingMemberOptional.isPresent()) {
-            Member existingMember = existingMemberOptional.get();
-            // 비밀번호 암호화
-            String encoderedPw = passwordEncoder.encode(memberDTO.getMemberPw());
+        // 비밀번호 암호화
+        String encoderedPw = passwordEncoder.encode(memberDTO.getMemberPw());
 
-            // 기존 엔티티 비밀번호만 변경
-            existingMember.setMemberPw(encoderedPw);
+        // 기존 엔티티 비밀번호만 변경
+        existingMember.setMemberPw(encoderedPw);
 
-            memberRepository.save(existingMember);
-        } else {
-            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
-        }
-
+        memberRepository.save(existingMember);
     }
 
     // ===================================================
@@ -139,24 +130,19 @@ public class MemberService {
 
         // 로그인된 사용자의 비밀번호와 입력된 비밀번호 비교하기
         // 1. 로그인된 사용자 찾기
-        Optional<Member> memberInfo = memberRepository.findByMemberId(memberId);
+        Member memberInfo = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다."));
 
-        // 2. 사용자가 존재하지 않으면 예외 처리(예외가 뜰리가 없음...!)
-        if (memberInfo.isEmpty()) {
-            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
-        }
+        // 2. 입력된 비밀번호와 저장된 비밀번호 비교하기
+        boolean checkPw = passwordEncoder.matches(memberPw, memberInfo.getMemberPw());
 
-        // 3. 사용자 GET
-        Member member = memberInfo.get();
-
-        // 4. 입력된 비밀번호와 저장된 비밀번호 비교하기
-        boolean checkPw = passwordEncoder.matches(memberPw, member.getMemberPw());
-
-        if (checkPw) {
-            return member;
-        } else {
+        // 2-1. [입력된 비밀번호 ≠ 저장된 비밀번호] => 예외처리
+        if (!checkPw) {
             throw new MemberNotFoundException("비밀번호 일치하지 않음");
         }
+
+        // 3. [입력된 비밀번호 = 저장된 비밀번호] => 컨트롤러에서 try 실행
+        return memberInfo;
     }
 
     // =========================================================
@@ -177,8 +163,6 @@ public class MemberService {
 
         // 2-1. 비밀번호가 변경된 경우에만 암호화하여 저장
         if (memberDTO.getMemberPw() != null) {
-            // String beforeEncodePw = (String) memberDTO.getMemberPw();
-
             // 비밀번호 암호화
             String encoderedPw = passwordEncoder.encode(memberDTO.getMemberPw());
             modifyMember.setMemberPw(encoderedPw);
@@ -186,5 +170,27 @@ public class MemberService {
 
         memberRepository.save(modifyMember);
 
+    }
+
+    // 관리자-회원관리
+    public List<MemberDTO> manageList() {
+        List<Member> members = memberRepository.findAll();
+
+        // 1. members 리스트를 스트림으로 변환
+        // 2. 각 Member객체를 MemberDTO로 매핑
+        List<MemberDTO> memberDTOs = members.stream().map(member -> {
+            MemberDTO memberDTO = MemberDTO.builder()
+                    .id(member.getId())
+                    .memberId(member.getMemberId())
+                    .memberName(member.getMemberName())
+                    .memberNickname(member.getMemberNickname())
+                    .memberRole(member.getMemberRole())
+                    .memberSignupDate(member.getMemberSignupDate())
+                    .isActive(member.isActive())
+                    .build();
+            return memberDTO;
+        }).collect(Collectors.toList()); // 스트림의 결과를 다시 리스트 형태로 수집
+
+        return memberDTOs;
     }
 }

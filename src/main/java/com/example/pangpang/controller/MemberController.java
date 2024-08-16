@@ -19,9 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -37,46 +34,67 @@ public class MemberController {
 
     // 회원가입 - 아이디 중복 확인
     @PostMapping("/signup/checkMemberId")
-    public Map<String, String> chechMemberId(@RequestBody MemberDTO memberDTO) {
+    public ResponseEntity<String> checkMemberId(@RequestBody MemberDTO memberDTO) {
 
-        memberService.checkMemberId(memberDTO);
+        try {
+            memberService.checkMemberId(memberDTO);
+            return ResponseEntity.ok("아이디 중복 확인 성공");
 
-        return Map.of("result", "아이디 중복 확인 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 회원가입
     @PostMapping("/signup")
-    public Map<String, String> signup(@Valid @RequestBody MemberDTO memberDTO) {
+    public ResponseEntity<?> signup(@Valid @RequestBody MemberDTO memberDTO) {
 
-        memberService.createMember(memberDTO);
+        try {
+            memberService.createMember(memberDTO);
+            return ResponseEntity.ok().body("회원가입 성공");
 
-        return Map.of("result", "회원가입 성공!", "memberName", memberDTO.getMemberName());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 아이디 찾기
     @PostMapping("/find_id")
-    public ResponseEntity<Member> findId(@RequestBody MemberDTO memberDTO) {
-        Member memberInfo = memberService.findId(memberDTO)
-                .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
-        return ResponseEntity.ok(memberInfo);
+    public ResponseEntity<?> findId(@RequestBody MemberDTO memberDTO) {
+
+        try {
+            Member memberInfo = memberService.findId(memberDTO);
+            return ResponseEntity.ok(memberInfo);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 비밀번호 찾기
     @PostMapping("/find_pw")
-    public Member findPw(@RequestBody MemberDTO memberDTO) {
+    public ResponseEntity<?> findPw(@RequestBody MemberDTO memberDTO) {
 
-        Member memberInfo = memberService.findPw(memberDTO);
+        try {
+            Member memberInfo = memberService.findPw(memberDTO);
+            return ResponseEntity.ok().body(memberInfo);
 
-        return memberInfo;
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 비밀번호 찾기->비밀번호 변경
     @PostMapping("/find_pw/reset")
-    public Map<String, String> resetPw(@RequestBody MemberDTO memberDTO) {
+    public ResponseEntity<?> resetPw(@RequestBody MemberDTO memberDTO) {
 
-        memberService.resetPw(memberDTO);
+        try {
+            memberService.resetPw(memberDTO);
+            return ResponseEntity.ok("비밀번호 변경 성공!");
 
-        return Map.of("result", "비밀번호 변경 성공!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 로그인
@@ -128,12 +146,14 @@ public class MemberController {
                     memberDTO.getMemberPw());
             // 참이면 return Repository.ok(해당 멤버의 entity 값 전송)
             return ResponseEntity.ok(member);
+
         } catch (Exception e) {
             // 거짓이면 에러메세지 띄움
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
+    // 마이페이지 내정보변경
     @PostMapping("/mypage/modify")
     public ResponseEntity<String> modifyProfile(Principal principal, @RequestBody MemberDTO memberDTO) {
 
@@ -158,19 +178,13 @@ public class MemberController {
 
     }
 
-    // 테스트
-    @GetMapping("/test")
-    public String test(Principal principal) {
-        // memberId만 뽑기
-        // 수많은 토큰끼리 식별하기 위해 subject라는 것을 설정함(토큰의 이름표라고 보면 될듯)
-        // 내가 subject(토큰의 이름표)를 memberId라고 설정함
-        // 프린시펄은 로그인 한 사용자 식별자를 알 수 있음
-        // 즉 프린시펄을 쓰면 subject로 설정한 memberId를 반환한다는 뜻
-        // String memberId = principal.getName();
-        // return memberId;
+    // 마이페이지 관리자 회원관리 회원리스트 받아오기
+    @GetMapping
+    public ResponseEntity<List<MemberDTO>> manageList() {
 
-        // toString으로 전부 보기
-        String memberInfo = principal.toString();
-        return memberInfo;
+        List<MemberDTO> memberDTOs = memberService.manageList();
+
+        return ResponseEntity.ok().body(memberDTOs);
     }
+
 }
