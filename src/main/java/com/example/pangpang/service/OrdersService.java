@@ -47,11 +47,11 @@ public class OrdersService {
                         .map(ordersProduct -> {
                             OrdersProductDTO productDTO = modelMapper.map(ordersProduct, OrdersProductDTO.class);
 
-                            // 이미지 리스트 수동 매핑
-                            List<String> imageFileNames = ordersProduct.getProduct()
-                                    .getProductImage().stream()
-                                    .map(ProductImage::getFileName)
-                                    .collect(Collectors.toList());
+                                                                // 이미지 리스트 수동 매핑
+                                                                List<String> imageFileNames = ordersProduct.getProduct()
+                                                                                .getProductImage().stream()
+                                                                                .map(productImage -> productImage.getFileName())
+                                                                                .collect(Collectors.toList());
 
                             productDTO.setUploadFileNames(imageFileNames);
 
