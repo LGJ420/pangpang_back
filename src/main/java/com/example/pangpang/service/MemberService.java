@@ -172,7 +172,7 @@ public class MemberService {
 
     }
 
-    // 관리자-회원관리
+    // 관리자-회원관리 리스트 받아오기
     public List<MemberDTO> manageList() {
         List<Member> members = memberRepository.findAll();
 
@@ -192,5 +192,18 @@ public class MemberService {
         }).collect(Collectors.toList()); // 스트림의 결과를 다시 리스트 형태로 수집
 
         return memberDTOs;
+    }
+
+    // 관리자-회원관리 회원등급 변경
+    public void changeMemberRole(Long id, String memberRole) {
+        // 회원찾기
+        Member extistingMember = memberRepository.findById(id)
+        .orElseThrow(()->new MemberNotFoundException("회원을 찾을 수 없습니다."));
+
+        // 회원 등급 변경
+        extistingMember.setMemberRole(memberRole);
+
+        // 변경 내용 저장
+        memberRepository.save(extistingMember);
     }
 }
