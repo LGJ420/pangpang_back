@@ -172,7 +172,7 @@ public class MemberService {
 
     }
 
-    //관리자-회원관리
+    // 관리자-회원관리
     public List<MemberDTO> manageList() {
         List<Member> members = memberRepository.findAll();
 
@@ -185,6 +185,7 @@ public class MemberService {
                     .memberName(member.getMemberName())
                     .memberNickname(member.getMemberNickname())
                     .memberRole(member.getMemberRole())
+                    .memberSignupDate(member.getMemberSignupDate())
                     .isActive(member.isActive())
                     .build();
             return memberDTO;

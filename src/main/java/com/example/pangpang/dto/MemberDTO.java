@@ -1,5 +1,6 @@
 package com.example.pangpang.dto;
 
+import java.time.LocalDateTime;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -51,5 +52,9 @@ public class MemberDTO {
     // 회원가입
     private String memberRole;
 
+    // 마이페이지-관리자-회원관리
+    private LocalDateTime memberSignupDate;
+
+    // 마이페이지-관리자-회원관리
     private boolean isActive;
 }
