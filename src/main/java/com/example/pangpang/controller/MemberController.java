@@ -86,11 +86,15 @@ public class MemberController {
 
     // 비밀번호 찾기->비밀번호 변경
     @PostMapping("/find_pw/reset")
-    public Map<String, String> resetPw(@RequestBody MemberDTO memberDTO) {
+    public ResponseEntity<?> resetPw(@RequestBody MemberDTO memberDTO) {
 
-        memberService.resetPw(memberDTO);
+        try {
+            memberService.resetPw(memberDTO);
+            return ResponseEntity.ok("비밀번호 변경 성공!");
 
-        return Map.of("result", "비밀번호 변경 성공!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 로그인

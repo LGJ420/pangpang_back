@@ -101,22 +101,17 @@ public class MemberService {
     public void resetPw(MemberDTO memberDTO) {
 
         // 회원번호(id)로 회원 찾기
-        Optional<Member> existingMemberOptional = memberRepository
-                .findByMemberId(memberDTO.getMemberId());
+        Member existingMember = memberRepository
+                .findByMemberId(memberDTO.getMemberId())
+                .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다."));
 
-        if (existingMemberOptional.isPresent()) {
-            Member existingMember = existingMemberOptional.get();
-            // 비밀번호 암호화
-            String encoderedPw = passwordEncoder.encode(memberDTO.getMemberPw());
+        // 비밀번호 암호화
+        String encoderedPw = passwordEncoder.encode(memberDTO.getMemberPw());
 
-            // 기존 엔티티 비밀번호만 변경
-            existingMember.setMemberPw(encoderedPw);
+        // 기존 엔티티 비밀번호만 변경
+        existingMember.setMemberPw(encoderedPw);
 
-            memberRepository.save(existingMember);
-        } else {
-            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
-        }
-
+        memberRepository.save(existingMember);
     }
 
     // ===================================================
