@@ -47,11 +47,15 @@ public class MemberController {
 
     // 회원가입
     @PostMapping("/signup")
-    public Map<String, String> signup(@Valid @RequestBody MemberDTO memberDTO) {
+    public ResponseEntity<?> signup(@Valid @RequestBody MemberDTO memberDTO) {
 
-        memberService.createMember(memberDTO);
+        try {
+            memberService.createMember(memberDTO);
+            return ResponseEntity.ok().body("회원가입 성공");
 
-        return Map.of("result", "회원가입 성공!", "memberName", memberDTO.getMemberName());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 아이디 찾기
