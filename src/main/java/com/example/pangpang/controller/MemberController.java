@@ -73,11 +73,15 @@ public class MemberController {
 
     // 비밀번호 찾기
     @PostMapping("/find_pw")
-    public Member findPw(@RequestBody MemberDTO memberDTO) {
+    public ResponseEntity<?> findPw(@RequestBody MemberDTO memberDTO) {
 
-        Member memberInfo = memberService.findPw(memberDTO);
+        try {
+            Member memberInfo = memberService.findPw(memberDTO);
+            return ResponseEntity.ok().body(memberInfo);
 
-        return memberInfo;
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 비밀번호 찾기->비밀번호 변경

@@ -91,12 +91,8 @@ public class MemberService {
         Member memberInfo = memberRepository.findByMemberIdAndMemberNameAndMemberBirth(
                 memberDTO.getMemberId(),
                 memberDTO.getMemberName(),
-                memberDTO.getMemberBirth());
-
-        // 조회된 회원 정보가 없으면 예외 발생
-        if (memberInfo == null) {
-            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
-        }
+                memberDTO.getMemberBirth())
+                .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다.")); // 조회된 회원 정보가 없으면 예외 발생
 
         return memberInfo;
     }
