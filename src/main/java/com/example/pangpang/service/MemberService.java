@@ -163,8 +163,6 @@ public class MemberService {
 
         // 2-1. 비밀번호가 변경된 경우에만 암호화하여 저장
         if (memberDTO.getMemberPw() != null) {
-            // String beforeEncodePw = (String) memberDTO.getMemberPw();
-
             // 비밀번호 암호화
             String encoderedPw = passwordEncoder.encode(memberDTO.getMemberPw());
             modifyMember.setMemberPw(encoderedPw);
