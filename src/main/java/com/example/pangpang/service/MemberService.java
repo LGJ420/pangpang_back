@@ -130,24 +130,19 @@ public class MemberService {
 
         // 로그인된 사용자의 비밀번호와 입력된 비밀번호 비교하기
         // 1. 로그인된 사용자 찾기
-        Optional<Member> memberInfo = memberRepository.findByMemberId(memberId);
+        Member memberInfo = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다."));
 
-        // 2. 사용자가 존재하지 않으면 예외 처리(예외가 뜰리가 없음...!)
-        if (memberInfo.isEmpty()) {
-            throw new MemberNotFoundException("회원 정보를 찾을 수 없습니다.");
-        }
+        // 2. 입력된 비밀번호와 저장된 비밀번호 비교하기
+        boolean checkPw = passwordEncoder.matches(memberPw, memberInfo.getMemberPw());
 
-        // 3. 사용자 GET
-        Member member = memberInfo.get();
-
-        // 4. 입력된 비밀번호와 저장된 비밀번호 비교하기
-        boolean checkPw = passwordEncoder.matches(memberPw, member.getMemberPw());
-
-        if (checkPw) {
-            return member;
-        } else {
+        // 2-1. [입력된 비밀번호 ≠ 저장된 비밀번호] => 예외처리
+        if (!checkPw) {
             throw new MemberNotFoundException("비밀번호 일치하지 않음");
         }
+
+        // 3. [입력된 비밀번호 = 저장된 비밀번호] => 컨트롤러에서 try 실행
+        return memberInfo;
     }
 
     // =========================================================

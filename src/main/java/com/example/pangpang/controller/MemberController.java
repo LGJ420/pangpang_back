@@ -146,6 +146,7 @@ public class MemberController {
                     memberDTO.getMemberPw());
             // 참이면 return Repository.ok(해당 멤버의 entity 값 전송)
             return ResponseEntity.ok(member);
+            
         } catch (Exception e) {
             // 거짓이면 에러메세지 띄움
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
