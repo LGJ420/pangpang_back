@@ -172,10 +172,12 @@ public class MemberService {
 
     }
 
-    //
+    //관리자-회원관리
     public List<MemberDTO> manageList() {
         List<Member> members = memberRepository.findAll();
 
+        // 1. members 리스트를 스트림으로 변환
+        // 2. 각 Member객체를 MemberDTO로 매핑
         List<MemberDTO> memberDTOs = members.stream().map(member -> {
             MemberDTO memberDTO = MemberDTO.builder()
                     .id(member.getId())
@@ -185,9 +187,8 @@ public class MemberService {
                     .memberRole(member.getMemberRole())
                     .isActive(member.isActive())
                     .build();
-
             return memberDTO;
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toList()); // 스트림의 결과를 다시 리스트 형태로 수집
 
         return memberDTOs;
     }

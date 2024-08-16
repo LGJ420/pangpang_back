@@ -146,13 +146,14 @@ public class MemberController {
                     memberDTO.getMemberPw());
             // 참이면 return Repository.ok(해당 멤버의 entity 값 전송)
             return ResponseEntity.ok(member);
-            
+
         } catch (Exception e) {
             // 거짓이면 에러메세지 띄움
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
+    // 마이페이지 내정보변경
     @PostMapping("/mypage/modify")
     public ResponseEntity<String> modifyProfile(Principal principal, @RequestBody MemberDTO memberDTO) {
 
@@ -177,6 +178,7 @@ public class MemberController {
 
     }
 
+    // 마이페이지 관리자 회원관리 회원리스트 받아오기
     @GetMapping
     public ResponseEntity<List<MemberDTO>> manageList() {
 
@@ -185,19 +187,4 @@ public class MemberController {
         return ResponseEntity.ok().body(memberDTOs);
     }
 
-    // 테스트
-    @GetMapping("/test")
-    public String test(Principal principal) {
-        // memberId만 뽑기
-        // 수많은 토큰끼리 식별하기 위해 subject라는 것을 설정함(토큰의 이름표라고 보면 될듯)
-        // 내가 subject(토큰의 이름표)를 memberId라고 설정함
-        // 프린시펄은 로그인 한 사용자 식별자를 알 수 있음
-        // 즉 프린시펄을 쓰면 subject로 설정한 memberId를 반환한다는 뜻
-        // String memberId = principal.getName();
-        // return memberId;
-
-        // toString으로 전부 보기
-        String memberInfo = principal.toString();
-        return memberInfo;
-    }
 }
