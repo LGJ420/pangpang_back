@@ -22,7 +22,9 @@ public class Product {
     private String productContent; // 상품 설명
     private int productPrice; // 상품 가격
     private String productCategory; // 상품 카테고리
-    private String productLongContent; // 상품 긴 설명
+
+    @Column(length = 500)
+    private String productDetailContent;  // 상품 긴 설명
 
     // 상품 주문
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
