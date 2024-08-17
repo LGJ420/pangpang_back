@@ -3,6 +3,7 @@ package com.example.pangpang.service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +52,8 @@ public class ProductReviewService {
 
     public List<ProductReviewDTO> list(Long id){
 
-        List<ProductReview> productReviews = productReviewRepository.findByProductId(id);
+        Sort sort = Sort.by("reviewDate").descending();
+        List<ProductReview> productReviews = productReviewRepository.findByProductId(id, sort);
 
         List<ProductReviewDTO> productReviewDTOs = productReviews.stream()
             .map(review->{
@@ -75,7 +77,8 @@ public class ProductReviewService {
 
     public List<ProductReviewDTO> mylist(Long id){
 
-        List<ProductReview> productReviews = productReviewRepository.findByMemberId(id);
+        Sort sort = Sort.by("reviewDate").descending();
+        List<ProductReview> productReviews = productReviewRepository.findByMemberId(id, sort);
 
         List<ProductReviewDTO> productReviewDTOs = productReviews.stream()
             .map(review->{
