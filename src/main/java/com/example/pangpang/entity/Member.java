@@ -36,7 +36,6 @@ public class Member implements UserDetails {
 
         // 활동(false), 활동정지(true) 구분
         private boolean isActive;
-        private boolean active;
 
         // =============================================
 
