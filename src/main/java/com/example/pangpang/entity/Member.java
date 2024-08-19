@@ -34,8 +34,8 @@ public class Member implements UserDetails {
         @Column(nullable = false)
         private String memberPw;
 
-        // 활동(true), 활동정지(isActive) 구분
-        private boolean isActive = true;
+        // 활동(false), 활동정지(true) 구분
+        private boolean active;
 
         // =============================================
 
@@ -67,7 +67,7 @@ public class Member implements UserDetails {
         // 핸드폰 번호
         private String memberPhone;
 
-        // 기본 배송지 
+        // 기본 배송지
         private String postcode; // 우편번호
         private String postAddress; // 경기도 성남시 어쩌고저쩌고
         private String detailAddress; // 101동 505호

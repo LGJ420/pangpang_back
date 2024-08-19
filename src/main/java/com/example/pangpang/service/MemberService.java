@@ -2,7 +2,6 @@ package com.example.pangpang.service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -186,7 +185,7 @@ public class MemberService {
                     .memberNickname(member.getMemberNickname())
                     .memberRole(member.getMemberRole())
                     .memberSignupDate(member.getMemberSignupDate())
-                    .isActive(member.isActive())
+                    .active(member.isActive())
                     .build();
             return memberDTO;
         }).collect(Collectors.toList()); // 스트림의 결과를 다시 리스트 형태로 수집
@@ -197,13 +196,32 @@ public class MemberService {
     // 관리자-회원관리 회원등급 변경
     public void changeMemberRole(Long id, String memberRole) {
         // 회원찾기
-        Member extistingMember = memberRepository.findById(id)
+        Member existingMember = memberRepository.findById(id)
         .orElseThrow(()->new MemberNotFoundException("회원을 찾을 수 없습니다."));
 
         // 회원 등급 변경
-        extistingMember.setMemberRole(memberRole);
+        existingMember.setMemberRole(memberRole);
 
         // 변경 내용 저장
-        memberRepository.save(extistingMember);
+        memberRepository.save(existingMember);
+    }
+
+    // 관리자-회원관리 회원등급 변경
+    public void changeIsActive(Long id, boolean isActive) {
+        // 회원찾기
+        Member existingMember = memberRepository.findById(id)
+        .orElseThrow(()->new MemberNotFoundException("회원을 찾을 수 없습니다."));
+
+        // 변경 전 상태 로그 출력
+        System.out.println("변경 전 회원 상태: " + existingMember.isActive());
+
+        // 회원 활동 상태 변경
+        existingMember.setActive(isActive);
+
+        // 변경 후 상태 로그 출력
+        System.out.println("변경 후 회원 상태: " + existingMember.isActive());
+
+        // 변경 내용 저장
+        memberRepository.save(existingMember);
     }
 }

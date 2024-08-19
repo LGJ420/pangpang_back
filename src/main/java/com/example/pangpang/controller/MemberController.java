@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.pangpang.dto.*;
 import com.example.pangpang.entity.Member;
-import com.example.pangpang.exception.MemberNotFoundException;
 import com.example.pangpang.service.MemberService;
 import com.example.pangpang.util.JwtUtil;
 
@@ -194,6 +193,21 @@ public class MemberController {
         try {
             memberService.changeMemberRole(memberDTO.getId(), memberDTO.getMemberRole());
             return ResponseEntity.ok().body("회원번호 : " + memberDTO.getId() + " 회원등급 : " + memberDTO.getMemberRole());
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
+    }
+
+    // 마이페이지 관리자 회원관리 회원등급 변경
+    @PostMapping("/mypage/manager/change/isActive")
+    public ResponseEntity<?> changeIsActive(@RequestBody MemberDTO memberDTO) {
+
+        System.out.println("프론트에서 전달받은 active : " + memberDTO.isActive());
+        
+        try {
+            memberService.changeIsActive(memberDTO.getId(), memberDTO.isActive());
+            return ResponseEntity.ok().body("회원번호 : " + memberDTO.getId() + " 변경 후 회원활동상태 : " + memberDTO.isActive());
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());

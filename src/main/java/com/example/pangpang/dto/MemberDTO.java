@@ -56,5 +56,6 @@ public class MemberDTO {
     private LocalDateTime memberSignupDate;
 
     // 마이페이지-관리자-회원관리
-    private boolean isActive;
+    private boolean active;
+
 }
