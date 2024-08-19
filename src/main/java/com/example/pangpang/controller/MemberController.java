@@ -4,11 +4,13 @@ import java.util.*;
 import java.security.Principal;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.pangpang.dto.*;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.MemberService;
 import com.example.pangpang.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -216,6 +218,21 @@ public class MemberController {
             memberService.changeIsActive(memberDTO.getId(), memberDTO.isActive());
             return ResponseEntity.ok().body("회원번호 : " + memberDTO.getId() + " 변경 후 회원활동상태 : " + memberDTO.isActive());
 
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
+    }
+
+    // 프로필 사진 관련 코드 (출처 : https://junikang.tistory.com/303)
+    @PostMapping("/mypage/image/post") 
+    public ResponseEntity<?> fileUpload(Principal principal, @RequestBody MultipartFile file){ 
+    
+        // 현재 로그인된 사용자 정보 가져오기
+        String loginedMemberId = principal.getName();
+
+        try {
+            memberService.changeMemberProfileImage(loginedMemberId, file);
+            return ResponseEntity.ok().body("프로필사진 변경 성공"); 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
         }

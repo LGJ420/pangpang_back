@@ -6,16 +6,23 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.pangpang.dto.*;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.exception.MemberNotFoundException;
 import com.example.pangpang.repository.MemberRepository;
+import com.example.pangpang.util.CustomFileUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.security.Principal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +35,8 @@ public class MemberService {
 
     // 암호화 의존성 주입
     private final PasswordEncoder passwordEncoder;
+
+    private final CustomFileUtil customFileUtil;
 
     // ===================================================
 
@@ -197,7 +206,7 @@ public class MemberService {
     public void changeMemberRole(Long id, String memberRole) {
         // 회원찾기
         Member existingMember = memberRepository.findById(id)
-        .orElseThrow(()->new MemberNotFoundException("회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
 
         // 회원 등급 변경
         existingMember.setMemberRole(memberRole);
@@ -210,7 +219,7 @@ public class MemberService {
     public void changeIsActive(Long id, boolean isActive) {
         // 회원찾기
         Member existingMember = memberRepository.findById(id)
-        .orElseThrow(()->new MemberNotFoundException("회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
 
         // 변경 전 상태 로그 출력
         System.out.println("변경 전 회원 상태: " + existingMember.isActive());
@@ -222,6 +231,31 @@ public class MemberService {
         System.out.println("변경 후 회원 상태: " + existingMember.isActive());
 
         // 변경 내용 저장
+        memberRepository.save(existingMember);
+    }
+
+    // 마이페이지-내정보변경-프로필사진 변경
+    public void changeMemberProfileImage(String memberId, MultipartFile file) {
+
+        System.out.println("=====before finding member=====");
+        // 회원찾기
+        Member existingMember = memberRepository.findByMemberId(memberId)
+        .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
+        System.out.println("=====after finding member=====");
+        System.out.println("===============================");
+        System.out.println("===== before post image with different name =====");
+        
+        // 파일 저장하는 메서드(이름을 겹치지 않게 하는 효과가 있다능!)
+        String memberImage = customFileUtil.saveFile(file);
+        System.out.println("===== after post image with different name =====");
+        System.out.println("===============================");
+        System.out.println("===== before save image =====");
+        
+        // 엔티티에 파일 저장
+        existingMember.setMemberImage(memberImage);
+        System.out.println("===== after save image =====");
+        System.out.println("===============================");
+
         memberRepository.save(existingMember);
     }
 }
