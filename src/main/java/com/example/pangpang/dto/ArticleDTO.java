@@ -26,5 +26,5 @@ public class ArticleDTO {
     private LocalDateTime articleCreated; 
     private LocalDateTime articleUpdated;
 
-    // private Long viewCount;
+    private Long viewCount;
 }

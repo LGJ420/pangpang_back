@@ -78,11 +78,17 @@ public class ArticleService {
                 .articleTitle(articleDTO.getArticleTitle())
                 .articleContent(articleDTO.getArticleContent())
                 .articleCreated(LocalDateTime.now())
+                .viewCount(0L) // 조회수 초기화
                 .member(member)
-                // .viewCount(0L) // 조회수 초기화
                 .build();
+                
         article = articleRepository.save(article);
         return article.getId();
+    }
+
+    @Transactional
+    public void incrementViewCount(Long id) {
+        articleRepository.incrementViewCount(id);
     }
 
     @Transactional
@@ -90,6 +96,9 @@ public class ArticleService {
         // 게시글 조회
         Optional<Article> result = articleRepository.findById(id);
         Article article = result.orElseThrow();
+
+        // 조회수 증가
+        incrementViewCount(id);
 
         ArticleDTO articleDTO = modelMapper.map(article, ArticleDTO.class);
 
@@ -125,9 +134,4 @@ public class ArticleService {
         }
         articleRepository.deleteById(id);
     }
-
-    // @Transactional
-    // public void incrementViewCount(Long id) {
-    //     articleRepository.incrementViewCount(id);
-    // }
 }
