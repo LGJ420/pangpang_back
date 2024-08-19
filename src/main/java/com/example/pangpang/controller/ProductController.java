@@ -30,6 +30,8 @@ public class ProductController {
       @RequestParam("productTitle") String productTitle,
       @RequestParam("productContent") String productContent,
       @RequestParam("productPrice") int productPrice,
+      @RequestParam("productCategory") String productCategory,
+      @RequestParam("productDetailContent") String productDetailContent,
       @RequestParam("files") List<MultipartFile> files) {
 
     // DTO 생성
@@ -37,6 +39,8 @@ public class ProductController {
         .productTitle(productTitle)
         .productContent(productContent)
         .productPrice(productPrice)
+        .productCategory(productCategory)
+        .productDetailContent(productDetailContent)
         .files(files)
         .build();
 

@@ -33,11 +33,15 @@ public class ProductService {
 
     // ProductDTO로부터 전달받은 데이터를 사용하여 Product 엔티티를 생성
     // Builder 패턴을 사용하여 productTitle, productContent, productPrice를 설정
-    Product product = Product.builder()
-        .productTitle(productDTO.getProductTitle())
-        .productContent(productDTO.getProductContent())
-        .productPrice(productDTO.getProductPrice())
-        .build();
+    // Product product = Product.builder()
+    //     .productTitle(productDTO.getProductTitle())
+    //     .productContent(productDTO.getProductContent())
+    //     .productPrice(productDTO.getProductPrice())
+    //     .productCategory(productDTO.getProductCategory())
+    //     .productDetailContent(productDTO.getProductLongContent())
+    //     .build();
+
+    Product product = modelMapper.map(productDTO, Product.class);
 
     // 생성한 Product 객체를 ProductRepository를 사용하여 데이터베이스에 저장
     // 저장 후 반환되는 savedProduct 객체에는 데이터베이스에서 생성된 id와 같은 추가 정보가 포함됨
@@ -179,7 +183,7 @@ public class ProductService {
     ProductDTO dto = modelMapper.map(product, ProductDTO.class);
 
     List<String> imageNames = product.getProductImage().stream()
-        .map(ProductImage::getFileName)
+        .map(productImage -> productImage.getFileName())
         .collect(Collectors.toList());
     dto.setUploadFileNames(imageNames);
 
