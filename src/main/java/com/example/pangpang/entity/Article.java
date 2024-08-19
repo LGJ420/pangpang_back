@@ -40,6 +40,6 @@ public class Article {
     private List<Comment> comments;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", referencedColumnName = "id")
     private Member member;
 }
