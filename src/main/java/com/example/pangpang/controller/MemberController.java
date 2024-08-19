@@ -117,6 +117,11 @@ public class MemberController {
                     member.getMemberNickname(),
                     member.getMemberRole(),
                     member.isActive());
+
+            if (member.isActive()) {
+                throw new IllegalArgumentException("isActive true");
+            }
+
             return ResponseEntity.ok(jwt);
 
         } catch (BadCredentialsException e) {
@@ -206,7 +211,7 @@ public class MemberController {
     public ResponseEntity<?> changeIsActive(@RequestBody MemberDTO memberDTO) {
 
         System.out.println("프론트에서 전달받은 active : " + memberDTO.isActive());
-        
+
         try {
             memberService.changeIsActive(memberDTO.getId(), memberDTO.isActive());
             return ResponseEntity.ok().body("회원번호 : " + memberDTO.getId() + " 변경 후 회원활동상태 : " + memberDTO.isActive());
