@@ -1,5 +1,6 @@
 package com.example.pangpang.controller;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import org.springframework.core.io.Resource;
@@ -41,6 +42,7 @@ public class ProductController {
         .productPrice(productPrice)
         .productCategory(productCategory)
         .productDetailContent(productDetailContent)
+        .productCreated(LocalDateTime.now())
         .files(files)
         .build();
 

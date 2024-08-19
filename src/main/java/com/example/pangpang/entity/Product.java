@@ -1,5 +1,6 @@
 package com.example.pangpang.entity;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import jakarta.persistence.*;
@@ -25,6 +26,9 @@ public class Product {
 
     @Column(length = 1000)
     private String productDetailContent;  // 상품 긴 설명
+
+    @Builder.Default
+    private LocalDateTime productCreated = LocalDateTime.now();
 
     // 상품 주문
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)

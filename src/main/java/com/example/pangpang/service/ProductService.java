@@ -105,6 +105,8 @@ public class ProductService {
               .productTitle(product.getProductTitle())
               .productContent(product.getProductContent())
               .productPrice(product.getProductPrice())
+              .productCategory(product.getProductCategory())
+              .productCreated(product.getProductCreated())
               .build();
 
           // 이미지 파일 이름 설정

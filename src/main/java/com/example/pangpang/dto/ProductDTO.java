@@ -1,8 +1,11 @@
 package com.example.pangpang.dto;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +34,9 @@ public class ProductDTO {
 
     @NotNull
     private String productCategory;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime productCreated;
 
 
     // 상품에 첨부된 파일들을 나타내는 MultipartFile 객체들의 리스트
