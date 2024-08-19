@@ -237,24 +237,16 @@ public class MemberService {
     // 마이페이지-내정보변경-프로필사진 변경
     public void changeMemberProfileImage(String memberId, MultipartFile file) {
 
-        System.out.println("=====before finding member=====");
         // 회원찾기
         Member existingMember = memberRepository.findByMemberId(memberId)
         .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
-        System.out.println("=====after finding member=====");
-        System.out.println("===============================");
-        System.out.println("===== before post image with different name =====");
+
         
         // 파일 저장하는 메서드(이름을 겹치지 않게 하는 효과가 있다능!)
         String memberImage = customFileUtil.saveFile(file);
-        System.out.println("===== after post image with different name =====");
-        System.out.println("===============================");
-        System.out.println("===== before save image =====");
-        
+
         // 엔티티에 파일 저장
         existingMember.setMemberImage(memberImage);
-        System.out.println("===== after save image =====");
-        System.out.println("===============================");
 
         memberRepository.save(existingMember);
     }
