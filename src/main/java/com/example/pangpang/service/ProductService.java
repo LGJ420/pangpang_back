@@ -68,42 +68,44 @@ public class ProductService {
     // 검색 키워드 가져오기
     String search = pageRequestDTO.getSearch();
 
-    // Product 엔티티 정의
-    Page<Object[]> result;
+    // 상품 목록 페이지
+    Page<Product> productPage;
 
-    // 검색 키워드가 비워져 있지 않으면 검색 키워드 기준으로 페이징, 아니면 상품 목록 전체 출력
+    // 검색어 있으면 if문 실행, 아니면 else문 실행
     if (search != null && !search.isEmpty()) {
-      result = productRepository.findByProductTitleContainingWithImage(search, pageable);
+      productPage = productRepository.findByProductTitleContainingWithImage(search, pageable);
     } else {
-      result = productRepository.selectList(pageable);
+      productPage = productRepository.findAll(pageable);
     }
 
+    // 현제 페이지의 상품 목록에서 상품 id 추출해 리스트로 만듦
+    List<Long> productIds = productPage.getContent().stream()
+        .map(product -> product.getId())
+        .collect(Collectors.toList());
 
-    // Product 엔티티를 ProductDTO로 변환하여 리스트로 만듦
-    List<ProductDTO> dtoList = result.getContent().stream() // 현재 페이지의 상품 목록 가져와 스트림으로 변환
-        .map(arr -> { // // 각 항목(arr)은 Product와 ProductImage를 포함하는 배열
-          Product product = (Product) arr[0]; // 배열의 첫 번째 요소가 Product
-          ProductImage productImage = (ProductImage) arr[1]; // 배열의 두 번째 요소가 ProductImage
+    // 상품 이미지 조회
+    List<ProductImage> allImages = productImageRepository.findByProductIdIn(productIds);
 
+    // 이미지 그룹화 - 각 상품 id에 대해 이미지 파일 이름을 리스트로 매핑
+    // productImagesMap의 키는 상품 id, 값은 이미지 파일 이름 리스트
+    Map<Long, List<String>> productImagesMap = allImages.stream()
+        .collect(Collectors.groupingBy(
+            image -> image.getProduct().getId(),
+            Collectors.mapping(productImage -> productImage.getFileName(), Collectors.toList())));
+
+    // 상품 목록을 productDTO로 변환
+    List<ProductDTO> dtoList = productPage.getContent().stream()
+        .map(product -> {
           ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
-
-          // 이미지 파일 이름 설정
-          if (productImage != null) { // productImage가 null이 아닌 경우,
-            String imageStr = productImage.getFileName(); // 이미지 파일 이름을 가져와서 ProductDTO에 설정
-            productDTO.setUploadFileNames(List.of(imageStr));
-          } else {
-            productDTO.setUploadFileNames(Collections.emptyList()); // 이미지가 없으면 빈 리스트를 설정
-          }
-
-          return productDTO; // 스트림의 각 항목을 ProductDTO로 변환 후,
+          // 상품 id에 관련된 이미지 리스트 가져오고, 없는 경우 빈 리스트로 설정
+          List<String> imageNames = productImagesMap.getOrDefault(product.getId(), Collections.emptyList());
+          productDTO.setUploadFileNames(imageNames);
+          return productDTO;
         })
-        .collect(Collectors.toList()); // 리스트로 형 변환
+        .collect(Collectors.toList());
 
+    long totalCount = productPage.getTotalElements();
 
-    // 전체 상품의 개수 가져옴 (페이지 네비게이션에 필요함)
-    long totalCount = result.getTotalElements();
-
-    // PageResponseDTO를 생성하여 dtoList, pageRequestDTO, totalCount를 포함하여 반환
     PageResponseDTO<ProductDTO> responseDTO = PageResponseDTO.<ProductDTO>withAll()
         .dtoList(dtoList)
         .pageRequestDTO(pageRequestDTO)
@@ -112,6 +114,8 @@ public class ProductService {
 
     return responseDTO;
   }
+
+
 
   /* 메인 페이지 상품 목록 */
   public List<ProductDTO> mainList() {
