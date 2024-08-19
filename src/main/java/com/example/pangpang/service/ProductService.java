@@ -120,29 +120,24 @@ public class ProductService {
   /* 메인 페이지 상품 목록 */
   public List<ProductDTO> mainList() {
 
-    List<Object[]> result = productRepository.findAllRandomWithImages();
+    List<Product> products = productRepository.findAllRandomWithImages();
 
-    List<ProductDTO> dtoList = result.stream()
-        .map(arr -> {
-          Product product = (Product) arr[0]; // 배열의 첫 번째 요소가 Product
-          ProductImage productImage = (ProductImage) arr[1]; // 배열의 두 번째 요소가 ProductImage
-
+    List<ProductDTO> dtoList = products.stream()
+        .map(product -> {
           ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
 
-          // 이미지 파일 이름 설정
-          if (productImage != null) {
-            String imageFileName = productImage.getFileName();
-            productDTO.setUploadFileNames(List.of(imageFileName));
-          } else {
-            productDTO.setUploadFileNames(Collections.emptyList());
-          }
+          // Product 객체에서 직접 이미지 리스트를 가져옴
+          List<String> imageNames = product.getProductImage().stream()
+              .map(ProductImage::getFileName)
+              .collect(Collectors.toList());
+
+          productDTO.setUploadFileNames(imageNames);
 
           return productDTO;
         })
         .collect(Collectors.toList());
 
     return dtoList;
-
   }
 
   /* 상품 상세보기 */
