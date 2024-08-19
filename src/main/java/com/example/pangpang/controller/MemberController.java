@@ -115,7 +115,8 @@ public class MemberController {
                     member.getId(),
                     member.getMemberName(),
                     member.getMemberNickname(),
-                    member.getMemberRole());
+                    member.getMemberRole(),
+                    member.isActive());
             return ResponseEntity.ok(jwt);
 
         } catch (BadCredentialsException e) {
@@ -168,7 +169,8 @@ public class MemberController {
                     member.getId(),
                     member.getMemberName(),
                     member.getMemberNickname(),
-                    member.getMemberRole());
+                    member.getMemberRole(),
+                    member.isActive());
             return ResponseEntity.ok(jwt);
 
         } catch (Exception e) {
