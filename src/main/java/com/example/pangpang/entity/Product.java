@@ -23,7 +23,7 @@ public class Product {
     private int productPrice; // 상품 가격
     private String productCategory; // 상품 카테고리
 
-    @Column(length = 500)
+    @Column(length = 1000)
     private String productDetailContent;  // 상품 긴 설명
 
     // 상품 주문
