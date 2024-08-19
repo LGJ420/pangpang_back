@@ -185,7 +185,7 @@ public class MemberService {
                     .memberNickname(member.getMemberNickname())
                     .memberRole(member.getMemberRole())
                     .memberSignupDate(member.getMemberSignupDate())
-                    .active(member.isActive())
+                    .isActive(member.isActive())
                     .build();
             return memberDTO;
         }).collect(Collectors.toList()); // 스트림의 결과를 다시 리스트 형태로 수집
