@@ -55,8 +55,11 @@ public class ArticleController {
     }
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<Void> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO){
-        articleService.updateArticle(id, articleDTO);
+    public ResponseEntity<Void> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO, Authentication auth){
+        Member member = (Member)auth.getPrincipal();
+        Long memberId = member.getId();
+
+        articleService.updateArticle(memberId, id, articleDTO);
         return ResponseEntity.noContent().build();
     }
 

@@ -96,13 +96,21 @@ public class ArticleService {
     }
 
     @Transactional
-    public void updateArticle(Long id, ArticleDTO articleDTO) {
+    public void updateArticle(Long memberId, Long id, ArticleDTO articleDTO) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("글을 찾지 못했습니다." + id));
+
+        if (!article.getMember().getId().equals(memberId)){
+            throw new RuntimeException("이 글을 수정할 권한이 없습니다.");
+        }
 
         article.setArticleTitle(articleDTO.getArticleTitle());
         article.setArticleContent(articleDTO.getArticleContent());
         article.setArticleUpdated(LocalDateTime.now());
+        article.setMember(member);
         articleRepository.save(article);
     }
 
