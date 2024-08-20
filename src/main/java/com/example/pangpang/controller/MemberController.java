@@ -123,7 +123,6 @@ public class MemberController {
                     member.getMemberName(),
                     member.getMemberNickname(),
                     member.getMemberRole(),
-                    member.getMemberImage(),
                     member.isActive());
 
             if (member.isActive()) {
@@ -197,7 +196,6 @@ public class MemberController {
                     member.getMemberName(),
                     member.getMemberNickname(),
                     member.getMemberRole(),
-                    member.getMemberImage(),
                     member.isActive());
             return ResponseEntity.ok(jwt);
 
