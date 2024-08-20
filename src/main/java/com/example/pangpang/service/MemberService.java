@@ -176,8 +176,22 @@ public class MemberService {
             modifyMember.setMemberPw(encoderedPw);
         }
 
-        memberRepository.save(modifyMember);
+        // 2-2. 프로필 이미지 경로 업데이트
+        if (memberDTO.getMemberImage() != null) {
+            modifyMember.setMemberImage(memberDTO.getMemberImage());
+        }
 
+        memberRepository.save(modifyMember);
+    }
+
+    // 마이페이지-내정보변경-프로필사진 변경
+    public String changeMemberProfileImage(String memberId, MultipartFile file) {
+
+        // 파일 해당 경로에 저장하는 메서드(이름을 겹치지 않게 하는 효과가 있다능!)
+        String memberImagePath = customFileUtil.saveFile(file);
+
+        // 저장된 파일의 경로를 반환
+        return memberImagePath.toString();
     }
 
     // 관리자-회원관리 리스트 받아오기
@@ -231,23 +245,6 @@ public class MemberService {
         System.out.println("변경 후 회원 상태: " + existingMember.isActive());
 
         // 변경 내용 저장
-        memberRepository.save(existingMember);
-    }
-
-    // 마이페이지-내정보변경-프로필사진 변경
-    public void changeMemberProfileImage(String memberId, MultipartFile file) {
-
-        // 회원찾기
-        Member existingMember = memberRepository.findByMemberId(memberId)
-        .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
-
-        
-        // 파일 저장하는 메서드(이름을 겹치지 않게 하는 효과가 있다능!)
-        String memberImage = customFileUtil.saveFile(file);
-
-        // 엔티티에 파일 저장
-        existingMember.setMemberImage(memberImage);
-
         memberRepository.save(existingMember);
     }
 }
