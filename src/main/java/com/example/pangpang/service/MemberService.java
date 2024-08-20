@@ -177,9 +177,7 @@ public class MemberService {
         }
 
         // 2-2. 프로필 이미지 경로 업데이트
-        if (memberDTO.getMemberImage() != null) {
             modifyMember.setMemberImage(memberDTO.getMemberImage());
-        }
 
         memberRepository.save(modifyMember);
     }
@@ -210,7 +208,7 @@ public class MemberService {
         member.setMemberImage(null);
         
         // 없앤 유저 정보 업데이트
-        memberRepository.save(member);
+        // memberRepository.save(member);
     }
 
     // 관리자-회원관리 리스트 받아오기

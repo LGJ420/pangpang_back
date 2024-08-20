@@ -183,6 +183,9 @@ public class MemberController {
                 // 예: 파일을 서버에 저장한 후 해당 경로를 데이터베이스에 저장
                 String imagePath = memberService.changeMemberProfileImage(loginedMemberId, file);
                 memberDTO.setMemberImage(imagePath); // 이미지 경로를 DTO에 설정 (필드 추가 필요)
+            } else {
+                // 프로필 사진이 비어있거나, 삭제했다면
+                memberDTO.setMemberImage(null);
             }
 
             // 나머지 프로필 정보 수정
