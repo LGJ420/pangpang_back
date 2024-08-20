@@ -12,6 +12,10 @@ import com.example.pangpang.entity.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+  // 상품 수정
+  
+
+
   @Query("SELECT p FROM Product p LEFT JOIN FETCH p.productImage WHERE p.id = :id")
   Optional<Product> findProductWithImages(@Param("id") Long id);
 

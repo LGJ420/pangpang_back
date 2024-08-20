@@ -55,6 +55,15 @@ public class ProductService {
     return savedProduct.getId();
   }
 
+
+  /* 상품 수정하기 */
+  public void modifyProduct(Long id) {
+    
+  }
+
+
+  
+
   /* 상품 목록 보기 */
   public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
 
