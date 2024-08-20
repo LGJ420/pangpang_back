@@ -194,6 +194,13 @@ public class MemberService {
         return memberImagePath.toString();
     }
 
+    public String getMemberImageName(Long id){
+        Member member = memberRepository.findById(id)
+        .orElseThrow(() -> new MemberNotFoundException("Member Not Found"));
+
+        return member.getMemberImage();
+    }
+
     // 관리자-회원관리 리스트 받아오기
     public List<MemberDTO> manageList() {
         List<Member> members = memberRepository.findAll();

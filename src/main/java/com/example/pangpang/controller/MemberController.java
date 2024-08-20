@@ -168,9 +168,9 @@ public class MemberController {
 
     // 마이페이지 내정보변경
     @PostMapping("/mypage/modify")
-    public ResponseEntity<String> modifyProfile(Principal principal, 
-    @ModelAttribute MemberDTO memberDTO, // 리액트에서 이미지(파일) 제외 보낸 정보들
-    @RequestParam(value = "file", required = false) MultipartFile file // 리액트에서 보낸 이미지(파일)
+    public ResponseEntity<String> modifyProfile(Principal principal,
+            @ModelAttribute MemberDTO memberDTO, // 리액트에서 이미지(파일) 제외 보낸 정보들
+            @RequestParam(value = "file", required = false) MultipartFile file // 리액트에서 보낸 이미지(파일)
     ) {
 
         // 현재 로그인된 사용자 정보 가져오기
@@ -209,9 +209,17 @@ public class MemberController {
 
     // 마이페이지에서 사진 불러옴
     @GetMapping("/view/{fileName}")
-    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName){
-        
+    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName) {
+
         return customFileUtil.getFile(fileName);
+    }
+
+    // 마이페이지에서 사진 불러옴
+    @GetMapping("/view/{id}/image")
+    public ResponseEntity<?> viewImageFileGET(@PathVariable Long id) {
+
+        String fileName = memberService.getMemberImageName(id);
+        return ResponseEntity.ok().body(fileName);
     }
 
     // 마이페이지 관리자 회원관리 회원리스트 받아오기
