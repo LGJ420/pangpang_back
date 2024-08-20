@@ -57,4 +57,5 @@ public class MemberDTO {
 
     // 마이페이지-관리자-회원관리
     private boolean isActive;
+
 }

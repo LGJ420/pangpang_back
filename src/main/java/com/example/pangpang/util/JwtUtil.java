@@ -22,12 +22,13 @@ public class JwtUtil {
     private long expiration = 86400000; // 토큰 만료 시간 (예: 24시간)
 
     // 토큰 생성
-    public String generateToken(String memberId, Long id, String memberName, String memberNickname, String memberRole) {
+    public String generateToken(String memberId, Long id, String memberName, String memberNickname, String memberRole, boolean isActive) {
         Claims claims = Jwts.claims().setSubject(memberId);
         claims.put("id", id);
         claims.put("memberName", memberName);
         claims.put("memberNickname", memberNickname);
         claims.put("memberRole", memberRole);
+        claims.put("isActive", isActive);
 
         return Jwts.builder()
                 .setClaims(claims)
