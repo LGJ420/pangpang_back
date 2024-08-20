@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.pangpang.dto.*;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.MemberService;
+import com.example.pangpang.util.CustomFileUtil;
 import com.example.pangpang.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
@@ -33,6 +35,8 @@ public class MemberController {
     private final MemberService memberService;
 
     private final JwtUtil jwtUtil;
+
+    private final CustomFileUtil customFileUtil;
 
     // 회원가입 - 아이디 중복 확인
     @PostMapping("/signup/checkMemberId")
@@ -199,6 +203,13 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
         }
 
+    }
+
+    // 마이페이지에서 사진 불러옴
+    @GetMapping("/view/{fileName}")
+    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName){
+        
+        return customFileUtil.getFile(fileName);
     }
 
     // 마이페이지 관리자 회원관리 회원리스트 받아오기

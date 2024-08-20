@@ -187,11 +187,6 @@ public class MemberService {
     // 마이페이지-내정보변경-프로필사진 변경
     public String changeMemberProfileImage(String memberId, MultipartFile file) {
 
-        // // 회원찾기
-        // Member existingMember = memberRepository.findByMemberId(memberId)
-        // .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
-
-        
         // 파일 해당 경로에 저장하는 메서드(이름을 겹치지 않게 하는 효과가 있다능!)
         String memberImagePath = customFileUtil.saveFile(file);
 
