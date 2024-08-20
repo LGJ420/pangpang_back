@@ -13,6 +13,7 @@ import com.example.pangpang.entity.*;
 import com.example.pangpang.repository.*;
 import com.example.pangpang.util.CustomFileUtil;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -57,7 +58,24 @@ public class ProductService {
 
 
   /* 상품 수정하기 */
-  public void modifyProduct(Long id) {
+  public Long updateProduct(Long id, ProductDTO productDTO) {
+
+    // 기존 상품 조회
+    Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+    modelMapper.map(productDTO, product);
+
+    // 이미지 파일 업데이트 처리
+    List<String> fileNames = customFileUtil.saveFiles(productDTO.getFiles());
+    List<ProductImage> images = fileNames.stream().map(fileName -> ProductImage.builder()
+    .fileName(fileName).build()).collect(Collectors.toList());
+
+
+    productImageRepository.saveAll(images);
+
+    productRepository.save(product);
+
+    return product.getId();
     
   }
 
