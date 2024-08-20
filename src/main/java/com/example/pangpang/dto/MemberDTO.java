@@ -1,6 +1,9 @@
 package com.example.pangpang.dto;
 
 import java.time.LocalDateTime;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -57,5 +60,9 @@ public class MemberDTO {
 
     // 마이페이지-관리자-회원관리
     private boolean isActive;
+
+    // 마이페이지-수정(프로필 사진때문에 formData로 file필요)
+    private MultipartFile file; 
+    private String memberImage;
 
 }
