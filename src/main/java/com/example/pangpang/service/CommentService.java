@@ -1,75 +1,97 @@
 package com.example.pangpang.service;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.pangpang.dto.CommentDTO;
-import com.example.pangpang.entity.Article;
 import com.example.pangpang.entity.Comment;
-import com.example.pangpang.repository.ArticleRepository;
+import com.example.pangpang.entity.Member;
+import com.example.pangpang.entity.Article;
 import com.example.pangpang.repository.CommentRepository;
+import com.example.pangpang.repository.MemberRepository;
+import com.example.pangpang.repository.ArticleRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+
+
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
-    
     private final CommentRepository commentRepository;
+    private final MemberRepository memberRepository;
     private final ArticleRepository articleRepository;
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @Transactional
-    public CommentDTO createComment(CommentDTO commentDTO) {
-        Article article = articleRepository.findById(commentDTO.getArticleId())
-        .orElseThrow(() -> new RuntimeException("해당 게시글을 찾을 수 없습니다."));
+    public Long createComment(Long memberId, Long articleId, CommentDTO commentDTO) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new EntityNotFoundException("Article not found"));
 
         Comment comment = Comment.builder()
-        .article(article)
-        .commentAuthor(commentDTO.getCommentAuthor())
-        .commentContent(commentDTO.getCommentContent())
-        .commentCreated(LocalDateTime.now())
-        .build();
+                .commentContent(commentDTO.getCommentContent())
+                .commentCreated(LocalDateTime.now())
+                .article(article)
+                .member(member)
+                .build();
 
         comment = commentRepository.save(comment);
-        return convertToDTO(comment);
+        return comment.getId();
     }
 
-    private CommentDTO convertToDTO(Comment comment){
-        return CommentDTO.builder()
-        .id(comment.getId())
-        .articleId(comment.getArticle().getId())
-        .commentAuthor(comment.getCommentAuthor())
-        .commentContent(comment.getCommentContent())
-        .commentCreated(comment.getCommentCreated())
-        .build();
-    }
+    public Page<CommentDTO> getCommentsByArticleId(Long articleId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("commentCreated").ascending());
 
-    public Optional<CommentDTO> getCommentById(Long id){
-        return commentRepository.findById(id).map(this::convertToDTO);
-    }
+        Page<Comment> commentPage = commentRepository.findByArticleId(articleId, pageable);
 
-    public List<CommentDTO> getCommentsByArticleId(Long articleId){
-        return commentRepository.findByArticleId(articleId).stream().map(this::convertToDTO).toList();
+        return commentPage.map(comment -> {
+            CommentDTO dto = modelMapper.map(comment, CommentDTO.class);
+            dto.setMemberNickname(comment.getMember().getMemberNickname());
+            return dto;
+        });
     }
 
     @Transactional
-    public void updateComment(Long id, CommentDTO commentDTO){
+    public CommentDTO getCommentById(Long id) {
         Comment comment = commentRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("해당 댓글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("Comment not found"));
 
-        comment.setCommentAuthor(commentDTO.getCommentAuthor());
+        CommentDTO dto = modelMapper.map(comment, CommentDTO.class);
+        dto.setMemberNickname(comment.getMember().getMemberNickname());
+        return dto;
+    }
+
+    @Transactional
+    public void updateComment(Long memberId, Long id, CommentDTO commentDTO) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        if (!comment.getMember().getId().equals(memberId)) {
+            throw new RuntimeException("You don't have permission to update this comment.");
+        }
+
         comment.setCommentContent(commentDTO.getCommentContent());
-        comment.setCommentUpdated(LocalDateTime.now());
         commentRepository.save(comment);
     }
 
     @Transactional
     public void deleteComment(Long id) {
         if (!commentRepository.existsById(id)) {
-            throw new RuntimeException("해당 댓글을 찾을 수 없습니다. ID: " + id);
+            throw new RuntimeException("Comment not found.");
         }
         commentRepository.deleteById(id);
     }
