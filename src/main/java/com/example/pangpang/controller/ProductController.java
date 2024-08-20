@@ -1,6 +1,5 @@
 package com.example.pangpang.controller;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import org.springframework.core.io.Resource;
@@ -28,17 +27,6 @@ public class ProductController {
   /* 상품 등록 */
   @PostMapping("/add")
   public ResponseEntity<Long> addProduct(ProductDTO productDTO) {
-
-    // DTO 생성
-    // ProductDTO productDTO = ProductDTO.builder()
-    //     .productTitle(productTitle)
-    //     .productContent(productContent)
-    //     .productPrice(productPrice)
-    //     .productCategory(productCategory)
-    //     .productDetailContent(productDetailContent)
-    //     .productCreated(LocalDateTime.now())
-    //     .files(files)
-    //     .build();
 
     List<MultipartFile> files = productDTO.getFiles();
 
