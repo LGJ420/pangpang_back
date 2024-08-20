@@ -33,19 +33,19 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
    * 이런 식으로 반환 됨
    */
   @Query("select p, pi from Product p left join p.productImage pi")
-  Page<Object[]> selectList(Pageable pageable);
+  Page<Product> selectList(Pageable pageable);
 
 
 
   // 상품명 기준으로 검색
   // 조회된 Product들과 각 Product에 연결된 ProductImage를 함꼐 로딩하여 페이지로 반환
   @Query("select p, pi from Product p left join p.productImage pi where p.productTitle like %:search%")
-  Page<Object[]> findByProductTitleContainingWithImage(@Param("search") String search, Pageable pageable);
+  Page<Product> findByProductTitleContainingWithImage(@Param("search") String search, Pageable pageable);
 
 
 
   // 상품 랜덤으로 가져오기 (메인에서 사용)
   @Query("SELECT p, pi FROM Product p LEFT JOIN p.productImage pi ORDER BY RAND() LIMIT 3")
-  List<Object[]> findAllRandomWithImages();
+  List<Product> findAllRandomWithImages();
 
 }
