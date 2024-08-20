@@ -27,28 +27,25 @@ public class ProductController {
 
   /* 상품 등록 */
   @PostMapping("/add")
-  public ResponseEntity<Long> addProduct(
-      @RequestParam("productTitle") String productTitle,
-      @RequestParam("productContent") String productContent,
-      @RequestParam("productPrice") int productPrice,
-      @RequestParam("productCategory") String productCategory,
-      @RequestParam("productDetailContent") String productDetailContent,
-      @RequestParam("files") List<MultipartFile> files) {
+  public ResponseEntity<Long> addProduct(ProductDTO productDTO) {
 
     // DTO 생성
-    ProductDTO productDTO = ProductDTO.builder()
-        .productTitle(productTitle)
-        .productContent(productContent)
-        .productPrice(productPrice)
-        .productCategory(productCategory)
-        .productDetailContent(productDetailContent)
-        .productCreated(LocalDateTime.now())
-        .files(files)
-        .build();
+    // ProductDTO productDTO = ProductDTO.builder()
+    //     .productTitle(productTitle)
+    //     .productContent(productContent)
+    //     .productPrice(productPrice)
+    //     .productCategory(productCategory)
+    //     .productDetailContent(productDetailContent)
+    //     .productCreated(LocalDateTime.now())
+    //     .files(files)
+    //     .build();
 
+    List<MultipartFile> files = productDTO.getFiles();
 
+    List<String> uploadFileNames = fileUtil.saveFiles(files);
 
-    // 상품 등록 서비스 호출
+    productDTO.setUploadFileNames(uploadFileNames);
+
     Long productId = productService.addProduct(productDTO);
 
     // 성공적인 응답 반환
