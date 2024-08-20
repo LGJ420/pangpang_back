@@ -48,15 +48,15 @@ public class ArticleController {
 
     @GetMapping("/read/{id}")
     public ArticleDTO getArticleById(@PathVariable(name = "id") Long id){
-        // 조회수 증가
-        // articleService.incrementViewCount(id);
-        
         return articleService.getArticleById(id);
     }
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<Void> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO){
-        articleService.updateArticle(id, articleDTO);
+    public ResponseEntity<Void> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO, Authentication auth){
+        Member member = (Member)auth.getPrincipal();
+        Long memberId = member.getId();
+
+        articleService.updateArticle(memberId, id, articleDTO);
         return ResponseEntity.noContent().build();
     }
 

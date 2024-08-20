@@ -78,11 +78,17 @@ public class ArticleService {
                 .articleTitle(articleDTO.getArticleTitle())
                 .articleContent(articleDTO.getArticleContent())
                 .articleCreated(LocalDateTime.now())
+                .viewCount(0L) // 조회수 초기화
                 .member(member)
-                // .viewCount(0L) // 조회수 초기화
                 .build();
+                
         article = articleRepository.save(article);
         return article.getId();
+    }
+
+    @Transactional
+    public void incrementViewCount(Long id) {
+        articleRepository.incrementViewCount(id);
     }
 
     @Transactional
@@ -91,18 +97,33 @@ public class ArticleService {
         Optional<Article> result = articleRepository.findById(id);
         Article article = result.orElseThrow();
 
+        // 조회수 증가
+        incrementViewCount(id);
+
         ArticleDTO articleDTO = modelMapper.map(article, ArticleDTO.class);
+
+        articleDTO.setMemberId(article.getMember().getId());
+
         return articleDTO;
     }
 
     @Transactional
-    public void updateArticle(Long id, ArticleDTO articleDTO) {
+    public void updateArticle(Long memberId, Long id, ArticleDTO articleDTO) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("글을 찾지 못했습니다." + id));
+
+        // 로그인한 회원이 다를 시에는 다른 회원의 글을 수정할 권한을 주지 않음
+        if (!article.getMember().getId().equals(memberId)){
+            throw new RuntimeException("이 글을 수정할 권한이 없습니다.");
+        }
 
         article.setArticleTitle(articleDTO.getArticleTitle());
         article.setArticleContent(articleDTO.getArticleContent());
         article.setArticleUpdated(LocalDateTime.now());
+        article.setMember(member);
         articleRepository.save(article);
     }
 
@@ -113,9 +134,4 @@ public class ArticleService {
         }
         articleRepository.deleteById(id);
     }
-
-    // @Transactional
-    // public void incrementViewCount(Long id) {
-    //     articleRepository.incrementViewCount(id);
-    // }
 }

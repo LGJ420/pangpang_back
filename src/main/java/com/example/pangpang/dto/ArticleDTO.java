@@ -21,8 +21,10 @@ public class ArticleDTO {
 
     private String memberNickname;
 
+    private Long memberId;
+
     private LocalDateTime articleCreated; 
     private LocalDateTime articleUpdated;
 
-    // private Long viewCount;
+    private Long viewCount;
 }
