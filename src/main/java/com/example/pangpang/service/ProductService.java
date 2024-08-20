@@ -35,15 +35,12 @@ public class ProductService {
     Product product = modelMapper.map(productDTO, Product.class);
 
     // 생성한 Product 객체를 ProductRepository를 사용하여 데이터베이스에 저장
-    // 저장 후 반환되는 savedProduct 객체에는 데이터베이스에서 생성된 id와 같은 추가 정보가 포함됨
     Product savedProduct = productRepository.save(product);
 
-    // customFileUtil을 사용하여 상품에 첨부된 이미지 파일들을 저장,
-    // 각 파일의 이름을 리스트로 받아옴
+    // customFileUtil을 사용하여 상품에 첨부된 이미지 파일들을 저장
     List<String> fileNames = customFileUtil.saveFiles(productDTO.getFiles());
 
     // 각 이미지 파일 이름을 ProductImage 엔티티로 변환
-    // 각 ProductImage 객체는 fileName과 savedProduct (상품 엔티티)와의 관계를 설정
     List<ProductImage> images = fileNames.stream()
         .map(fileName -> ProductImage.builder()
             .fileName(fileName)

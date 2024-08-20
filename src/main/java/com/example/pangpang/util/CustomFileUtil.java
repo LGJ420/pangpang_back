@@ -103,23 +103,21 @@ public class CustomFileUtil {
         // 저장된 파일의 이름을 담을 리스트 초기화
         List<String> uploadNames = new ArrayList<>();
 
-
         // 파일 처리 루프 - 파일 리스트의 각 파일을 순회하며 처리
         for(MultipartFile multipartFile : files) {
+            if (multipartFile.isEmpty()) {
+                continue; // 빈 파일은 건너뛰기
+            }
 
             // 각 파일에 대해 고유한 이름 생성
-            // UUID(범용 고유 식별자)를 사용하여 파일 이름의 충돌을 방지하고, 원본 파일 이름을 유지
             String savedName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
 
-
             // 파일이 저장될 서버의 경로를 설정
-            // uploadPath(파일이 저장될 기본 경로)와 생성된 파일 이름을 조합하여 전체 경로를 설정
             Path savePath = Paths.get(uploadPath, savedName);
 
             try {
-                // 파일의 입력 스트림을 읽어 서버의 지정된 경로에 파일을 저장
                 // 클라이언트에서 업로드한 파일을 서버에 저장
-                Files.copy(multipartFile.getInputStream(), savePath);
+                Files.copy(multipartFile.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
 
                 // 파일의 MIME 타입을 확인
                 String contentType = multipartFile.getContentType();
@@ -149,7 +147,7 @@ public class CustomFileUtil {
 
 
 
-    // 파일 다운로드 메서드
+    // 파일 조회 메서드
     // 반환값 : HTTP 응답 객체. 파일 데이터와 함께 적절한 HTTP 헤더를 설정하여 클라이언트에게 반환
     public ResponseEntity<Resource> getFile(String fileName){
 

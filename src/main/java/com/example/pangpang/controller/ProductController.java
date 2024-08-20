@@ -28,11 +28,9 @@ public class ProductController {
   @PostMapping("/add")
   public ResponseEntity<Long> addProduct(ProductDTO productDTO) {
 
-    List<MultipartFile> files = productDTO.getFiles();
-
-    List<String> uploadFileNames = fileUtil.saveFiles(files);
-
-    productDTO.setUploadFileNames(uploadFileNames);
+    if (productDTO.getFiles() == null || productDTO.getFiles().isEmpty()) {
+      return ResponseEntity.badRequest().body(null);
+    }
 
     Long productId = productService.addProduct(productDTO);
 
