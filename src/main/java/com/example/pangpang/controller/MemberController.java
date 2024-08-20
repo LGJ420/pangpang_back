@@ -213,11 +213,23 @@ public class MemberController {
     }
 
     // 마이페이지에서 사진 불러옴
-    @GetMapping("/view/{id}/image")
+    @GetMapping("/{id}/image")
     public ResponseEntity<?> viewImageFileGET(@PathVariable Long id) {
 
         String fileName = memberService.getMemberImageName(id);
         return ResponseEntity.ok().body(fileName);
+    }
+
+    // 마이페이지에서 사진 삭제함
+    @DeleteMapping("/{memberId}/image")
+    public ResponseEntity<?> deleteImageFileGET(@PathVariable String memberId) {
+
+        try {
+            memberService.getMemberImageDelete(memberId);
+            return ResponseEntity.ok().body("프로필 사진 삭제 완료");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 마이페이지 관리자 회원관리 회원리스트 받아오기
