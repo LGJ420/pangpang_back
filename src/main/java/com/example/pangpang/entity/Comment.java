@@ -13,17 +13,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Comment {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "article_id", nullable = false)
-    private Article article;
-
-    @Column(nullable = false)
-    private String commentAuthor;
 
     @Column(columnDefinition = "TEXT", nullable = false, length = 3000)
     private String commentContent;
@@ -33,6 +26,10 @@ public class Comment {
 
     @Column(name = "comment_updated")
     private LocalDateTime commentUpdated;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "article_id", nullable = false)
+    private Article article;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
