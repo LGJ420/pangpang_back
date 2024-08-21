@@ -123,7 +123,6 @@ public class MemberController {
                     member.getMemberName(),
                     member.getMemberNickname(),
                     member.getMemberRole(),
-                    member.getMemberImage(),
                     member.isActive());
 
             if (member.isActive()) {
@@ -168,9 +167,9 @@ public class MemberController {
 
     // 마이페이지 내정보변경
     @PostMapping("/mypage/modify")
-    public ResponseEntity<String> modifyProfile(Principal principal, 
-    @ModelAttribute MemberDTO memberDTO, // 리액트에서 이미지(파일) 제외 보낸 정보들
-    @RequestParam(value = "file", required = false) MultipartFile file // 리액트에서 보낸 이미지(파일)
+    public ResponseEntity<String> modifyProfile(Principal principal,
+            @ModelAttribute MemberDTO memberDTO, // 리액트에서 이미지(파일) 제외 보낸 정보들
+            @RequestParam(value = "file", required = false) MultipartFile file // 리액트에서 보낸 이미지(파일)
     ) {
 
         // 현재 로그인된 사용자 정보 가져오기
@@ -184,6 +183,9 @@ public class MemberController {
                 // 예: 파일을 서버에 저장한 후 해당 경로를 데이터베이스에 저장
                 String imagePath = memberService.changeMemberProfileImage(loginedMemberId, file);
                 memberDTO.setMemberImage(imagePath); // 이미지 경로를 DTO에 설정 (필드 추가 필요)
+            } else {
+                // 프로필 사진이 비어있거나, 삭제했다면
+                memberDTO.setMemberImage(null);
             }
 
             // 나머지 프로필 정보 수정
@@ -197,7 +199,6 @@ public class MemberController {
                     member.getMemberName(),
                     member.getMemberNickname(),
                     member.getMemberRole(),
-                    member.getMemberImage(),
                     member.isActive());
             return ResponseEntity.ok(jwt);
 
@@ -209,9 +210,29 @@ public class MemberController {
 
     // 마이페이지에서 사진 불러옴
     @GetMapping("/view/{fileName}")
-    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName){
-        
+    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName) {
+
         return customFileUtil.getFile(fileName);
+    }
+
+    // 마이페이지에서 사진 불러옴
+    @GetMapping("/{id}/image")
+    public ResponseEntity<?> viewImageFileGET(@PathVariable Long id) {
+
+        String fileName = memberService.getMemberImageName(id);
+        return ResponseEntity.ok().body(fileName);
+    }
+
+    // 마이페이지에서 사진 삭제함
+    @DeleteMapping("/{memberId}/image")
+    public ResponseEntity<?> deleteImageFileGET(@PathVariable String memberId) {
+
+        try {
+            memberService.getMemberImageDelete(memberId);
+            return ResponseEntity.ok().body("프로필 사진 삭제 완료");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 마이페이지 관리자 회원관리 회원리스트 받아오기

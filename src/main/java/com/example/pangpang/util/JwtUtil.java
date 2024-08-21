@@ -1,8 +1,11 @@
 package com.example.pangpang.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
@@ -19,16 +22,18 @@ public class JwtUtil {
     private SecretKey secretKey = Keys.hmacShaKeyFor("yourSecretKeyyourSecretKeyyourSecretKey".getBytes());
     // 키는 최소 32바이트 이상
 
-    private long expiration = 86400000; // 토큰 만료 시간 (예: 24시간)
+    // 만료시간은 밀리초 단위
+    // 초 밀리초
+    private long expiration = 24 * 60 * 60 * 1000; // 토큰 만료 시간 (24h)
 
     // 토큰 생성
-    public String generateToken(String memberId, Long id, String memberName, String memberNickname, String memberRole, String memberImage, boolean isActive) {
+    public String generateToken(String memberId, Long id, String memberName, String memberNickname, String memberRole,
+            boolean isActive) {
         Claims claims = Jwts.claims().setSubject(memberId);
         claims.put("id", id);
         claims.put("memberName", memberName);
         claims.put("memberNickname", memberNickname);
         claims.put("memberRole", memberRole);
-        claims.put("memberImage", memberImage);
         claims.put("isActive", isActive);
 
         return Jwts.builder()
@@ -41,22 +46,42 @@ public class JwtUtil {
 
     // 토큰 검증
     public Claims parseToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰
+            throw new RuntimeException("Token expired", e);
+
+        } catch (UnsupportedJwtException | MalformedJwtException e) {
+            // 잘못된 토큰
+            throw new RuntimeException("Unsupported or malformed token", e);
+
+        } catch (Exception e) {
+            // 기타 예외 처리
+            throw new RuntimeException("Token error", e);
+        }
     }
 
     // 토큰 유효기간(참/거짓)
     public boolean validateToken(String token, UserDetails userDetails) {
-        final String username = parseToken(token).getSubject();
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        try {
+            Claims claims = parseToken(token);
+            final String username = claims.getSubject();
+            return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     // 토큰이 만료되었는지 확인(참/거짓)
     private boolean isTokenExpired(String token) {
-        return parseToken(token).getExpiration().before(new Date());
+        final Date expiration = parseToken(token).getExpiration();
+        return expiration.before(new Date());
     }
 
     // JWT 토큰에서 사용자 이름을 추출

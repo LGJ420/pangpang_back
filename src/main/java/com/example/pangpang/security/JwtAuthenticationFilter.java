@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,7 +38,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 memberId = jwtUtil.getUsernameFromToken(token);
             } catch (ExpiredJwtException e) {
-                // Handle expired token exception
+                logger.info("Token expired: " + e.getMessage());
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.getWriter().write("The token has expired.");
+                return;
+            } catch (Exception e) { // 다른 JWT 관련 예외 처리
+                logger.error("JWT processing failed: " + e.getMessage());
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.getWriter().write("An error occurred while processing the token.");
+                return;
             }
         }
 
