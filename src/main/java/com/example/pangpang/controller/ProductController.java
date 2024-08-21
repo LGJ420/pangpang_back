@@ -59,6 +59,14 @@ public class ProductController {
   }
 
 
+  /* 상품 삭제 */
+  @DeleteMapping("read/{id}")
+  public ResponseEntity<Void> deleteProduct(@PathVariable(name = "id") Long id) {
+    productService.deleteProduct(id);
+    return ResponseEntity.noContent().build();
+  }
+
+
 
   /* 이미지 조회 */
   @GetMapping("/view/{fileName}")

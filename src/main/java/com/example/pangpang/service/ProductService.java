@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.data.domain.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -90,7 +91,29 @@ public class ProductService {
 }
 
 
-  
+
+/* 상품 삭제하기 */
+public void deleteProduct(Long id) {
+  if(!productRepository.existsById(id)) {
+    throw new RuntimeException("상품을 찾지 못했습니다." + id);
+  }
+
+  // 상품에 연결된 이미지 파일 삭제
+  List<ProductImage> productImages = productImageRepository.findByProductId(id);
+  List<String> fileNames = productImages.stream()
+      .map(ProductImage::getFileName)
+      .collect(Collectors.toList());
+
+  // 이미지 파일 삭제
+  customFileUtil.deleteFiles(fileNames);
+
+  // 이미지 엔티티 삭제
+  productImageRepository.deleteAll(productImages);
+
+  // 상품 삭제
+  productRepository.deleteById(id);
+}
+
 
   /* 상품 목록 보기 */
   public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
