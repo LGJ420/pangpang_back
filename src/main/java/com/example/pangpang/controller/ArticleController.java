@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 public class ArticleController {
     private final ArticleService articleService;
 
+
+    // 게시글 작성
     @PostMapping("/create")
     public ResponseEntity<Long> createArticle(@Valid @RequestBody ArticleDTO articleDTO, Authentication auth){
 
@@ -29,6 +31,8 @@ public class ArticleController {
         return ResponseEntity.ok(articleId);
     }
 
+
+    // 전체 게시글 리스트
     @GetMapping("/list")
     public PageResponseDTO<ArticleDTO> list(
         @RequestParam(value = "page", defaultValue = "1") int page,
@@ -46,11 +50,15 @@ public class ArticleController {
         return articleService.list(pageRequestDTO);
     }
 
+
+    // 게시글 조회
     @GetMapping("/read/{id}")
     public ArticleDTO getArticleById(@PathVariable(name = "id") Long id){
         return articleService.getArticleById(id);
     }
 
+
+    // 게시글 수정
     @PutMapping("/modify/{id}")
     public ResponseEntity<Void> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO, Authentication auth){
         Member member = (Member)auth.getPrincipal();
@@ -60,6 +68,8 @@ public class ArticleController {
         return ResponseEntity.noContent().build();
     }
 
+
+    // 게시글 삭제
     @DeleteMapping("/list/{id}")
     public ResponseEntity<Void> deleteArticle(@PathVariable Long id){
         articleService.deleteArticle(id);

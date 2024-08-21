@@ -24,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
@@ -31,6 +33,9 @@ public class ArticleService {
     private final MemberRepository memberRepository;
     private final ModelMapper modelMapper = new ModelMapper();
 
+
+
+    // 게시글 페이지네이션 및 검색
     public PageResponseDTO<ArticleDTO> list(PageRequestDTO pageRequestDTO) {
         Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
                 Sort.by("id").descending());
@@ -38,6 +43,7 @@ public class ArticleService {
         String search = pageRequestDTO.getSearch();
         String searchBy = pageRequestDTO.getSearchBy();
 
+        // 검색 조건(글 제목 or 회원 닉네임)
         Page<Article> result;
         if("title".equalsIgnoreCase(searchBy)){
             result = articleRepository.findByArticleTitleContaining(search, pageable);
@@ -58,6 +64,8 @@ public class ArticleService {
         return responseDTO;
     }
 
+
+
     public List<ArticleDTO> mainArticleList() {
         List<Article> result = articleRepository.findAll();
 
@@ -67,6 +75,8 @@ public class ArticleService {
         return dtoList;
     }
 
+
+    // 게시글 작성
     @Transactional
     public Long createArticle(Long memberId, ArticleDTO articleDTO) {
 
@@ -86,14 +96,20 @@ public class ArticleService {
         return article.getId();
     }
 
+
+    
+    // 조회수 증가
     @Transactional
     public void incrementViewCount(Long id) {
         articleRepository.incrementViewCount(id);
+        articleRepository.flush();
     }
 
+
+
+    // 게시글 조회
     @Transactional
     public ArticleDTO getArticleById(Long id) {
-        // 게시글 조회
         Optional<Article> result = articleRepository.findById(id);
         Article article = result.orElseThrow();
 
@@ -107,6 +123,9 @@ public class ArticleService {
         return articleDTO;
     }
 
+
+
+    // 게시글 업데이트
     @Transactional
     public void updateArticle(Long memberId, Long id, ArticleDTO articleDTO) {
         Member member = memberRepository.findById(memberId)
@@ -127,6 +146,9 @@ public class ArticleService {
         articleRepository.save(article);
     }
 
+
+
+    // 게시글 삭제
     @Transactional
     public void deleteArticle(Long id) {
         if (!articleRepository.existsById(id)) {
