@@ -51,7 +51,7 @@ public class CommentService {
     }
 
     public Page<CommentDTO> getCommentsByArticleId(Long articleId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("commentCreated").ascending());
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("commentCreated").ascending());
 
         Page<Comment> commentPage = commentRepository.findByArticleId(articleId, pageable);
 
@@ -85,6 +85,7 @@ public class CommentService {
         }
 
         comment.setCommentContent(commentDTO.getCommentContent());
+        comment.setCommentUpdated(LocalDateTime.now());
         commentRepository.save(comment);
     }
 
