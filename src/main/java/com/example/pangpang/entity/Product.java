@@ -55,13 +55,4 @@ public class Product {
     }
 
 
-    // 상품 수정 시 사용
-    // public void modifyProduct(String title, String content, int price, String category, String detailContent) {
-    //     this.productTitle = title;
-    //     this.productContent = content;
-    //     this.productPrice = price;
-    //     this.productCategory = category;
-    //     this.productDetailContent = detailContent;
-    // }
-
 }
