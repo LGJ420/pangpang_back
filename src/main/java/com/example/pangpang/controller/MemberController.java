@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.pangpang.dto.*;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.MemberService;
+import com.example.pangpang.util.CustomFileUtil;
 import com.example.pangpang.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
@@ -33,6 +35,8 @@ public class MemberController {
     private final MemberService memberService;
 
     private final JwtUtil jwtUtil;
+
+    private final CustomFileUtil customFileUtil;
 
     // 회원가입 - 아이디 중복 확인
     @PostMapping("/signup/checkMemberId")
@@ -163,14 +167,31 @@ public class MemberController {
 
     // 마이페이지 내정보변경
     @PostMapping("/mypage/modify")
-    public ResponseEntity<String> modifyProfile(Principal principal, @RequestBody MemberDTO memberDTO) {
+    public ResponseEntity<String> modifyProfile(Principal principal,
+            @ModelAttribute MemberDTO memberDTO, // 리액트에서 이미지(파일) 제외 보낸 정보들
+            @RequestParam(value = "file", required = false) MultipartFile file // 리액트에서 보낸 이미지(파일)
+    ) {
 
         // 현재 로그인된 사용자 정보 가져오기
         String loginedMemberId = principal.getName();
 
         try {
+            // 프로필 사진 파일을 처리
+            file = memberDTO.getFile();
+            if (file != null && !file.isEmpty()) {
+                // 프로필 사진 파일을 저장하거나 처리하는 로직을 구현
+                // 예: 파일을 서버에 저장한 후 해당 경로를 데이터베이스에 저장
+                String imagePath = memberService.changeMemberProfileImage(loginedMemberId, file);
+                memberDTO.setMemberImage(imagePath); // 이미지 경로를 DTO에 설정 (필드 추가 필요)
+            } else {
+                // 프로필 사진이 비어있거나, 삭제했다면
+                memberDTO.setMemberImage(null);
+            }
+
+            // 나머지 프로필 정보 수정
             memberService.modifyProfile(loginedMemberId, memberDTO);
 
+            // 사용자 정보를 이용해 JWT 생성 및 반환
             Member member = memberService.findByMemberId(loginedMemberId);
             String jwt = jwtUtil.generateToken(
                     member.getMemberId(),
@@ -185,6 +206,33 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
         }
 
+    }
+
+    // 마이페이지에서 사진 불러옴
+    @GetMapping("/view/{fileName}")
+    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName) {
+
+        return customFileUtil.getFile(fileName);
+    }
+
+    // 마이페이지에서 사진 불러옴
+    @GetMapping("/{id}/image")
+    public ResponseEntity<?> viewImageFileGET(@PathVariable Long id) {
+
+        String fileName = memberService.getMemberImageName(id);
+        return ResponseEntity.ok().body(fileName);
+    }
+
+    // 마이페이지에서 사진 삭제함
+    @DeleteMapping("/{memberId}/image")
+    public ResponseEntity<?> deleteImageFileGET(@PathVariable String memberId) {
+
+        try {
+            memberService.getMemberImageDelete(memberId);
+            return ResponseEntity.ok().body("프로필 사진 삭제 완료");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
     }
 
     // 마이페이지 관리자 회원관리 회원리스트 받아오기
@@ -219,21 +267,6 @@ public class MemberController {
             memberService.changeIsActive(memberDTO.getId(), memberDTO.isActive());
             return ResponseEntity.ok().body("회원번호 : " + memberDTO.getId() + " 변경 후 회원활동상태 : " + memberDTO.isActive());
 
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
-        }
-    }
-
-    // 프로필 사진 관련 코드 (출처 : https://junikang.tistory.com/303)
-    @PostMapping("/mypage/image/post") 
-    public ResponseEntity<?> fileUpload(Principal principal, @RequestBody MultipartFile file){ 
-    
-        // 현재 로그인된 사용자 정보 가져오기
-        String loginedMemberId = principal.getName();
-
-        try {
-            memberService.changeMemberProfileImage(loginedMemberId, file);
-            return ResponseEntity.ok().body("프로필사진 변경 성공"); 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
         }
