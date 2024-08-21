@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.pangpang.dto.*;
 import com.example.pangpang.entity.*;
@@ -58,7 +59,7 @@ public class ProductService {
 
 
   /* 상품 수정하기 */
-  public void modifyProduct(Long id, ProductDTO productDTO) {
+  public void modifyProduct(Long id, ProductDTO productDTO, List<MultipartFile> files) {
 
     Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
@@ -68,28 +69,25 @@ public class ProductService {
     product.setProductDetailContent(productDTO.getProductDetailContent());
     product.setProductCategory(productDTO.getProductCategory());
 
-    // 기존 이미지 유지하고 새 이미지 추가
-    if (productDTO.getFiles() != null && !productDTO.getFiles().isEmpty()) {
-      // 새 이미지 저장
-      List<String> fileNames = customFileUtil.saveFiles(productDTO.getFiles());
+   // 기존 이미지 유지하고 새 이미지 추가
+  if (files != null && !files.isEmpty()) {
+    // 새 이미지 저장
+    List<String> fileNames = customFileUtil.saveFiles(files);
 
-      // 새 이미지 엔티티 생성
-      List<ProductImage> images = fileNames.stream()
-          .map(fileName -> ProductImage.builder()
-              .fileName(fileName)
-              .product(product) // 저장된 상품과 연관
-              .build())
-          .collect(Collectors.toList());
+    // 새 이미지 엔티티 생성
+    List<ProductImage> images = fileNames.stream()
+        .map(fileName -> ProductImage.builder()
+            .fileName(fileName)
+            .product(product) // 저장된 상품과 연관
+            .build())
+        .collect(Collectors.toList());
 
-      // 새 이미지 DB에 저장
-      productImageRepository.saveAll(images);
-    }
-    
-
-    productRepository.save(product);
-  
-    
+    // 새 이미지 DB에 저장
+    productImageRepository.saveAll(images);
   }
+
+  productRepository.save(product);
+}
 
 
   

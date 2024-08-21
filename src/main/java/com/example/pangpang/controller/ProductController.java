@@ -41,8 +41,19 @@ public class ProductController {
   
   /* 상품 수정 */
   @PutMapping("/modify/{id}")
-  public ResponseEntity<Void> modifyProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
-    productService.modifyProduct(id, productDTO);
+  public ResponseEntity<Void> modifyProduct(@PathVariable(name = "id") Long id, 
+      @RequestParam Map<String, String> params,
+      @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+    // ProductDTO 파라미터 생성
+    ProductDTO productDTO = new ProductDTO();
+    productDTO.setProductTitle(params.get("productTitle"));
+    productDTO.setProductContent(params.get("productContent"));
+    productDTO.setProductPrice(Integer.parseInt(params.get("productPrice")));
+    productDTO.setProductDetailContent(params.get("productDetailContent"));
+    productDTO.setProductCategory(params.get("productCategory"));
+
+    // 상품 수정
+    productService.modifyProduct(id, productDTO, files);
     return ResponseEntity.noContent().build();
   }
 
