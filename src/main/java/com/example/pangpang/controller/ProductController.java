@@ -44,6 +44,7 @@ public class ProductController {
   public ResponseEntity<Void> modifyProduct(@PathVariable(name = "id") Long id, 
       @RequestParam Map<String, String> params,
       @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+
     // ProductDTO 파라미터 생성
     ProductDTO productDTO = new ProductDTO();
     productDTO.setProductTitle(params.get("productTitle"));
