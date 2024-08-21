@@ -85,6 +85,7 @@ public class ArticleService {
         
 
         Article article = Article.builder()
+                .id(articleDTO.getId())
                 .articleTitle(articleDTO.getArticleTitle())
                 .articleContent(articleDTO.getArticleContent())
                 .articleCreated(LocalDateTime.now())
@@ -155,5 +156,25 @@ public class ArticleService {
             throw new RuntimeException("글을 찾지 못했습니다. " + id);
         }
         articleRepository.deleteById(id);
+    }
+
+    // 회원 마이페이지 게시글 목록 조회
+    public PageResponseDTO<ArticleDTO> listByMember(Long memberId, PageRequestDTO pageRequestDTO) {
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
+                Sort.by("id").descending());
+
+        Page<Article> result = articleRepository.findByMemberId(memberId, pageable);
+
+        List<ArticleDTO> dtoList = result.getContent().stream()
+                .map(article -> modelMapper.map(article, ArticleDTO.class))
+                .collect(Collectors.toList());
+
+        long totalCount = result.getTotalElements();
+
+        return PageResponseDTO.<ArticleDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO)
+                .totalCount(totalCount)
+                .build();
     }
 }

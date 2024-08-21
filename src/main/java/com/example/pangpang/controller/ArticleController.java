@@ -75,4 +75,22 @@ public class ArticleController {
         articleService.deleteArticle(id);
         return ResponseEntity.noContent().build();
     }
+
+    // 로그인한 회원의 본인 게시글 목록 조회
+    @GetMapping("/myArticles")
+    public PageResponseDTO<ArticleDTO> getMyArticles(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Authentication auth) {
+
+        Member member = (Member) auth.getPrincipal();
+        Long memberId = member.getId();
+
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .page(page)
+                .size(size)
+                .build();
+
+        return articleService.listByMember(memberId, pageRequestDTO);
+    }
 }
