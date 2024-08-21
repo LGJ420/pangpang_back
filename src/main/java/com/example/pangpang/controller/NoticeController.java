@@ -22,4 +22,11 @@ public class NoticeController {
         return noticeService.list(pageRequestDTO);
     }
 
+
+    @GetMapping("/{id}")
+    public NoticeDTO getOne(@PathVariable(name = "id") Long id) {
+
+        return noticeService.getOne(id);
+    }
+
 }

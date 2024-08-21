@@ -34,7 +34,7 @@ public class NoticeService {
         Page<Notice> result = noticeRepository.findAll(pageable);
 
         List<NoticeDTO> dtoList = result.getContent().stream()
-            .map(todo->modelMapper.map(todo, NoticeDTO.class))
+            .map(notice->modelMapper.map(notice, NoticeDTO.class))
             .collect(Collectors.toList());
 
         long totalCount = result.getTotalElements();
@@ -46,5 +46,16 @@ public class NoticeService {
             .build();
 
         return responseDTO;
+    }
+
+
+
+    public NoticeDTO getOne(Long id) {
+
+        Notice notice = noticeRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Notice not found"));
+        NoticeDTO noticeDTO = modelMapper.map(notice, NoticeDTO.class);
+
+        return noticeDTO;
     }
 }
