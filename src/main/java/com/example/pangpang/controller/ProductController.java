@@ -38,6 +38,15 @@ public class ProductController {
     return ResponseEntity.status(HttpStatus.CREATED).body(productId);
   }
 
+  
+  /* 상품 수정 */
+  @PutMapping("/modify/{id}")
+  public ResponseEntity<Void> modifyProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
+    productService.modifyProduct(id, productDTO);
+    return ResponseEntity.noContent().build();
+  }
+
+
 
   /* 이미지 조회 */
   @GetMapping("/view/{fileName}")
@@ -45,9 +54,6 @@ public class ProductController {
     return fileUtil.getFile(fileName);
   }
 
-
-
-  
   /* 상품 목록 보기 */
   @GetMapping("/list")
   public PageResponseDTO<ProductDTO> list(

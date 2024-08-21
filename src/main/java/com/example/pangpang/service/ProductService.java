@@ -58,24 +58,36 @@ public class ProductService {
 
 
   /* 상품 수정하기 */
-  public Long updateProduct(Long id, ProductDTO productDTO) {
+  public void modifyProduct(Long id, ProductDTO productDTO) {
 
-    // 기존 상품 조회
     Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-    modelMapper.map(productDTO, product);
+    product.setProductTitle(productDTO.getProductTitle());
+    product.setProductContent(productDTO.getProductContent());
+    product.setProductPrice(productDTO.getProductPrice());
+    product.setProductDetailContent(productDTO.getProductDetailContent());
+    product.setProductCategory(productDTO.getProductCategory());
 
-    // 이미지 파일 업데이트 처리
-    List<String> fileNames = customFileUtil.saveFiles(productDTO.getFiles());
-    List<ProductImage> images = fileNames.stream().map(fileName -> ProductImage.builder()
-    .fileName(fileName).build()).collect(Collectors.toList());
+    // 기존 이미지 유지하고 새 이미지 추가
+    if (productDTO.getFiles() != null && !productDTO.getFiles().isEmpty()) {
+      // 새 이미지 저장
+      List<String> fileNames = customFileUtil.saveFiles(productDTO.getFiles());
 
+      // 새 이미지 엔티티 생성
+      List<ProductImage> images = fileNames.stream()
+          .map(fileName -> ProductImage.builder()
+              .fileName(fileName)
+              .product(product) // 저장된 상품과 연관
+              .build())
+          .collect(Collectors.toList());
 
-    productImageRepository.saveAll(images);
+      // 새 이미지 DB에 저장
+      productImageRepository.saveAll(images);
+    }
+    
 
     productRepository.save(product);
-
-    return product.getId();
+  
     
   }
 
