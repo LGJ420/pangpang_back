@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 @Entity
@@ -20,11 +21,15 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty
     private String productTitle; // 상품 이름
+    @NotEmpty
     private String productContent; // 상품 설명
     private int productPrice; // 상품 가격
+    @NotEmpty
     private String productCategory; // 상품 카테고리
 
+    @NotEmpty
     @Column(length = 1000)
     private String productDetailContent;  // 상품 긴 설명
 
