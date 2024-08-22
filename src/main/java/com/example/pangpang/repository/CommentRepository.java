@@ -7,4 +7,6 @@ import com.example.pangpang.entity.Comment;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>{
     Page<Comment> findByArticleId(Long articleId, Pageable pageable);
+
+    Page<Comment> findByMemberId(Long memberId, Pageable pageable);
 }
