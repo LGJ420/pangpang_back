@@ -51,7 +51,7 @@ public class CommentService {
     }
 
     public Page<CommentDTO> getCommentsByArticleId(Long articleId, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("commentCreated").ascending());
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("commentCreated").descending());
 
         Page<Comment> commentPage = commentRepository.findByArticleId(articleId, pageable);
 
