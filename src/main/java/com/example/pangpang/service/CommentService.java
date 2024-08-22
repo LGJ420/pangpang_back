@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.pangpang.dto.CommentDTO;
+import com.example.pangpang.dto.PageRequestDTO;
+import com.example.pangpang.dto.PageResponseDTO;
 import com.example.pangpang.entity.Comment;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.entity.Article;
@@ -20,8 +22,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-
-
+import java.util.*;
+import java.util.stream.*;
 
 @Service
 @RequiredArgsConstructor
@@ -95,5 +97,25 @@ public class CommentService {
             throw new RuntimeException("Comment not found.");
         }
         commentRepository.deleteById(id);
+    }
+
+    public PageResponseDTO<CommentDTO> getCommentsByMemberId(Long memberId, PageRequestDTO pageRequestDTO) {
+        // Create pageable object from pageRequestDTO
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(), Sort.by("commentCreated").descending());
+    
+        // Fetch comments using repository
+        Page<Comment> result = commentRepository.findByMemberId(memberId, pageable);
+    
+        // Convert Comment entities to CommentDTOs
+        List<CommentDTO> dtoList = result.getContent().stream()
+            .map(comment -> modelMapper.map(comment, CommentDTO.class))
+            .collect(Collectors.toList());
+    
+        // Return PageResponseDTO with pagination information
+        return PageResponseDTO.<CommentDTO>withAll()
+            .dtoList(dtoList)
+            .pageRequestDTO(pageRequestDTO)
+            .totalCount(result.getTotalElements())
+            .build();
     }
 }

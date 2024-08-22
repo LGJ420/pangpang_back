@@ -160,8 +160,7 @@ public class ArticleService {
 
     // 회원 마이페이지 게시글 목록 조회
     public PageResponseDTO<ArticleDTO> listByMember(Long memberId, PageRequestDTO pageRequestDTO) {
-        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
-                Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(), Sort.by("id").descending());
 
         Page<Article> result = articleRepository.findByMemberId(memberId, pageable);
 
