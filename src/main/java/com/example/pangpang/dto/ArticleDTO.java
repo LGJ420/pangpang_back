@@ -27,4 +27,6 @@ public class ArticleDTO {
     private LocalDateTime articleUpdated;
 
     private Long viewCount;
+
+    private Long commentCount;
 }

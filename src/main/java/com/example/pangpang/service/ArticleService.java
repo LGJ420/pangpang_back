@@ -1,6 +1,8 @@
 package com.example.pangpang.service;
 
 import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -16,24 +18,19 @@ import com.example.pangpang.dto.PageResponseDTO;
 import com.example.pangpang.entity.Article;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.repository.ArticleRepository;
+import com.example.pangpang.repository.CommentRepository;
 import com.example.pangpang.repository.MemberRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-
 
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;  // Add CommentRepository
     private final ModelMapper modelMapper = new ModelMapper();
-
-
 
     // 게시글 페이지네이션 및 검색
     public PageResponseDTO<ArticleDTO> list(PageRequestDTO pageRequestDTO) {
@@ -45,44 +42,54 @@ public class ArticleService {
 
         // 검색 조건(글 제목 or 회원 닉네임)
         Page<Article> result;
-        if("title".equalsIgnoreCase(searchBy)){
+        if ("title".equalsIgnoreCase(searchBy)) {
             result = articleRepository.findByArticleTitleContaining(search, pageable);
-        }else if ("author".equalsIgnoreCase(searchBy)) {
+        } else if ("author".equalsIgnoreCase(searchBy)) {
             result = articleRepository.findByMemberMemberNicknameContaining(search, pageable);
         } else {
             result = articleRepository.findAll(pageable);
         }
 
         List<ArticleDTO> dtoList = result.getContent().stream()
-                .map(article -> modelMapper.map(article, ArticleDTO.class)).collect(Collectors.toList());
+                .map(article -> {
+                    ArticleDTO articleDTO = modelMapper.map(article, ArticleDTO.class);
+                    Long commentCount = commentRepository.countByArticle(article);
+                    articleDTO.setCommentCount(commentCount);
+                    return articleDTO;
+                })
+                .collect(Collectors.toList());
 
         long totalCount = result.getTotalElements();
 
-        PageResponseDTO<ArticleDTO> responseDTO = PageResponseDTO.<ArticleDTO>withAll().dtoList(dtoList)
-                .pageRequestDTO(pageRequestDTO).totalCount(totalCount).build();
+        PageResponseDTO<ArticleDTO> responseDTO = PageResponseDTO.<ArticleDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO)
+                .totalCount(totalCount)
+                .build();
 
         return responseDTO;
     }
 
-
-
     public List<ArticleDTO> mainArticleList() {
         List<Article> result = articleRepository.findAll();
 
-        List<ArticleDTO> dtoList = result.stream().map(article -> modelMapper.map(article, ArticleDTO.class))
+        List<ArticleDTO> dtoList = result.stream()
+                .map(article -> {
+                    ArticleDTO articleDTO = modelMapper.map(article, ArticleDTO.class);
+                    Long commentCount = commentRepository.countByArticle(article);
+                    articleDTO.setCommentCount(commentCount);
+                    return articleDTO;
+                })
                 .collect(Collectors.toList());
 
         return dtoList;
     }
 
-
     // 게시글 작성
     @Transactional
     public Long createArticle(Long memberId, ArticleDTO articleDTO) {
-
         Member member = memberRepository.findById(memberId)
-                                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
-        
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
 
         Article article = Article.builder()
                 .id(articleDTO.getId())
@@ -92,13 +99,11 @@ public class ArticleService {
                 .viewCount(0L) // 조회수 초기화
                 .member(member)
                 .build();
-                
+
         article = articleRepository.save(article);
         return article.getId();
     }
 
-
-    
     // 조회수 증가
     @Transactional
     public void incrementViewCount(Long id) {
@@ -106,25 +111,22 @@ public class ArticleService {
         articleRepository.flush();
     }
 
-
-
     // 게시글 조회
     @Transactional
     public ArticleDTO getArticleById(Long id) {
-        Optional<Article> result = articleRepository.findById(id);
-        Article article = result.orElseThrow();
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Article not found"));
 
         // 조회수 증가
         incrementViewCount(id);
 
         ArticleDTO articleDTO = modelMapper.map(article, ArticleDTO.class);
-
         articleDTO.setMemberId(article.getMember().getId());
+        Long commentCount = commentRepository.countByArticle(article);
+        articleDTO.setCommentCount(commentCount);
 
         return articleDTO;
     }
-
-
 
     // 게시글 업데이트
     @Transactional
@@ -136,7 +138,7 @@ public class ArticleService {
                 .orElseThrow(() -> new RuntimeException("글을 찾지 못했습니다." + id));
 
         // 로그인한 회원이 다를 시에는 다른 회원의 글을 수정할 권한을 주지 않음
-        if (!article.getMember().getId().equals(memberId)){
+        if (!article.getMember().getId().equals(memberId)) {
             throw new RuntimeException("이 글을 수정할 권한이 없습니다.");
         }
 
@@ -146,8 +148,6 @@ public class ArticleService {
         article.setMember(member);
         articleRepository.save(article);
     }
-
-
 
     // 게시글 삭제
     @Transactional
@@ -165,7 +165,12 @@ public class ArticleService {
         Page<Article> result = articleRepository.findByMemberId(memberId, pageable);
 
         List<ArticleDTO> dtoList = result.getContent().stream()
-                .map(article -> modelMapper.map(article, ArticleDTO.class))
+                .map(article -> {
+                    ArticleDTO articleDTO = modelMapper.map(article, ArticleDTO.class);
+                    Long commentCount = commentRepository.countByArticle(article);
+                    articleDTO.setCommentCount(commentCount);
+                    return articleDTO;
+                })
                 .collect(Collectors.toList());
 
         long totalCount = result.getTotalElements();
