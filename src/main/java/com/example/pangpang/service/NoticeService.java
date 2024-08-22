@@ -9,9 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.pangpang.dto.*;
+import com.example.pangpang.entity.Member;
 import com.example.pangpang.entity.Notice;
+import com.example.pangpang.repository.MemberRepository;
 import com.example.pangpang.repository.NoticeRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class NoticeService {
     
     private final NoticeRepository noticeRepository;
+    private final MemberRepository memberRepository;
     private final ModelMapper modelMapper;
 
 
@@ -57,5 +61,26 @@ public class NoticeService {
         NoticeDTO noticeDTO = modelMapper.map(notice, NoticeDTO.class);
 
         return noticeDTO;
+    }
+
+
+
+    public void createOne(Long id, NoticeDTO noticeDTO){
+
+        Member member = memberRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+        if (!member.getMemberRole().equals("Admin")){
+
+            throw new RuntimeException("운영자가 아니면 공지사항 등록이 불가능합니다.");
+        }
+
+        Notice notice = Notice.builder()
+            .noticeTitle(noticeDTO.getNoticeTitle())
+            .noticeContent(noticeDTO.getNoticeContent())
+            .member(member)
+            .build();
+
+        noticeRepository.save(notice);
     }
 }
