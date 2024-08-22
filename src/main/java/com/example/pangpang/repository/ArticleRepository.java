@@ -17,6 +17,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
 
     Page<Article> findByMemberMemberNicknameContaining(String memberNickname, Pageable pageable);
 
+    Page<Article> findByMemberId(Long memberId, Pageable pageable);
+
     // 조회수 증가 메서드
     @Modifying
     @Query("UPDATE Article a SET a.viewCount = a.viewCount + 1 WHERE a.id = :id")

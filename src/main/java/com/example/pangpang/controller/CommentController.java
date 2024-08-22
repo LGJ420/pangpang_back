@@ -6,6 +6,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.pangpang.dto.CommentDTO;
+import com.example.pangpang.dto.PageRequestDTO;
+import com.example.pangpang.dto.PageResponseDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.CommentService;
 
@@ -55,5 +57,23 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(@PathVariable Long id){
         commentService.deleteComment(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/myComments")
+    public ResponseEntity<PageResponseDTO<CommentDTO>> getCommentsByMemberId(
+        @RequestParam(value = "page", defaultValue = "1") int page,
+        @RequestParam(value = "size", defaultValue = "5") int size,
+        Authentication auth) {
+
+        Member member = (Member) auth.getPrincipal();
+        Long memberId = member.getId();
+
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .page(page)
+                .size(size)
+                .build();
+
+        PageResponseDTO<CommentDTO> responseDTO = commentService.getCommentsByMemberId(memberId, pageRequestDTO);
+        return ResponseEntity.ok(responseDTO);
     }
 }
