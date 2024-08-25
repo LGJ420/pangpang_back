@@ -79,13 +79,15 @@ public class ProductController {
   public PageResponseDTO<ProductDTO> list(
       @RequestParam(value = "page", defaultValue = "1") int page,
       @RequestParam(value = "size", defaultValue = "12") int size,
-      @RequestParam(value = "search", required = false) String search) {
+      @RequestParam(value = "search", required = false) String search,
+      @RequestParam(value = "category", required = false) String category) {
 
     // URL에서 전달받은 데이터 PageRequestDTO에 저장
     PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
         .page(page)
         .size(size)
         .search(search)
+        .category(category)
         .build();
 
     return productService.list(pageRequestDTO);

@@ -124,15 +124,17 @@ public void deleteProduct(Long id) {
 
     // 검색 키워드 가져오기
     String search = pageRequestDTO.getSearch();
+    String category = pageRequestDTO.getCategory();
 
     // 상품 목록 페이지
     Page<Product> productPage;
 
     // 검색어 있으면 if문 실행, 아니면 else문 실행
-    if (search != null && !search.isEmpty()) {
-      productPage = productRepository.findByProductTitleContainingWithImage(search, pageable);
-    } else {
+    if ((category == null || category.isEmpty()) && (search == null || search.isEmpty())) {
       productPage = productRepository.findAll(pageable);
+    } else {
+      // 카테고리와 검색어를 동시에 적용
+      productPage = productRepository.findByCategoryAndSearch(category, search, pageable);
     }
 
     // 현제 페이지의 상품 목록에서 상품 id 추출해 리스트로 만듦
