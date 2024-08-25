@@ -28,8 +28,12 @@ public class Comment {
     private LocalDateTime commentUpdated;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "article_id", nullable = false)
+    @JoinColumn(name = "article_id")
     private Article article;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "notice_id")
+    private Notice notice;
 
     @ManyToOne
     @JoinColumn(name = "member_id")

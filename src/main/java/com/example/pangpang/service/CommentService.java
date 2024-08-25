@@ -1,22 +1,13 @@
 package com.example.pangpang.service;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.pangpang.dto.CommentDTO;
-import com.example.pangpang.dto.PageRequestDTO;
-import com.example.pangpang.dto.PageResponseDTO;
-import com.example.pangpang.entity.Comment;
-import com.example.pangpang.entity.Member;
-import com.example.pangpang.entity.Article;
-import com.example.pangpang.repository.CommentRepository;
-import com.example.pangpang.repository.MemberRepository;
-import com.example.pangpang.repository.ArticleRepository;
+import com.example.pangpang.dto.*;
+import com.example.pangpang.entity.*;
+import com.example.pangpang.repository.*;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +19,12 @@ import java.util.stream.*;
 @Service
 @RequiredArgsConstructor
 public class CommentService {
+
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final ArticleRepository articleRepository;
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final NoticeRepository noticeRepository;
+    private final ModelMapper modelMapper;
 
     @Transactional
     public Long createComment(Long memberId, Long articleId, CommentDTO commentDTO) {
@@ -121,4 +114,69 @@ public class CommentService {
             .totalCount(result.getTotalElements())
             .build();
     }
+
+
+
+
+    /* 공지사항 댓글 불러오기*/
+    public PageResponseDTO<CommentDTO> getNoticeComment(Long noticeId, PageRequestDTO pageRequestDTO){
+
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(), Sort.by("commentCreated").descending());
+
+        Page<Comment> commentPage = commentRepository.findByNoticeId(noticeId, pageable);
+
+        List<CommentDTO> dtoList = commentPage.getContent().stream()
+            .map(comment -> {
+                CommentDTO commentDTO = modelMapper.map(comment, CommentDTO.class);
+                commentDTO.setMemberNickname(comment.getMember().getMemberNickname());
+                return commentDTO;
+            })
+            .collect(Collectors.toList());
+        
+        PageResponseDTO<CommentDTO> responseDTO = PageResponseDTO.<CommentDTO>withAll()
+            .dtoList(dtoList)
+            .pageRequestDTO(pageRequestDTO)
+            .totalCount(commentPage.getTotalElements())
+            .build();
+        
+        return responseDTO;
+    }
+
+
+    /* 공지사항 댓글 쓰기*/
+    public void addNoticeComment(Long noticeId, Long memberId, CommentDTO commentDTO){
+
+        Notice notice = noticeRepository.findById(noticeId)
+            .orElseThrow(() -> new EntityNotFoundException("Notice not found"));
+            
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+        
+        Comment comment = Comment.builder()
+            .commentContent(commentDTO.getCommentContent())
+            .commentCreated(LocalDateTime.now())
+            .notice(notice)
+            .member(member)
+            .build();
+
+        commentRepository.save(comment);
+
+
+
+
+        /* 공지사항 댓글 수정*/
+
+        /* 공지사항 댓글 삭제*/
+    }
+
+
+
+
+
+
+
+
+
+
+
 }

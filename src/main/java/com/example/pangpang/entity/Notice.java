@@ -1,6 +1,7 @@
 package com.example.pangpang.entity;
 
 import java.time.*;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,6 +30,10 @@ public class Notice {
     private LocalDateTime noticeCreated = LocalDateTime.now();
 
     private LocalDateTime noticeUpdated;
+
+    @OneToMany(mappedBy = "notice", cascade = CascadeType.REMOVE)
+    @OrderBy("commentCreated asc") // 댓글을 작성 시간 기준으로 정렬
+    private List<Comment> comments;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
