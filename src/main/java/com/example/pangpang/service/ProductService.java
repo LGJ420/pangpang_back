@@ -126,53 +126,49 @@ public void deleteProduct(Long id) {
     String search = pageRequestDTO.getSearch();
     String category = pageRequestDTO.getCategory();
 
-    // 상품 목록 페이지
-    Page<Product> productPage;
-
-
     // 검색어가 존재하면 카테고리 필터를 무시하고 전체 검색
     if (search != null && !search.isEmpty()) {
-        category = null; // 카테고리 필터를 리셋
+      category = null; // 카테고리 필터를 리셋
     }
 
-    // category와 search가 모두 null이거나 빈 문자열인 경우, 모든 상품을 가져옵니다.
-    productPage = productRepository.findByCategoryAndSearch(category, search, pageable);
+    // 첫 번째 단계: Product 목록만 조회
+    Page<Product> productPage = productRepository.findProductsByCategoryAndSearch(category, search, pageable);
 
-    // 현제 페이지의 상품 목록에서 상품 id 추출해 리스트로 만듦
+    // 현재 페이지의 Product ID 리스트 추출
     List<Long> productIds = productPage.getContent().stream()
-        .map(product -> product.getId())
+        .map(Product::getId)
         .collect(Collectors.toList());
 
-    // 상품 이미지 조회
-    List<ProductImage> allImages = productImageRepository.findByProductIdIn(productIds);
+    // 두 번째 단계: Product ID 리스트로 관련된 이미지 조회
+    List<ProductImage> allImages = productRepository.findImagesByProductIds(productIds);
 
-    // 이미지 그룹화 - 각 상품 id에 대해 이미지 파일 이름을 리스트로 매핑
-    // productImagesMap의 키는 상품 id, 값은 이미지 파일 이름 리스트
+    // 이미지 그룹화
     Map<Long, List<String>> productImagesMap = allImages.stream()
         .collect(Collectors.groupingBy(
             image -> image.getProduct().getId(),
-            Collectors.mapping(productImage -> productImage.getFileName(), Collectors.toList())));
+            Collectors.mapping(ProductImage::getFileName, Collectors.toList())));
 
-    // 상품 목록을 productDTO로 변환
+    // Product 목록을 ProductDTO로 변환하고 이미지 설정
     List<ProductDTO> dtoList = productPage.getContent().stream()
         .map(product -> {
           ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
-          // 상품 id에 관련된 이미지 리스트 가져오고, 없는 경우 빈 리스트로 설정
           List<String> imageNames = productImagesMap.getOrDefault(product.getId(), Collections.emptyList());
           productDTO.setUploadFileNames(imageNames);
           return productDTO;
         })
         .collect(Collectors.toList());
 
+    // 총 개수 가져오기
     long totalCount = productPage.getTotalElements();
 
-    PageResponseDTO<ProductDTO> responseDTO = PageResponseDTO.<ProductDTO>withAll()
+    log.info("totalCount : " + totalCount);
+
+    // PageResponseDTO 생성 및 반환
+    return PageResponseDTO.<ProductDTO>withAll()
         .dtoList(dtoList)
         .pageRequestDTO(pageRequestDTO)
         .totalCount(totalCount)
         .build();
-
-    return responseDTO;
   }
 
 
