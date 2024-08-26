@@ -85,7 +85,7 @@ public class CommentController {
     public ResponseEntity<PageResponseDTO<CommentDTO>> getNoticeComment(
         @PathVariable(name = "id") Long noticeId,
         @RequestParam(value = "page", defaultValue = "1") int page,
-        @RequestParam(value = "size", defaultValue = "5") int size){
+        @RequestParam(value = "size", defaultValue = "50") int size){
 
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
             .page(page)
@@ -115,22 +115,31 @@ public class CommentController {
     }
 
 
-    /* 공지사항 댓글 수정 작업중*/
-    @PutMapping("/notice/{id}")
+    /* 공지사항 댓글 수정*/
+    @PutMapping("/notice")
     public ResponseEntity<Map<String, String>> modifyNoticeComment(
         Authentication auth,
-        @PathVariable(name = "id") Long id){
+        @RequestBody CommentDTO commentDTO){
 
+        Member member = (Member)auth.getPrincipal();
+        Long memberId = member.getId();
+
+        commentService.modifyNoticeComment(memberId, commentDTO);
 
         return ResponseEntity.ok().body(null);
     }
 
 
-    /* 공지사항 댓글 삭제 작업중*/
+    /* 공지사항 댓글 삭제*/
     @DeleteMapping("/notice/{id}")
     public ResponseEntity<Map<String, String>> deleteNoticeComment(
         Authentication auth,
-        @PathVariable(name = "id") Long id){
+        @PathVariable(name = "id") Long commentId){
+
+        Member member = (Member)auth.getPrincipal();
+        Long memberId = member.getId();
+
+        commentService.deleteNoticeComment(memberId, commentId);
 
         return ResponseEntity.ok().body(null);
     }

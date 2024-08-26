@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.stream.*;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CommentService {
 
@@ -26,7 +27,7 @@ public class CommentService {
     private final NoticeRepository noticeRepository;
     private final ModelMapper modelMapper;
 
-    @Transactional
+
     public Long createComment(Long memberId, Long articleId, CommentDTO commentDTO) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found"));
@@ -57,7 +58,7 @@ public class CommentService {
         });
     }
 
-    @Transactional
+
     public CommentDTO getCommentById(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Comment not found"));
@@ -67,7 +68,7 @@ public class CommentService {
         return dto;
     }
 
-    @Transactional
+
     public void updateComment(Long memberId, Long id, CommentDTO commentDTO) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found"));
@@ -84,7 +85,7 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    @Transactional
+
     public void deleteComment(Long id) {
         if (!commentRepository.existsById(id)) {
             throw new RuntimeException("Comment not found.");
@@ -161,18 +162,41 @@ public class CommentService {
 
         commentRepository.save(comment);
 
+    }
+        
+
+    /* 공지사항 댓글 수정*/
+    public void modifyNoticeComment(Long memberId, CommentDTO commentDTO){
+
+        Comment comment = commentRepository.findById(commentDTO.getId())
+            .orElseThrow(() -> new EntityNotFoundException("Comment not found"));
 
 
+        if(memberId != comment.getMember().getId()){
 
-        /* 공지사항 댓글 수정*/
+            throw new IllegalArgumentException("사용자가 일치하지 않습니다.");
+        }
 
-        /* 공지사항 댓글 삭제*/
+        comment.setCommentContent(commentDTO.getCommentContent());
+        comment.setCommentUpdated(LocalDateTime.now());
+        
+        commentRepository.save(comment);
     }
 
 
 
+    /* 공지사항 댓글 삭제*/
+    public void deleteNoticeComment(Long memberId, Long commentId) {
 
-
+        Comment comment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new EntityNotFoundException("Comment not found"));
+    
+        if (memberId != comment.getMember().getId()) {
+            throw new IllegalArgumentException("사용자가 일치하지 않습니다.");
+        }
+    
+        commentRepository.delete(comment);
+    }
 
 
 
