@@ -26,4 +26,6 @@ public class PageRequestDTO {
 
     /* 검색 기준 - 제목(title) 또는 작성자(author) */
     private String searchBy;
+
+    private String category;
 }

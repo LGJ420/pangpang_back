@@ -106,10 +106,13 @@ public class CommentService {
         // Fetch comments using repository
         Page<Comment> result = commentRepository.findByMemberId(memberId, pageable);
     
-        // Convert Comment entities to CommentDTOs
         List<CommentDTO> dtoList = result.getContent().stream()
-            .map(comment -> modelMapper.map(comment, CommentDTO.class))
-            .collect(Collectors.toList());
+        .map(comment -> {
+            CommentDTO dto = modelMapper.map(comment, CommentDTO.class);
+            dto.setViewCount(comment.getArticle().getViewCount());  // Set the viewCount from Article
+            return dto;
+        })
+        .collect(Collectors.toList());
     
         // Return PageResponseDTO with pagination information
         return PageResponseDTO.<CommentDTO>withAll()

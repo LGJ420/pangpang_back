@@ -25,4 +25,8 @@ public class CommentDTO {
     
     private LocalDateTime commentCreated;
     private LocalDateTime commentUpdated;
+
+    private String articleTitle;
+
+    private Long viewCount;
 }
