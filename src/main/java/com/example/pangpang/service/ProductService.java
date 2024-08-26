@@ -69,6 +69,7 @@ public class ProductService {
     product.setProductPrice(productDTO.getProductPrice());
     product.setProductDetailContent(productDTO.getProductDetailContent());
     product.setProductCategory(productDTO.getProductCategory());
+    product.setProductStock(productDTO.getProductStock());
 
    // 기존 이미지 유지하고 새 이미지 추가
   if (files != null && !files.isEmpty()) {
