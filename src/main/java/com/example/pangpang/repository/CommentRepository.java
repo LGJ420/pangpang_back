@@ -14,6 +14,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long>{
 
     Page<Comment> findByMemberId(Long memberId, Pageable pageable);
 
+    Page<Comment> findByNoticeId(Long noticeId, Pageable pageable);
+
+
     // Method to count comments by article
     Long countByArticle(Article article);
 }

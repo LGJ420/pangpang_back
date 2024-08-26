@@ -1,13 +1,13 @@
 package com.example.pangpang.controller;
 
+import java.util.*;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.pangpang.dto.CommentDTO;
-import com.example.pangpang.dto.PageRequestDTO;
-import com.example.pangpang.dto.PageResponseDTO;
+import com.example.pangpang.dto.*;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.CommentService;
 
@@ -76,4 +76,65 @@ public class CommentController {
         PageResponseDTO<CommentDTO> responseDTO = commentService.getCommentsByMemberId(memberId, pageRequestDTO);
         return ResponseEntity.ok(responseDTO);
     }
+
+
+
+
+    /* 공지사항 댓글 불러오기*/
+    @GetMapping("/notice/{id}")
+    public ResponseEntity<PageResponseDTO<CommentDTO>> getNoticeComment(
+        @PathVariable(name = "id") Long noticeId,
+        @RequestParam(value = "page", defaultValue = "1") int page,
+        @RequestParam(value = "size", defaultValue = "5") int size){
+
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+            .page(page)
+            .size(size)
+            .build();
+
+        PageResponseDTO<CommentDTO> pageResponseDTO =
+            commentService.getNoticeComment(noticeId, pageRequestDTO);
+
+        return ResponseEntity.ok().body(pageResponseDTO);
+    }
+
+
+    /* 공지사항 댓글 쓰기*/
+    @PostMapping("/notice/{id}")
+    public ResponseEntity<Map<String, String>> addNoticeComment(
+        @PathVariable(name = "id") Long noticeId,
+        Authentication auth,
+        @RequestBody CommentDTO commentDTO){
+
+        Member member = (Member)auth.getPrincipal();
+        Long memberId = member.getId();
+
+        commentService.addNoticeComment(noticeId, memberId, commentDTO);
+
+        return ResponseEntity.ok().body(null);
+    }
+
+
+    /* 공지사항 댓글 수정 작업중*/
+    @PutMapping("/notice/{id}")
+    public ResponseEntity<Map<String, String>> modifyNoticeComment(
+        Authentication auth,
+        @PathVariable(name = "id") Long id){
+
+
+        return ResponseEntity.ok().body(null);
+    }
+
+
+    /* 공지사항 댓글 삭제 작업중*/
+    @DeleteMapping("/notice/{id}")
+    public ResponseEntity<Map<String, String>> deleteNoticeComment(
+        Authentication auth,
+        @PathVariable(name = "id") Long id){
+
+        return ResponseEntity.ok().body(null);
+    }
+
+
+
 }
