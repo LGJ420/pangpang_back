@@ -129,13 +129,14 @@ public void deleteProduct(Long id) {
     // 상품 목록 페이지
     Page<Product> productPage;
 
-    // 검색어 있으면 if문 실행, 아니면 else문 실행
-    if ((category == null || category.isEmpty()) && (search == null || search.isEmpty())) {
-      productPage = productRepository.findAll(pageable);
-    } else {
-      // 카테고리와 검색어를 동시에 적용
-      productPage = productRepository.findByCategoryAndSearch(category, search, pageable);
+
+    // 검색어가 존재하면 카테고리 필터를 무시하고 전체 검색
+    if (search != null && !search.isEmpty()) {
+        category = null; // 카테고리 필터를 리셋
     }
+
+    // category와 search가 모두 null이거나 빈 문자열인 경우, 모든 상품을 가져옵니다.
+    productPage = productRepository.findByCategoryAndSearch(category, search, pageable);
 
     // 현제 페이지의 상품 목록에서 상품 id 추출해 리스트로 만듦
     List<Long> productIds = productPage.getContent().stream()

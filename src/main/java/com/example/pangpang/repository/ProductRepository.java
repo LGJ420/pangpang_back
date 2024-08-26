@@ -26,13 +26,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   
   // 목록 보기 - 상품 이미지 포함
   // 모든 Product와 각 Product에 연결된 ProductImage도 함께 조회. 결과는 페이지로 반환
-  /*
-   * 쿼리 결과 : [
-   * [Product1, ProductImage1],
-   * [Product2, ProductImage2],
-   * [Product3, null] ] // 이미지가 없는 경우
-   * 이런 식으로 반환 됨
-   */
   @Query("select p, pi from Product p left join p.productImage pi")
   Page<Product> selectList(Pageable pageable);
 
@@ -47,8 +40,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   Page<Product> findByProductTitleContainingWithImage(@Param("search") String search, Pageable pageable);
 
 
-  @Query("SELECT p FROM Product p LEFT JOIN FETCH p.productImage WHERE (:category IS NULL OR p.productCategory = :category) AND (:search IS NULL OR p.productTitle LIKE %:search%) ORDER BY p.id DESC")
-  Page<Product> findByCategoryAndSearch(@Param("category") String category, @Param("search") String search,
+  @Query("SELECT p FROM Product p LEFT JOIN FETCH p.productImage " +
+      "WHERE (:category IS NULL OR :category = '' OR p.productCategory = :category) " +
+      "AND (:search IS NULL OR :search = '' OR p.productTitle LIKE %:search%) " +
+      "ORDER BY p.id DESC")
+  Page<Product> findByCategoryAndSearch(@Param("category") String category,
+      @Param("search") String search,
       Pageable pageable);
 
   // 상품 랜덤으로 가져오기 (메인에서 사용)
