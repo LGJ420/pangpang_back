@@ -65,7 +65,7 @@ public class MemberController {
     }
 
     // 아이디 찾기
-    @PostMapping("/find_id")
+    @PostMapping("/find/id")
     public ResponseEntity<?> findId(@RequestBody MemberDTO memberDTO) {
 
         try {
@@ -78,7 +78,7 @@ public class MemberController {
     }
 
     // 비밀번호 찾기
-    @PostMapping("/find_pw")
+    @PostMapping("/find/pw")
     public ResponseEntity<?> findPw(@RequestBody MemberDTO memberDTO) {
 
         try {
@@ -91,7 +91,7 @@ public class MemberController {
     }
 
     // 비밀번호 찾기->비밀번호 변경
-    @PostMapping("/find_pw/reset")
+    @PostMapping("/find/pw/reset")
     public ResponseEntity<?> resetPw(@RequestBody MemberDTO memberDTO) {
 
         try {
