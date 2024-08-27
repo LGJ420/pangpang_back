@@ -56,6 +56,7 @@ public class CommentService {
         return commentPage.map(comment -> {
             CommentDTO dto = modelMapper.map(comment, CommentDTO.class);
             dto.setMemberNickname(comment.getMember().getMemberNickname());
+            dto.setMemberImage(comment.getMember().getMemberImage());
             return dto;
         });
     }
@@ -67,6 +68,7 @@ public class CommentService {
 
         CommentDTO dto = modelMapper.map(comment, CommentDTO.class);
         dto.setMemberNickname(comment.getMember().getMemberNickname());
+        dto.setMemberImage(comment.getMember().getMemberImage());
         return dto;
     }
 
