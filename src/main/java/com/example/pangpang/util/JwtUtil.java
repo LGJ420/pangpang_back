@@ -24,14 +24,14 @@ public class JwtUtil {
 
     // 만료시간은 밀리초 단위
     // 초 밀리초
-    // private long expiration = 24 * // 24시간
-    //         60 * // 1시간
-    //         60 * // 1분
-    //         1000; // 1초
+    private long expiration = 24 * // 24시간
+            60 * // 1시간
+            60 * // 1분
+            1000; // 1초
                   // 토큰 만료 시간 (24h)
 
     // // 개발용 토큰 유효 기간
-    private long expiration = 10 * 1000; // 토큰 만료 시간 (10초)
+    // private long expiration = 10 * 1000; // 토큰 만료 시간 (10초)
 
     // 토큰 생성
     public String generateToken(String memberId, Long id, String memberName, String memberNickname, String memberRole,
