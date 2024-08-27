@@ -29,4 +29,6 @@ public class CommentDTO {
     private String articleTitle;
 
     private Long viewCount;
+
+    private String memberImage;
 }

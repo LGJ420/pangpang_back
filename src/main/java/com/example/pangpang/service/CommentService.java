@@ -134,6 +134,7 @@ public class CommentService {
             .map(comment -> {
                 CommentDTO commentDTO = modelMapper.map(comment, CommentDTO.class);
                 commentDTO.setMemberNickname(comment.getMember().getMemberNickname());
+                commentDTO.setMemberImage(comment.getMember().getMemberImage());
                 return commentDTO;
             })
             .collect(Collectors.toList());
