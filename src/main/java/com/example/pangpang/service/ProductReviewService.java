@@ -64,7 +64,7 @@ public class ProductReviewService {
                     .reviewDate(review.getReviewDate())
                     .productId(review.getProduct().getId())
                     .memberId(review.getMember().getId())
-                    .memberProfile(review.getMember().getMemberImage())
+                    .memberImage(review.getMember().getMemberImage())
                     .build();
                 
                 return productReviewDTO;
@@ -90,7 +90,7 @@ public class ProductReviewService {
                     .reviewDate(review.getReviewDate())
                     .productId(review.getProduct().getId())
                     .memberId(review.getMember().getId())
-                    .memberProfile(review.getMember().getMemberImage())
+                    .memberImage(review.getMember().getMemberImage())
                     .build();
                 
                 return productReviewDTO;
