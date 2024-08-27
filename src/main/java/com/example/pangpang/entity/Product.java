@@ -23,15 +23,22 @@ public class Product {
 
     @NotEmpty
     private String productTitle; // 상품 이름
+
     @NotEmpty
     private String productContent; // 상품 설명
+
     private int productPrice; // 상품 가격
+
     @NotEmpty
     private String productCategory; // 상품 카테고리
 
     @NotEmpty
     @Column(length = 1000)
-    private String productDetailContent;  // 상품 긴 설명
+    private String productDetailContent; // 상품 긴 설명
+
+    private int productStock; // 상품 재고량
+
+    private int productSales; // 상품 판매량
 
     private LocalDateTime productCreated;
 
@@ -50,7 +57,6 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductReview> productReviews;
 
-
     // Builder 패턴 사용 안하므로 여기서 엔티티의 기본값 설정
     @PrePersist
     public void prePersist() {
@@ -59,5 +65,9 @@ public class Product {
         }
     }
 
+    public void changeProductStock(int productStock){
+
+        this.productStock = productStock;
+    }
 
 }
