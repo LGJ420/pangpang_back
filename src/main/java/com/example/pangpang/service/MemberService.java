@@ -10,8 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.pangpang.dto.*;
 import com.example.pangpang.entity.Member;
+import com.example.pangpang.entity.Product;
+import com.example.pangpang.entity.ProductImage;
 import com.example.pangpang.exception.MemberNotFoundException;
-import com.example.pangpang.repository.MemberRepository;
 import com.example.pangpang.util.CustomFileUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,7 +25,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.modelmapper.ModelMapper;
+
+import org.springframework.data.domain.*;
+import org.springframework.http.ResponseEntity;
+
+import com.example.pangpang.entity.*;
+import com.example.pangpang.repository.*;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 @RequiredArgsConstructor
 @Log4j2
 public class MemberService {
@@ -37,6 +50,10 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     private final CustomFileUtil customFileUtil;
+
+    private final ModelMapper modelMapper;
+    private final ProductRepository productRepository;
+    private final ProductImageRepository productImageRepository;
 
     // ===================================================
 
@@ -177,7 +194,7 @@ public class MemberService {
         }
 
         // 2-2. 프로필 이미지 경로 업데이트
-            modifyMember.setMemberImage(memberDTO.getMemberImage());
+        modifyMember.setMemberImage(memberDTO.getMemberImage());
 
         memberRepository.save(modifyMember);
     }
@@ -193,32 +210,47 @@ public class MemberService {
     }
 
     // 마이페이지-내정보변경-프로필사진 변경
-    public String getMemberImageName(String memberId){
+    public String getMemberImageName(String memberId) {
         Member member = memberRepository.findByMemberId(memberId)
-        .orElseThrow(() -> new MemberNotFoundException("Member Not Found"));
+                .orElseThrow(() -> new MemberNotFoundException("Member Not Found"));
 
         return member.getMemberImage();
     }
 
     // 마이페이지-내정보변경-프로필사진 삭제
-    public void getMemberImageDelete(String memberId){
+    public void getMemberImageDelete(String memberId) {
         Member member = memberRepository.findByMemberId(memberId)
-        .orElseThrow(() -> new MemberNotFoundException("Member Not Found"));
+                .orElseThrow(() -> new MemberNotFoundException("Member Not Found"));
 
         // 사진 없앰
         member.setMemberImage(null);
-        
+
         // 없앤 유저 정보 업데이트
         memberRepository.save(member);
     }
 
     // 관리자-회원관리 리스트 받아오기
-    public List<MemberDTO> manageList() {
-        List<Member> members = memberRepository.findAll();
+    public PageResponseDTO<MemberDTO> manageList(PageRequestDTO pageRequestDTO) {
 
-        // 1. members 리스트를 스트림으로 변환
-        // 2. 각 Member객체를 MemberDTO로 매핑
-        List<MemberDTO> memberDTOs = members.stream().map(member -> {
+        // 페이지 정의
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
+                Sort.by("id").descending());
+
+        // 검색 키워드 가져오기
+        String search = pageRequestDTO.getSearch();
+
+        // 상품 목록 페이지
+        Page<Member> membersPage;
+
+        // 검색어 있으면 if문 실행, 아니면 else문 실행
+        if (search != null && !search.isEmpty()) {
+            membersPage = memberRepository.findByMemberIdForSearch(search, pageable);
+        } else {
+            membersPage = memberRepository.findAll(pageable);
+        }
+
+        // 현제 페이지의 상품 목록에서 상품 id 추출해 리스트로 만듦
+        List<MemberDTO> memberDTOs = membersPage.stream().map(member -> {
             MemberDTO memberDTO = MemberDTO.builder()
                     .id(member.getId())
                     .memberId(member.getMemberId())
@@ -231,7 +263,15 @@ public class MemberService {
             return memberDTO;
         }).collect(Collectors.toList()); // 스트림의 결과를 다시 리스트 형태로 수집
 
-        return memberDTOs;
+        long totalCount = membersPage.getTotalElements();
+
+        PageResponseDTO<MemberDTO> responseDTO = PageResponseDTO.<MemberDTO>withAll()
+                .dtoList(memberDTOs)
+                .pageRequestDTO(pageRequestDTO)
+                .totalCount(totalCount)
+                .build();
+
+        return responseDTO;
     }
 
     // 관리자-회원관리 회원등급 변경

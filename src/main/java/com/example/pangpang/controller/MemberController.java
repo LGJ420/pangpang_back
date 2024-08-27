@@ -237,9 +237,19 @@ public class MemberController {
 
     // 마이페이지 관리자 회원관리 회원리스트 받아오기
     @GetMapping
-    public ResponseEntity<List<MemberDTO>> manageList() {
+    public ResponseEntity<PageResponseDTO<MemberDTO>> manageList(
+        @RequestParam(value = "page", defaultValue = "1") int page,
+        @RequestParam(value = "size", defaultValue = "12") int size,
+        @RequestParam(value = "search", required = false) String search) {
 
-        List<MemberDTO> memberDTOs = memberService.manageList();
+        // URL에서 전달받은 데이터 PageRequestDTO에 저장
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+        .page(page)
+        .size(size)
+        .search(search)
+        .build();
+
+        PageResponseDTO<MemberDTO> memberDTOs = memberService.manageList(pageRequestDTO);
 
         return ResponseEntity.ok().body(memberDTOs);
     }
