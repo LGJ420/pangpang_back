@@ -44,7 +44,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getCommentsByArticleId(articleId, page, size));
     }
 
-    @PutMapping("/modify/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> updateComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO, Authentication auth){
         Member member = (Member)auth.getPrincipal();
         Long memberId = member.getId();

@@ -21,7 +21,7 @@ public class ArticleController {
 
 
     // 게시글 작성
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity<Long> createArticle(@Valid @RequestBody ArticleDTO articleDTO, Authentication auth){
 
         Member member = (Member)auth.getPrincipal();
@@ -52,14 +52,14 @@ public class ArticleController {
 
 
     // 게시글 조회
-    @GetMapping("/read/{id}")
+    @GetMapping("/{id}")
     public ArticleDTO getArticleById(@PathVariable(name = "id") Long id){
         return articleService.getArticleById(id);
     }
 
 
     // 게시글 수정
-    @PutMapping("/modify/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO, Authentication auth){
         Member member = (Member)auth.getPrincipal();
         Long memberId = member.getId();
