@@ -59,6 +59,11 @@ public class NoticeService {
 
         Notice notice = noticeRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Notice not found"));
+
+        Long updatedHit = notice.getNoticeHit() + 1L;
+
+        notice.changeNoticeHit(updatedHit);
+
         NoticeDTO noticeDTO = modelMapper.map(notice, NoticeDTO.class);
 
         return noticeDTO;
