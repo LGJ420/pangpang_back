@@ -28,24 +28,29 @@ public class ProductController {
 
   /* 상품 등록 */
   @PostMapping("/add")
-  public ResponseEntity<Long> addProduct(ProductDTO productDTO) {
+  public ResponseEntity<Long> addProduct(Authentication auth, ProductDTO productDTO) {
+
+    Member member = (Member) auth.getPrincipal();
+    Long memberId = member.getId();
 
     if (productDTO.getFiles() == null || productDTO.getFiles().isEmpty()) {
       return ResponseEntity.badRequest().body(null);
     }
 
-    Long productId = productService.addProduct(productDTO);
+    Long productId = productService.addProduct(memberId, productDTO);
 
     // 성공적인 응답 반환
     return ResponseEntity.status(HttpStatus.CREATED).body(productId);
   }
 
-  
   /* 상품 수정 */
   @PutMapping("/modify/{id}")
-  public ResponseEntity<Void> modifyProduct(@PathVariable(name = "id") Long id, 
+  public ResponseEntity<Void> modifyProduct(Authentication auth, @PathVariable(name = "id") Long id,
       @RequestParam Map<String, String> params,
       @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+
+    Member member = (Member) auth.getPrincipal();
+    Long memberId = member.getId();
 
     // ProductDTO 파라미터 생성
     ProductDTO productDTO = new ProductDTO();
@@ -58,19 +63,20 @@ public class ProductController {
     productDTO.setProductSales(Integer.parseInt(params.get("productSales")));
 
     // 상품 수정
-    productService.modifyProduct(id, productDTO, files);
+    productService.modifyProduct(memberId, id, productDTO, files);
     return ResponseEntity.noContent().build();
   }
-
 
   /* 상품 삭제 */
   @DeleteMapping("read/{id}")
-  public ResponseEntity<Void> deleteProduct(@PathVariable(name = "id") Long id) {
-    productService.deleteProduct(id);
+  public ResponseEntity<Void> deleteProduct(Authentication auth, @PathVariable(name = "id") Long id) {
+
+    Member member = (Member) auth.getPrincipal();
+    Long memberId = member.getId();
+
+    productService.deleteProduct(memberId, id);
     return ResponseEntity.noContent().build();
   }
-
-
 
   /* 이미지 조회 */
   @GetMapping("/view/{fileName}")
@@ -103,20 +109,18 @@ public class ProductController {
     return productService.getDetail(id);
   }
 
-
-
   /* 상품 재고량만 수정 */
-   @PutMapping("/stock/{id}")
-   public ResponseEntity<Map<String, String>> modifyStock(
-    Authentication auth,
-    @PathVariable(name = "id") Long productId,
-    @RequestBody ProductDTO productDTO){
-      
-      Member member = (Member)auth.getPrincipal();
-      Long memberId = member.getId();
+  @PutMapping("/stock/{id}")
+  public ResponseEntity<Map<String, String>> modifyStock(
+      Authentication auth,
+      @PathVariable(name = "id") Long productId,
+      @RequestBody ProductDTO productDTO) {
 
-      productService.modifyStock(memberId, productId, productDTO);
+    Member member = (Member) auth.getPrincipal();
+    Long memberId = member.getId();
+
+    productService.modifyStock(memberId, productId, productDTO);
 
     return ResponseEntity.ok().body(Map.of("result", "success"));
-   }
+  }
 }

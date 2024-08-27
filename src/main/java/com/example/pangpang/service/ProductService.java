@@ -34,7 +34,15 @@ public class ProductService {
   private final MemberRepository memberRepository;
 
   /* 상품 등록 */
-  public Long addProduct(ProductDTO productDTO) {
+  public Long addProduct(Long memberId, ProductDTO productDTO) {
+
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+    if (!member.getMemberRole().equals("Admin")) {
+
+      throw new RuntimeException("운영자가 아니면 상품 등록이 불가능합니다.");
+    }
 
     // ProductDTO를 Product 엔티티로 변환
     Product product = modelMapper.map(productDTO, Product.class);
@@ -60,11 +68,19 @@ public class ProductService {
     return savedProduct.getId();
   }
 
-
   /* 상품 수정하기 */
-  public void modifyProduct(Long id, ProductDTO productDTO, List<MultipartFile> files) {
+  public void modifyProduct(Long memberId, Long id, ProductDTO productDTO, List<MultipartFile> files) {
 
-    Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found"));
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+    if (!member.getMemberRole().equals("Admin")) {
+
+      throw new RuntimeException("운영자가 아니면 상품 수정이 불가능합니다.");
+    }
+
+    Product product = productRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
     product.setProductTitle(productDTO.getProductTitle());
     product.setProductContent(productDTO.getProductContent());
@@ -74,50 +90,56 @@ public class ProductService {
     product.setProductStock(productDTO.getProductStock());
     product.setProductSales(productDTO.getProductSales());
 
-   // 기존 이미지 유지하고 새 이미지 추가
-  if (files != null && !files.isEmpty()) {
-    // 새 이미지 저장
-    List<String> fileNames = customFileUtil.saveFiles(files);
+    // 기존 이미지 유지하고 새 이미지 추가
+    if (files != null && !files.isEmpty()) {
+      // 새 이미지 저장
+      List<String> fileNames = customFileUtil.saveFiles(files);
 
-    // 새 이미지 엔티티 생성
-    List<ProductImage> images = fileNames.stream()
-        .map(fileName -> ProductImage.builder()
-            .fileName(fileName)
-            .product(product) // 저장된 상품과 연관
-            .build())
+      // 새 이미지 엔티티 생성
+      List<ProductImage> images = fileNames.stream()
+          .map(fileName -> ProductImage.builder()
+              .fileName(fileName)
+              .product(product) // 저장된 상품과 연관
+              .build())
+          .collect(Collectors.toList());
+
+      // 새 이미지 DB에 저장
+      productImageRepository.saveAll(images);
+    }
+
+    productRepository.save(product);
+  }
+
+  /* 상품 삭제하기 */
+  public void deleteProduct(Long memberId, Long id) {
+
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+    if (!member.getMemberRole().equals("Admin")) {
+
+      throw new RuntimeException("운영자가 아니면 상품 삭제가 불가능합니다.");
+    }
+
+    if (!productRepository.existsById(id)) {
+      throw new RuntimeException("상품을 찾지 못했습니다." + id);
+    }
+
+    // 상품에 연결된 이미지 파일 삭제
+    List<ProductImage> productImages = productImageRepository.findByProductId(id);
+    List<String> fileNames = productImages.stream()
+        .map(ProductImage::getFileName)
         .collect(Collectors.toList());
 
-    // 새 이미지 DB에 저장
-    productImageRepository.saveAll(images);
+    // 이미지 파일 삭제
+    customFileUtil.deleteFiles(fileNames);
+
+    // 이미지 엔티티 삭제
+    productImageRepository.deleteAll(productImages);
+
+    // 상품 삭제
+    productRepository.deleteById(id);
   }
-
-  productRepository.save(product);
-}
-
-
-
-/* 상품 삭제하기 */
-public void deleteProduct(Long id) {
-  if(!productRepository.existsById(id)) {
-    throw new RuntimeException("상품을 찾지 못했습니다." + id);
-  }
-
-  // 상품에 연결된 이미지 파일 삭제
-  List<ProductImage> productImages = productImageRepository.findByProductId(id);
-  List<String> fileNames = productImages.stream()
-      .map(ProductImage::getFileName)
-      .collect(Collectors.toList());
-
-  // 이미지 파일 삭제
-  customFileUtil.deleteFiles(fileNames);
-
-  // 이미지 엔티티 삭제
-  productImageRepository.deleteAll(productImages);
-
-  // 상품 삭제
-  productRepository.deleteById(id);
-}
-
 
   /* 상품 목록 보기 */
   public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
@@ -159,7 +181,8 @@ public void deleteProduct(Long id) {
           List<String> imageNames = productImagesMap.getOrDefault(product.getId(), Collections.emptyList());
           productDTO.setUploadFileNames(imageNames);
           productDTO.setProductSales(ordersProductRepository.getTotalSalesForProduct(product.getId()));
-          productDTO.setProductStock(product.getProductStock() - ordersProductRepository.getTotalSalesForProduct(product.getId()));
+          productDTO.setProductStock(
+              product.getProductStock() - ordersProductRepository.getTotalSalesForProduct(product.getId()));
           return productDTO;
         })
         .collect(Collectors.toList());
@@ -176,8 +199,6 @@ public void deleteProduct(Long id) {
         .totalCount(totalCount)
         .build();
   }
-
-
 
   /* 메인 페이지 상품 목록 */
   public List<ProductDTO> mainList() {
@@ -217,12 +238,11 @@ public void deleteProduct(Long id) {
     return dto;
   }
 
-
   /* 상품 재고량만 수정 */
-  public void modifyStock(Long memberId, Long productId, ProductDTO productDTO){
+  public void modifyStock(Long memberId, Long productId, ProductDTO productDTO) {
 
     Member member = memberRepository.findById(memberId)
-      .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+        .orElseThrow(() -> new EntityNotFoundException("Member not found"));
 
     if (!member.getMemberRole().equals("Admin")) {
 
@@ -230,12 +250,11 @@ public void deleteProduct(Long id) {
     }
 
     Product product = productRepository.findById(productId)
-      .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
     product.changeProductStock(productDTO.getProductStock());
-    
+
     productRepository.save(product);
   }
-
 
 }
