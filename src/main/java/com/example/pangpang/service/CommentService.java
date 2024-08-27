@@ -26,6 +26,8 @@ public class CommentService {
     private final NoticeRepository noticeRepository;
     private final ModelMapper modelMapper;
 
+
+
     @Transactional
     public Long createComment(Long memberId, Long articleId, CommentDTO commentDTO) {
         Member member = memberRepository.findById(memberId)
@@ -45,6 +47,8 @@ public class CommentService {
         return comment.getId();
     }
 
+
+
     public Page<CommentDTO> getCommentsByArticleId(Long articleId, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("commentCreated").descending());
 
@@ -57,6 +61,8 @@ public class CommentService {
         });
     }
 
+
+
     @Transactional
     public CommentDTO getCommentById(Long id) {
         Comment comment = commentRepository.findById(id)
@@ -66,6 +72,8 @@ public class CommentService {
         dto.setMemberNickname(comment.getMember().getMemberNickname());
         return dto;
     }
+
+
 
     @Transactional
     public void updateComment(Long memberId, Long id, CommentDTO commentDTO) {
@@ -84,6 +92,8 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
+
+
     @Transactional
     public void deleteComment(Long id) {
         if (!commentRepository.existsById(id)) {
@@ -91,6 +101,8 @@ public class CommentService {
         }
         commentRepository.deleteById(id);
     }
+
+
 
     public PageResponseDTO<CommentDTO> getCommentsByMemberId(Long memberId, PageRequestDTO pageRequestDTO) {
         // Create pageable object from pageRequestDTO
@@ -141,6 +153,7 @@ public class CommentService {
         
         return responseDTO;
     }
+    
 
 
     /* 공지사항 댓글 쓰기*/

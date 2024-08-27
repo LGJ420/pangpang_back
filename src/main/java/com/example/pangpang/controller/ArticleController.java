@@ -32,9 +32,10 @@ public class ArticleController {
     }
 
 
+
     // 전체 게시글 리스트
     @GetMapping("/list")
-    public PageResponseDTO<ArticleDTO> list(
+    public ResponseEntity<PageResponseDTO<ArticleDTO>> list(
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "size", defaultValue = "12") int size,
         @RequestParam(value = "search", required = false) String search,
@@ -47,15 +48,18 @@ public class ArticleController {
         .searchBy(searchBy)
         .build();
 
-        return articleService.list(pageRequestDTO);
+        PageResponseDTO<ArticleDTO> response = articleService.list(pageRequestDTO);
+        return ResponseEntity.ok(response);
     }
+
 
 
     // 게시글 조회
     @GetMapping("/{id}")
-    public ArticleDTO getArticleById(@PathVariable(name = "id") Long id){
-        return articleService.getArticleById(id);
+    public ResponseEntity<ArticleDTO> getArticleById(@PathVariable(name = "id") Long id){
+        return ResponseEntity.ok(articleService.getArticleById(id));
     }
+
 
 
     // 게시글 수정
@@ -69,6 +73,7 @@ public class ArticleController {
     }
 
 
+
     // 게시글 삭제
     @DeleteMapping("/list/{id}")
     public ResponseEntity<Void> deleteArticle(@PathVariable Long id){
@@ -76,9 +81,11 @@ public class ArticleController {
         return ResponseEntity.noContent().build();
     }
 
+    
+
     // 로그인한 회원의 본인 게시글 목록 조회
     @GetMapping("/myArticles")
-    public PageResponseDTO<ArticleDTO> getMyArticles(
+    public ResponseEntity<PageResponseDTO<ArticleDTO>> getMyArticles(
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Authentication auth) {
@@ -91,6 +98,7 @@ public class ArticleController {
                 .size(size)
                 .build();
 
-        return articleService.listByMember(memberId, pageRequestDTO);
+            PageResponseDTO<ArticleDTO> response = articleService.listByMember(memberId, pageRequestDTO);
+            return ResponseEntity.ok(response);
     }
 }

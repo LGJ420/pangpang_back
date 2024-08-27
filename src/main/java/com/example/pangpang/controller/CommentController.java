@@ -29,11 +29,15 @@ public class CommentController {
         return ResponseEntity.ok(commentId);
     }
 
+
+
     @GetMapping("/{id}")
     public ResponseEntity<CommentDTO> getCommentById(@PathVariable Long id) {
         CommentDTO commentDTO = commentService.getCommentById(id);
         return ResponseEntity.ok(commentDTO);
     }
+
+
 
     @GetMapping("/article/{articleId}")
     public ResponseEntity<Page<CommentDTO>> getCommentsByArticleId(
@@ -44,6 +48,8 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getCommentsByArticleId(articleId, page, size));
     }
 
+
+
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO, Authentication auth){
         Member member = (Member)auth.getPrincipal();
@@ -53,11 +59,15 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
 
+
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long id){
         commentService.deleteComment(id);
         return ResponseEntity.noContent().build();
     }
+
+
 
     @GetMapping("/myComments")
     public ResponseEntity<PageResponseDTO<CommentDTO>> getCommentsByMemberId(
@@ -76,7 +86,6 @@ public class CommentController {
         PageResponseDTO<CommentDTO> responseDTO = commentService.getCommentsByMemberId(memberId, pageRequestDTO);
         return ResponseEntity.ok(responseDTO);
     }
-
 
 
 
@@ -99,6 +108,7 @@ public class CommentController {
     }
 
 
+
     /* 공지사항 댓글 쓰기*/
     @PostMapping("/notice/{id}")
     public ResponseEntity<Map<String, String>> addNoticeComment(
@@ -115,6 +125,7 @@ public class CommentController {
     }
 
 
+
     /* 공지사항 댓글 수정 작업중*/
     @PutMapping("/notice/{id}")
     public ResponseEntity<Map<String, String>> modifyNoticeComment(
@@ -126,6 +137,7 @@ public class CommentController {
     }
 
 
+
     /* 공지사항 댓글 삭제 작업중*/
     @DeleteMapping("/notice/{id}")
     public ResponseEntity<Map<String, String>> deleteNoticeComment(
@@ -134,7 +146,4 @@ public class CommentController {
 
         return ResponseEntity.ok().body(null);
     }
-
-
-
 }
