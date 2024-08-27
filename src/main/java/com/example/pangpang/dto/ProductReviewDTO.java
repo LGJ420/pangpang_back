@@ -25,4 +25,6 @@ public class ProductReviewDTO {
 
     private Long productId;
     private Long memberId;
+
+    private String memberImage;
 }
