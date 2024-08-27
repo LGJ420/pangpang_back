@@ -27,4 +27,5 @@ public class ProductReviewDTO {
     private Long memberId;
 
     private String memberProfile;
+    private String memberNickName;
 }
