@@ -30,6 +30,7 @@ public class ProductService {
   private final ProductRepository productRepository;
   private final CustomFileUtil customFileUtil;
   private final ProductImageRepository productImageRepository;
+  private final OrdersProductRepository ordersProductRepository;
 
   /* 상품 등록 */
   public Long addProduct(ProductDTO productDTO) {
@@ -155,6 +156,8 @@ public void deleteProduct(Long id) {
           ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
           List<String> imageNames = productImagesMap.getOrDefault(product.getId(), Collections.emptyList());
           productDTO.setUploadFileNames(imageNames);
+          productDTO.setProductSales(ordersProductRepository.getTotalSalesForProduct(product.getId()));
+          productDTO.setProductStock(product.getProductStock() - ordersProductRepository.getTotalSalesForProduct(product.getId()));
           return productDTO;
         })
         .collect(Collectors.toList());
