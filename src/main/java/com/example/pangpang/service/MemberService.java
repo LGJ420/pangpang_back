@@ -193,13 +193,14 @@ public class MemberService {
     }
 
     // 마이페이지-내정보변경-프로필사진 변경
-    public String getMemberImageName(Long id){
-        Member member = memberRepository.findById(id)
+    public String getMemberImageName(String memberId){
+        Member member = memberRepository.findByMemberId(memberId)
         .orElseThrow(() -> new MemberNotFoundException("Member Not Found"));
 
         return member.getMemberImage();
     }
 
+    // 마이페이지-내정보변경-프로필사진 삭제
     public void getMemberImageDelete(String memberId){
         Member member = memberRepository.findByMemberId(memberId)
         .orElseThrow(() -> new MemberNotFoundException("Member Not Found"));
@@ -208,7 +209,7 @@ public class MemberService {
         member.setMemberImage(null);
         
         // 없앤 유저 정보 업데이트
-        // memberRepository.save(member);
+        memberRepository.save(member);
     }
 
     // 관리자-회원관리 리스트 받아오기

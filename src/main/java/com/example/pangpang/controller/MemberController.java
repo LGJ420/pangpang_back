@@ -170,22 +170,22 @@ public class MemberController {
     public ResponseEntity<String> modifyProfile(Principal principal,
             @ModelAttribute MemberDTO memberDTO, // 리액트에서 이미지(파일) 제외 보낸 정보들
             @RequestParam(value = "file", required = false) MultipartFile file // 리액트에서 보낸 이미지(파일)
-    ) {
+            ) {
 
         // 현재 로그인된 사용자 정보 가져오기
         String loginedMemberId = principal.getName();
 
         try {
             // 프로필 사진 파일을 처리
-            file = memberDTO.getFile();
-            if (file != null && !file.isEmpty()) {
+            if (memberDTO.getFile() != null) {
                 // 프로필 사진 파일을 저장하거나 처리하는 로직을 구현
                 // 예: 파일을 서버에 저장한 후 해당 경로를 데이터베이스에 저장
+                file = memberDTO.getFile();
                 String imagePath = memberService.changeMemberProfileImage(loginedMemberId, file);
                 memberDTO.setMemberImage(imagePath); // 이미지 경로를 DTO에 설정 (필드 추가 필요)
             } else {
-                // 프로필 사진이 비어있거나, 삭제했다면
-                memberDTO.setMemberImage(null);
+                // 프로필 사진이 비어있으면 기존 사진 불러오기
+                memberDTO.setMemberImage(memberService.getMemberImageName(loginedMemberId));
             }
 
             // 나머지 프로필 정보 수정
@@ -215,11 +215,11 @@ public class MemberController {
         return customFileUtil.getFile(fileName);
     }
 
-    // 마이페이지에서 사진 불러옴
-    @GetMapping("/{id}/image")
-    public ResponseEntity<?> viewImageFileGET(@PathVariable Long id) {
+    // // 마이페이지 레이아웃, navBar에서 사진 불러옴
+    @GetMapping("/{memberId}/image")
+    public ResponseEntity<?> viewImageFileGET(@PathVariable String memberId) {
 
-        String fileName = memberService.getMemberImageName(id);
+        String fileName = memberService.getMemberImageName(memberId);
         return ResponseEntity.ok().body(fileName);
     }
 
