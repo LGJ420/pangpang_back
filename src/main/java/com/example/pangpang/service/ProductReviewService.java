@@ -89,6 +89,7 @@ public class ProductReviewService {
                     .reviewDate(review.getReviewDate())
                     .productId(review.getProduct().getId())
                     .memberId(review.getMember().getId())
+                    .memberProfile(review.getMember().getMemberImage())
                     .build();
                 
                 return productReviewDTO;
