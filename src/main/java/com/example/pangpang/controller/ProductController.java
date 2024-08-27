@@ -5,10 +5,12 @@ import java.util.*;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.pangpang.dto.*;
+import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.ProductService;
 import com.example.pangpang.util.CustomFileUtil;
 
@@ -53,6 +55,7 @@ public class ProductController {
     productDTO.setProductDetailContent(params.get("productDetailContent"));
     productDTO.setProductCategory(params.get("productCategory"));
     productDTO.setProductStock(Integer.parseInt(params.get("productStock")));
+    productDTO.setProductSales(Integer.parseInt(params.get("productSales")));
 
     // 상품 수정
     productService.modifyProduct(id, productDTO, files);
@@ -100,4 +103,20 @@ public class ProductController {
     return productService.getDetail(id);
   }
 
+
+
+  /* 상품 재고량만 수정 */
+   @PutMapping("/stock/{id}")
+   public ResponseEntity<Map<String, String>> modifyStock(
+    Authentication auth,
+    @PathVariable(name = "id") Long productId,
+    @RequestBody ProductDTO productDTO){
+      
+      Member member = (Member)auth.getPrincipal();
+      Long memberId = member.getId();
+
+      productService.modifyStock(memberId, productId, productDTO);
+
+    return ResponseEntity.ok().body(Map.of("result", "success"));
+   }
 }

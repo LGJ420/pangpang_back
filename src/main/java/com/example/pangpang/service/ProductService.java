@@ -31,6 +31,7 @@ public class ProductService {
   private final CustomFileUtil customFileUtil;
   private final ProductImageRepository productImageRepository;
   private final OrdersProductRepository ordersProductRepository;
+  private final MemberRepository memberRepository;
 
   /* 상품 등록 */
   public Long addProduct(ProductDTO productDTO) {
@@ -71,6 +72,7 @@ public class ProductService {
     product.setProductDetailContent(productDTO.getProductDetailContent());
     product.setProductCategory(productDTO.getProductCategory());
     product.setProductStock(productDTO.getProductStock());
+    product.setProductSales(productDTO.getProductSales());
 
    // 기존 이미지 유지하고 새 이미지 추가
   if (files != null && !files.isEmpty()) {
@@ -214,5 +216,26 @@ public void deleteProduct(Long id) {
 
     return dto;
   }
+
+
+  /* 상품 재고량만 수정 */
+  public void modifyStock(Long memberId, Long productId, ProductDTO productDTO){
+
+    Member member = memberRepository.findById(memberId)
+      .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+    if (!member.getMemberRole().equals("Admin")) {
+
+      throw new RuntimeException("운영자가 아니면 재고량 수정이 불가능합니다.");
+    }
+
+    Product product = productRepository.findById(productId)
+      .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+    product.changeProductStock(productDTO.getProductStock());
+    
+    productRepository.save(product);
+  }
+
 
 }

@@ -65,4 +65,9 @@ public class Product {
         }
     }
 
+    public void changeProductStock(int productStock){
+
+        this.productStock = productStock;
+    }
+
 }
