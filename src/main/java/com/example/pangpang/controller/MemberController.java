@@ -132,7 +132,7 @@ public class MemberController {
             return ResponseEntity.ok(jwt);
 
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials : 잘못된 자격증명");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("아이디 혹은 비밀번호가 틀렸습니다.");
         }
     }
 
@@ -161,7 +161,7 @@ public class MemberController {
 
         } catch (Exception e) {
             // 거짓이면 에러메세지 띄움
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
 
