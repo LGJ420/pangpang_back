@@ -29,11 +29,15 @@ public class CommentController {
         return ResponseEntity.ok(commentId);
     }
 
+
+
     @GetMapping("/{id}")
     public ResponseEntity<CommentDTO> getCommentById(@PathVariable Long id) {
         CommentDTO commentDTO = commentService.getCommentById(id);
         return ResponseEntity.ok(commentDTO);
     }
+
+
 
     @GetMapping("/article/{articleId}")
     public ResponseEntity<Page<CommentDTO>> getCommentsByArticleId(
@@ -44,20 +48,26 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getCommentsByArticleId(articleId, page, size));
     }
 
-    @PutMapping("/modify/{id}")
-    public ResponseEntity<Void> updateComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO, Authentication auth){
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, String>> updateComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO, Authentication auth){
         Member member = (Member)auth.getPrincipal();
         Long memberId = member.getId();
 
         commentService.updateComment(memberId, id, commentDTO);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
 
+
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id){
+    public ResponseEntity<Map<String, String>> deleteComment(@PathVariable Long id){
         commentService.deleteComment(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
+
+
 
     @GetMapping("/myComments")
     public ResponseEntity<PageResponseDTO<CommentDTO>> getCommentsByMemberId(
@@ -79,7 +89,6 @@ public class CommentController {
 
 
 
-
     /* 공지사항 댓글 불러오기*/
     @GetMapping("/notice/{id}")
     public ResponseEntity<PageResponseDTO<CommentDTO>> getNoticeComment(
@@ -97,6 +106,7 @@ public class CommentController {
 
         return ResponseEntity.ok().body(pageResponseDTO);
     }
+
 
 
     /* 공지사항 댓글 쓰기*/
@@ -143,7 +153,4 @@ public class CommentController {
 
         return ResponseEntity.ok().body(Map.of("result", "success"));
     }
-
-
-
 }

@@ -12,6 +12,7 @@ import com.example.pangpang.service.ArticleService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/article")
@@ -21,7 +22,7 @@ public class ArticleController {
 
 
     // 게시글 작성
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity<Long> createArticle(@Valid @RequestBody ArticleDTO articleDTO, Authentication auth){
 
         Member member = (Member)auth.getPrincipal();
@@ -32,9 +33,10 @@ public class ArticleController {
     }
 
 
+
     // 전체 게시글 리스트
     @GetMapping("/list")
-    public PageResponseDTO<ArticleDTO> list(
+    public ResponseEntity<PageResponseDTO<ArticleDTO>> list(
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "size", defaultValue = "12") int size,
         @RequestParam(value = "search", required = false) String search,
@@ -47,38 +49,44 @@ public class ArticleController {
         .searchBy(searchBy)
         .build();
 
-        return articleService.list(pageRequestDTO);
+        PageResponseDTO<ArticleDTO> response = articleService.list(pageRequestDTO);
+        return ResponseEntity.ok(response);
     }
+
 
 
     // 게시글 조회
-    @GetMapping("/read/{id}")
-    public ArticleDTO getArticleById(@PathVariable(name = "id") Long id){
-        return articleService.getArticleById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<ArticleDTO> getArticleById(@PathVariable(name = "id") Long id){
+        return ResponseEntity.ok(articleService.getArticleById(id));
     }
 
 
+
     // 게시글 수정
-    @PutMapping("/modify/{id}")
-    public ResponseEntity<Void> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO, Authentication auth){
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, String>> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO, Authentication auth){
         Member member = (Member)auth.getPrincipal();
         Long memberId = member.getId();
 
         articleService.updateArticle(memberId, id, articleDTO);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
+
 
 
     // 게시글 삭제
-    @DeleteMapping("/list/{id}")
-    public ResponseEntity<Void> deleteArticle(@PathVariable Long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteArticle(@PathVariable Long id){
         articleService.deleteArticle(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
+
+
 
     // 로그인한 회원의 본인 게시글 목록 조회
     @GetMapping("/myArticles")
-    public PageResponseDTO<ArticleDTO> getMyArticles(
+    public ResponseEntity<PageResponseDTO<ArticleDTO>> getMyArticles(
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Authentication auth) {
@@ -91,6 +99,7 @@ public class ArticleController {
                 .size(size)
                 .build();
 
-        return articleService.listByMember(memberId, pageRequestDTO);
+            PageResponseDTO<ArticleDTO> response = articleService.listByMember(memberId, pageRequestDTO);
+            return ResponseEntity.ok(response);
     }
 }

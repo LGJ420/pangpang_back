@@ -46,6 +46,8 @@ public class CommentService {
         return comment.getId();
     }
 
+
+
     public Page<CommentDTO> getCommentsByArticleId(Long articleId, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("commentCreated").descending());
 
@@ -92,6 +94,8 @@ public class CommentService {
         }
         commentRepository.deleteById(id);
     }
+
+
 
     public PageResponseDTO<CommentDTO> getCommentsByMemberId(Long memberId, PageRequestDTO pageRequestDTO) {
         // Create pageable object from pageRequestDTO
@@ -142,6 +146,7 @@ public class CommentService {
         
         return responseDTO;
     }
+    
 
 
     /* 공지사항 댓글 쓰기*/
