@@ -1,6 +1,7 @@
 package com.example.pangpang.service;
 
 import java.util.*;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -82,5 +83,37 @@ public class NoticeService {
             .build();
 
         noticeRepository.save(notice);
+    }
+
+    
+    public void modify(Long memberId, NoticeDTO noticeDTO){
+
+        Notice notice = noticeRepository.findById(noticeDTO.getId())
+            .orElseThrow(() -> new EntityNotFoundException("Notice not found"));
+
+
+        if(memberId != notice.getMember().getId()){
+
+            throw new IllegalArgumentException("사용자가 일치하지 않습니다.");
+        }
+
+        notice.changeNoticeTitle(noticeDTO.getNoticeTitle());
+        notice.changeNoticeContent(noticeDTO.getNoticeContent());
+        notice.changeNoticeUpdated(LocalDateTime.now());
+        
+        noticeRepository.save(notice);
+    }
+
+
+    public void delete(Long memberId, Long noticeId){
+
+        Notice notice = noticeRepository.findById(noticeId)
+            .orElseThrow(() -> new EntityNotFoundException("Notice not found"));
+
+        if (memberId != notice.getMember().getId()){
+            throw new IllegalArgumentException("사용자가 일치하지 않습니다.");
+        }
+
+        noticeRepository.delete(notice);
     }
 }

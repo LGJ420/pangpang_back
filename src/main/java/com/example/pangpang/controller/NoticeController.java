@@ -48,4 +48,36 @@ public class NoticeController {
         return ResponseEntity.ok().body(Map.of("result", "success"));
     }
 
+    
+    @PutMapping("")
+    public ResponseEntity<Map<String, String>> modify(
+        Authentication auth,
+        @RequestBody NoticeDTO noticeDTO){
+        
+        Member member = (Member)auth.getPrincipal();
+        Long memberId = member.getId();
+
+        noticeService.modify(memberId, noticeDTO);
+
+        return ResponseEntity.ok().body(Map.of("result", "success"));
+    } 
+
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> delete(
+        Authentication auth,
+        @PathVariable(name = "id") Long noticeId){
+
+        Member member = (Member)auth.getPrincipal();
+        Long memberId = member.getId();
+
+        noticeService.delete(memberId, noticeId);
+
+        return ResponseEntity.ok().body(Map.of("result", "success"));
+    }
+
+
+
+
 }

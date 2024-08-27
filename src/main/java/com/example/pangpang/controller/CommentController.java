@@ -111,7 +111,7 @@ public class CommentController {
 
         commentService.addNoticeComment(noticeId, memberId, commentDTO);
 
-        return ResponseEntity.ok().body(null);
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
 
 
@@ -126,7 +126,7 @@ public class CommentController {
 
         commentService.modifyNoticeComment(memberId, commentDTO);
 
-        return ResponseEntity.ok().body(null);
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
 
 
@@ -141,7 +141,7 @@ public class CommentController {
 
         commentService.deleteNoticeComment(memberId, commentId);
 
-        return ResponseEntity.ok().body(null);
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
 
 

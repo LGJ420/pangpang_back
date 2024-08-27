@@ -38,4 +38,22 @@ public class Notice {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+
+    
+    public void changeNoticeTitle(String title) {
+
+        this.noticeTitle = title;
+    }
+    
+    public void changeNoticeContent(String content) {
+
+        this.noticeContent = content;
+    }
+
+    public void changeNoticeUpdated(LocalDateTime date) {
+
+        this.noticeUpdated = date;
+    }
+
 }
