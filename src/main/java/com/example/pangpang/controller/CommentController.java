@@ -51,20 +51,20 @@ public class CommentController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO, Authentication auth){
+    public ResponseEntity<Map<String, String>> updateComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO, Authentication auth){
         Member member = (Member)auth.getPrincipal();
         Long memberId = member.getId();
 
         commentService.updateComment(memberId, id, commentDTO);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
 
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id){
+    public ResponseEntity<Map<String, String>> deleteComment(@PathVariable Long id){
         commentService.deleteComment(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
 
 

@@ -12,6 +12,7 @@ import com.example.pangpang.service.ArticleService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/article")
@@ -64,24 +65,24 @@ public class ArticleController {
 
     // 게시글 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO, Authentication auth){
+    public ResponseEntity<Map<String, String>> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO, Authentication auth){
         Member member = (Member)auth.getPrincipal();
         Long memberId = member.getId();
 
         articleService.updateArticle(memberId, id, articleDTO);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
 
 
 
     // 게시글 삭제
-    @DeleteMapping("/list/{id}")
-    public ResponseEntity<Void> deleteArticle(@PathVariable Long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteArticle(@PathVariable Long id){
         articleService.deleteArticle(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
 
-    
+
 
     // 로그인한 회원의 본인 게시글 목록 조회
     @GetMapping("/myArticles")
