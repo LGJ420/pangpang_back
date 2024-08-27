@@ -91,10 +91,12 @@ public class NoticeService {
         Notice notice = noticeRepository.findById(noticeDTO.getId())
             .orElseThrow(() -> new EntityNotFoundException("Notice not found"));
 
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new EntityNotFoundException("Member not found"));
 
-        if(memberId != notice.getMember().getId()){
+        if (!member.getMemberRole().equals("Admin")){
 
-            throw new IllegalArgumentException("사용자가 일치하지 않습니다.");
+            throw new IllegalArgumentException("관리자만 수정 할 수 있습니다.");
         }
 
         notice.changeNoticeTitle(noticeDTO.getNoticeTitle());
@@ -110,8 +112,12 @@ public class NoticeService {
         Notice notice = noticeRepository.findById(noticeId)
             .orElseThrow(() -> new EntityNotFoundException("Notice not found"));
 
-        if (memberId != notice.getMember().getId()){
-            throw new IllegalArgumentException("사용자가 일치하지 않습니다.");
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+        if (!member.getMemberRole().equals("Admin")){
+
+            throw new IllegalArgumentException("관리자만 삭제 할 수 있습니다.");
         }
 
         noticeRepository.delete(notice);
