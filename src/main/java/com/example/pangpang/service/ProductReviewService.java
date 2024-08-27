@@ -19,38 +19,34 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class ProductReviewService {
-    
+
     private final ProductReviewRepository productReviewRepository;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
     private final CustomFileUtil customFileUtil;
 
-
-
-    public void add(Long memberId, ProductReviewDTO productReviewDTO){
+    public void add(Long memberId, ProductReviewDTO productReviewDTO) {
 
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new EntityNotFoundException("Member not found"));
-            
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
         Product product = productRepository.findById(productReviewDTO.getProductId())
-            .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
         String fileName = customFileUtil.saveFile(productReviewDTO.getReviewFile());
 
         ProductReview productReview = ProductReview.builder()
-            .rating(productReviewDTO.getRating())
-            .reviewContent(productReviewDTO.getReviewContent())
-            .reviewFileName(fileName)
-            .product(product)
-            .member(member)
-            .build();
+                .rating(productReviewDTO.getRating())
+                .reviewContent(productReviewDTO.getReviewContent())
+                .reviewFileName(fileName)
+                .product(product)
+                .member(member)
+                .build();
 
         productReviewRepository.save(productReview);
     }
 
-
-
-    public List<ProductReviewDTO> list(Long id){
+    public List<ProductReviewDTO> list(Long id) {
 
         Sort sort = Sort.by("reviewDate").descending();
         List<ProductReview> productReviews = productReviewRepository.findByProductId(id, sort);
@@ -65,6 +61,7 @@ public class ProductReviewService {
                     .productId(review.getProduct().getId())
                     .memberId(review.getMember().getId())
                     .memberImage(review.getMember().getMemberImage())
+                    .memberNickName(review.getMember().getMemberNickname())
                     .build();
                 
                 return productReviewDTO;
@@ -74,9 +71,7 @@ public class ProductReviewService {
         return productReviewDTOs;
     }
 
-
-
-    public List<ProductReviewDTO> mylist(Long id){
+    public List<ProductReviewDTO> mylist(Long id) {
 
         Sort sort = Sort.by("reviewDate").descending();
         List<ProductReview> productReviews = productReviewRepository.findByMemberId(id, sort);
@@ -91,6 +86,7 @@ public class ProductReviewService {
                     .productId(review.getProduct().getId())
                     .memberId(review.getMember().getId())
                     .memberImage(review.getMember().getMemberImage())
+                    .memberNickName(review.getMember().getMemberNickname())
                     .build();
                 
                 return productReviewDTO;

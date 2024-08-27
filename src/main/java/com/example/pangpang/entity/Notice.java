@@ -56,4 +56,9 @@ public class Notice {
         this.noticeUpdated = date;
     }
 
+    public void changeNoticeHit(Long noticeHit) {
+
+        this.noticeHit = noticeHit;
+    }
+
 }
