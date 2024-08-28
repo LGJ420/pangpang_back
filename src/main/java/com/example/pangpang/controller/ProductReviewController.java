@@ -38,9 +38,9 @@ public class ProductReviewController {
 
 
     @GetMapping("/{id}")
-    public List<ProductReviewDTO> list(@PathVariable(name = "id") Long id){
+    public List<ProductReviewDTO> list(@PathVariable(name = "id") Long productId){
 
-        return productReviewService.list(id);
+        return productReviewService.list(productId);
     }
 
 

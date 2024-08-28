@@ -27,7 +27,7 @@ public class ProductController {
   private final CustomFileUtil fileUtil;
 
   /* 상품 등록 */
-  @PostMapping("/add")
+  @PostMapping("")
   public ResponseEntity<Long> addProduct(Authentication auth, ProductDTO productDTO) {
 
     Member member = (Member) auth.getPrincipal();
@@ -44,7 +44,7 @@ public class ProductController {
   }
 
   /* 상품 수정 */
-  @PutMapping("/modify/{id}")
+  @PutMapping("/{id}")
   public ResponseEntity<Void> modifyProduct(Authentication auth, @PathVariable(name = "id") Long id,
       @RequestParam Map<String, String> params,
       @RequestParam(value = "files", required = false) List<MultipartFile> files) {
@@ -59,16 +59,14 @@ public class ProductController {
     productDTO.setProductPrice(Integer.parseInt(params.get("productPrice")));
     productDTO.setProductDetailContent(params.get("productDetailContent"));
     productDTO.setProductCategory(params.get("productCategory"));
-    productDTO.setProductStock(Integer.parseInt(params.get("productStock")));
-    productDTO.setProductSales(Integer.parseInt(params.get("productSales")));
-
+    
     // 상품 수정
     productService.modifyProduct(memberId, id, productDTO, files);
     return ResponseEntity.noContent().build();
   }
 
   /* 상품 삭제 */
-  @DeleteMapping("read/{id}")
+  @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteProduct(Authentication auth, @PathVariable(name = "id") Long id) {
 
     Member member = (Member) auth.getPrincipal();
@@ -104,7 +102,7 @@ public class ProductController {
   }
 
   /* 상품 상세 보기 */
-  @GetMapping("/read/{id}")
+  @GetMapping("/{id}")
   public ProductDTO getDetail(@PathVariable(name = "id") Long id) {
     return productService.getDetail(id);
   }

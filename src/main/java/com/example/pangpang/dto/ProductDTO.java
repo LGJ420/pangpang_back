@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -39,7 +40,10 @@ public class ProductDTO {
     private int productStock;
 
     @Positive
-    private int productSales;
+    private int productTotalSales;
+
+    @Positive
+    private int productUpdateSales;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime productCreated;
@@ -52,5 +56,5 @@ public class ProductDTO {
     // 업로드된 파일 이름들을 나타내는 문자열 리스트
     @Builder.Default
     private List<String> uploadFileNames = new ArrayList<>();
-
+    
 }
