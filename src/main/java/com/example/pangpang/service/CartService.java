@@ -84,6 +84,7 @@ public class CartService {
                             .productTitle(cart.getProduct().getProductTitle())
                             .productContent(cart.getProduct().getProductContent())
                             .productPrice(cart.getProduct().getProductPrice())
+                            .productStock(cart.getProduct().getProductStock())
                             .cartCount(cart.getCartCount())
                             .uploadFileNames(uploadFileNames)
                             .build();
