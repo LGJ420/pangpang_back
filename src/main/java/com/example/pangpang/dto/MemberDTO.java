@@ -38,6 +38,7 @@ public class MemberDTO {
 
     // 회원가입, 내정보수정(마이페이지)
     @NotNull(message = "닉네임은 필수 항목입니다")
+    @Size(min = 2, max = 10, message = "닉네임은 2자 이상 10자 이하이어야 합니다.")
     private String memberNickname;
 
     // 회원가입, 아이디찾기, 비밀번호찾기
