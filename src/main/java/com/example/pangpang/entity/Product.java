@@ -38,7 +38,9 @@ public class Product {
 
     private int productStock; // 상품 재고량
 
-    private int productSales; // 상품 판매량
+    private int productTotalSales; // 상품 누적 판매량
+
+    private int productUpdateSales; // 상품 재고량 수정 시 사용할 상품 판매량
 
     private LocalDateTime productCreated;
 
@@ -63,11 +65,24 @@ public class Product {
         if (this.productCreated == null) {
             this.productCreated = LocalDateTime.now();
         }
+
     }
 
+    // 상품 재고량 수정
     public void changeProductStock(int productStock){
 
         this.productStock = productStock;
+        this.productUpdateSales = 0;
+    }
+
+    // 상품 수정
+    public void changeProduct(String productTitle, String productContent, String productDetailContent, String productCategory , 
+    int productPrice) {
+        this.productTitle = productTitle;
+        this.productContent = productContent;
+        this.productDetailContent = productDetailContent;
+        this.productCategory = productCategory;
+        this.productPrice = productPrice;
     }
 
 }

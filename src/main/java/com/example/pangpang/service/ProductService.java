@@ -30,7 +30,6 @@ public class ProductService {
   private final ProductRepository productRepository;
   private final CustomFileUtil customFileUtil;
   private final ProductImageRepository productImageRepository;
-  private final OrdersProductRepository ordersProductRepository;
   private final MemberRepository memberRepository;
 
   /* 상품 등록 */
@@ -82,13 +81,8 @@ public class ProductService {
     Product product = productRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-    product.setProductTitle(productDTO.getProductTitle());
-    product.setProductContent(productDTO.getProductContent());
-    product.setProductPrice(productDTO.getProductPrice());
-    product.setProductDetailContent(productDTO.getProductDetailContent());
-    product.setProductCategory(productDTO.getProductCategory());
-    product.setProductStock(productDTO.getProductStock());
-    product.setProductSales(productDTO.getProductSales());
+    product.changeProduct(productDTO.getProductTitle(), productDTO.getProductContent(),
+        productDTO.getProductDetailContent(), productDTO.getProductCategory(), productDTO.getProductPrice());
 
     // 기존 이미지 유지하고 새 이미지 추가
     if (files != null && !files.isEmpty()) {
@@ -180,9 +174,8 @@ public class ProductService {
           ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
           List<String> imageNames = productImagesMap.getOrDefault(product.getId(), Collections.emptyList());
           productDTO.setUploadFileNames(imageNames);
-          productDTO.setProductSales(ordersProductRepository.getTotalSalesForProduct(product.getId()));
-          productDTO.setProductStock(
-              product.getProductStock() - ordersProductRepository.getTotalSalesForProduct(product.getId()));
+          productDTO.setProductTotalSales(product.getProductTotalSales());
+          productDTO.setProductStock(product.getProductStock() - product.getProductUpdateSales());
           return productDTO;
         })
         .collect(Collectors.toList());
