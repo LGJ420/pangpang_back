@@ -81,14 +81,8 @@ public class ProductService {
     Product product = productRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-    product.setProductTitle(productDTO.getProductTitle());
-    product.setProductContent(productDTO.getProductContent());
-    product.setProductPrice(productDTO.getProductPrice());
-    product.setProductDetailContent(productDTO.getProductDetailContent());
-    product.setProductCategory(productDTO.getProductCategory());
-    product.setProductStock(productDTO.getProductStock());
-    product.setProductTotalSales(productDTO.getProductTotalSales());
-    product.setProductUpdateSales(product.getProductUpdateSales());
+    product.changeProduct(productDTO.getProductTitle(), productDTO.getProductContent(),
+        productDTO.getProductDetailContent(), productDTO.getProductCategory(), productDTO.getProductPrice());
 
     // 기존 이미지 유지하고 새 이미지 추가
     if (files != null && !files.isEmpty()) {
@@ -251,8 +245,7 @@ public class ProductService {
     Product product = productRepository.findById(productId)
         .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-
-        product.changeProductStock(productDTO.getProductStock());
+    product.changeProductStock(productDTO.getProductStock());
 
     productRepository.save(product);
   }
