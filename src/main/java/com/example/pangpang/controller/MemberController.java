@@ -170,7 +170,7 @@ public class MemberController {
     public ResponseEntity<String> modifyProfile(Principal principal,
             @ModelAttribute MemberDTO memberDTO, // 리액트에서 이미지(파일) 제외 보낸 정보들
             @RequestParam(value = "file", required = false) MultipartFile file // 리액트에서 보낸 이미지(파일)
-            ) {
+    ) {
 
         // 현재 로그인된 사용자 정보 가져오기
         String loginedMemberId = principal.getName();
@@ -238,16 +238,16 @@ public class MemberController {
     // 마이페이지 관리자 회원관리 회원리스트 받아오기
     @GetMapping
     public ResponseEntity<PageResponseDTO<MemberDTO>> manageList(
-        @RequestParam(value = "page", defaultValue = "1") int page,
-        @RequestParam(value = "size", defaultValue = "12") int size,
-        @RequestParam(value = "search", required = false) String search) {
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "12") int size,
+            @RequestParam(value = "search", required = false) String search) {
 
         // URL에서 전달받은 데이터 PageRequestDTO에 저장
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
-        .page(page)
-        .size(size)
-        .search(search)
-        .build();
+                .page(page)
+                .size(size)
+                .search(search)
+                .build();
 
         PageResponseDTO<MemberDTO> memberDTOs = memberService.manageList(pageRequestDTO);
 
@@ -255,7 +255,7 @@ public class MemberController {
     }
 
     // 마이페이지 관리자 회원관리 회원등급 변경
-    @PostMapping("/mypage/manager/change/role")
+    @PutMapping("/mypage/manager/change/role")
     public ResponseEntity<?> changeMemberRole(@RequestBody MemberDTO memberDTO) {
 
         try {
@@ -268,7 +268,7 @@ public class MemberController {
     }
 
     // 마이페이지 관리자 회원관리 회원등급 변경
-    @PostMapping("/mypage/manager/change/isActive")
+    @PutMapping("/mypage/manager/change/isActive")
     public ResponseEntity<?> changeIsActive(@RequestBody MemberDTO memberDTO) {
 
         System.out.println("프론트에서 전달받은 active : " + memberDTO.isActive());
