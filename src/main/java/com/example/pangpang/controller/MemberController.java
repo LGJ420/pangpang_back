@@ -65,7 +65,7 @@ public class MemberController {
     }
 
     // 아이디 찾기
-    @PostMapping("/find/id")
+    @PostMapping("/id")
     public ResponseEntity<?> findId(@RequestBody MemberDTO memberDTO) {
 
         try {
@@ -78,7 +78,7 @@ public class MemberController {
     }
 
     // 비밀번호 찾기
-    @PostMapping("/find/pw")
+    @PostMapping("/password")
     public ResponseEntity<?> findPw(@RequestBody MemberDTO memberDTO) {
 
         try {
@@ -91,7 +91,7 @@ public class MemberController {
     }
 
     // 비밀번호 찾기->비밀번호 변경
-    @PutMapping("/find/pw/reset")
+    @PutMapping("/password")
     public ResponseEntity<?> resetPw(@RequestBody MemberDTO memberDTO) {
 
         try {
@@ -145,7 +145,7 @@ public class MemberController {
     }
 
     // 마이페이지에서 내정보변경할때, 비밀번호로 한번 확인
-    @PostMapping("/confirm_before_profile")
+    @PostMapping("/mypage/confirm_before_profile")
     public ResponseEntity<?> confirmBeforeProfile(Principal principal,
             @RequestBody MemberDTO memberDTO) {
 
@@ -166,7 +166,7 @@ public class MemberController {
     }
 
     // 마이페이지 내정보변경
-    @PutMapping("/mypage/modify")
+    @PutMapping("/mypage/profile")
     public ResponseEntity<String> modifyProfile(Principal principal,
             @ModelAttribute MemberDTO memberDTO, // 리액트에서 이미지(파일) 제외 보낸 정보들
             @RequestParam(value = "file", required = false) MultipartFile file // 리액트에서 보낸 이미지(파일)
@@ -255,7 +255,7 @@ public class MemberController {
     }
 
     // 마이페이지 관리자 회원관리 회원등급 변경
-    @PutMapping("/mypage/manager/change/role")
+    @PutMapping("/mypage/manager/role")
     public ResponseEntity<?> changeMemberRole(@RequestBody MemberDTO memberDTO) {
 
         try {
@@ -268,7 +268,7 @@ public class MemberController {
     }
 
     // 마이페이지 관리자 회원관리 회원등급 변경
-    @PutMapping("/mypage/manager/change/isActive")
+    @PutMapping("/mypage/manager/isActive")
     public ResponseEntity<?> changeIsActive(@RequestBody MemberDTO memberDTO) {
 
         System.out.println("프론트에서 전달받은 active : " + memberDTO.isActive());
