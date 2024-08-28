@@ -60,7 +60,7 @@ public class ProductController {
     productDTO.setProductDetailContent(params.get("productDetailContent"));
     productDTO.setProductCategory(params.get("productCategory"));
     productDTO.setProductStock(Integer.parseInt(params.get("productStock")));
-    productDTO.setProductTotalSales(Integer.parseInt(params.get("productSales")));
+    productDTO.setProductUpdateSales(Integer.parseInt(params.get("productUpdateSales")));
 
     // 상품 수정
     productService.modifyProduct(memberId, id, productDTO, files);

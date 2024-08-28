@@ -30,7 +30,6 @@ public class ProductService {
   private final ProductRepository productRepository;
   private final CustomFileUtil customFileUtil;
   private final ProductImageRepository productImageRepository;
-  private final OrdersProductRepository ordersProductRepository;
   private final MemberRepository memberRepository;
 
   /* 상품 등록 */
@@ -89,6 +88,7 @@ public class ProductService {
     product.setProductCategory(productDTO.getProductCategory());
     product.setProductStock(productDTO.getProductStock());
     product.setProductTotalSales(productDTO.getProductTotalSales());
+    product.setProductUpdateSales(product.getProductUpdateSales());
 
     // 기존 이미지 유지하고 새 이미지 추가
     if (files != null && !files.isEmpty()) {
@@ -180,9 +180,8 @@ public class ProductService {
           ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
           List<String> imageNames = productImagesMap.getOrDefault(product.getId(), Collections.emptyList());
           productDTO.setUploadFileNames(imageNames);
-          productDTO.setProductTotalSales(ordersProductRepository.getTotalSalesForProduct(product.getId()));
-          productDTO.setProductStock(
-              product.getProductStock() - ordersProductRepository.getTotalSalesForProduct(product.getId()));
+          productDTO.setProductTotalSales(product.getProductTotalSales());
+          productDTO.setProductStock(product.getProductStock() - product.getProductUpdateSales());
           return productDTO;
         })
         .collect(Collectors.toList());
@@ -252,7 +251,8 @@ public class ProductService {
     Product product = productRepository.findById(productId)
         .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-    product.changeProductStock(productDTO.getProductStock());
+
+        product.changeProductStock(productDTO.getProductStock());
 
     productRepository.save(product);
   }
