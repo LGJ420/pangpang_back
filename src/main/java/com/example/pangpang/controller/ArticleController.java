@@ -77,8 +77,11 @@ public class ArticleController {
 
     // 게시글 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteArticle(@PathVariable Long id){
-        articleService.deleteArticle(id);
+    public ResponseEntity<Map<String, String>> deleteArticle(@PathVariable Long id, Authentication auth){
+        Member member = (Member) auth.getPrincipal();
+        Long memberId = member.getId();
+
+        articleService.deleteArticle(memberId, id);
         return ResponseEntity.ok().body(Map.of("result", "success"));
     }
 
