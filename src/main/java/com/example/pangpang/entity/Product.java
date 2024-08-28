@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
@@ -71,6 +73,9 @@ public class Product {
     // 상품 재고량 수정
     public void changeProductStock(int productStock){
 
+        if(productStock < 0 || productStock >= 101) {
+            throw new IllegalArgumentException();
+        }
         this.productStock = productStock;
         this.productUpdateSales = 0;
     }

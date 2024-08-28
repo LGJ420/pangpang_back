@@ -15,6 +15,7 @@ public class CartListDTO {
     private String productContent;
     private int productPrice;
     private int cartCount;
+    private int productStock;
 
     // 상품 이미지 파일 이름들을 나타내는 문자열 리스트
     @Builder.Default

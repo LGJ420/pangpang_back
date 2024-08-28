@@ -2,6 +2,7 @@ package com.example.pangpang.controller;
 
 import java.util.*;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,19 +22,19 @@ public class OrdersController {
 
 
     @GetMapping("/list")
-    public List<OrdersDTO> getList(
+    public ResponseEntity<List<OrdersDTO>> getList(
         @RequestParam(value = "search", required = false) String search,
         Authentication auth){
 
         Member member = (Member)auth.getPrincipal();
         Long memberId = member.getId();
     
-        return ordersService.list(memberId, search);
+        return ResponseEntity.ok().body(ordersService.list(memberId, search));
     }
 
 
     @PostMapping("")
-    public Map<String, String> add(
+    public ResponseEntity<Map<String, String>> add(
         @Valid @RequestBody OrdersDTO ordersDTO,
         Authentication auth){
 
@@ -42,6 +43,6 @@ public class OrdersController {
 
         ordersService.add(memberId, ordersDTO);
 
-        return Map.of("result", "ok");
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
 }

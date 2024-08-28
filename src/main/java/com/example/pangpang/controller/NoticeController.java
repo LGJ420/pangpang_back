@@ -22,16 +22,16 @@ public class NoticeController {
 
     /* 공지사항 목록 보기 */
     @GetMapping("/list")
-    public PageResponseDTO<NoticeDTO> list(PageRequestDTO pageRequestDTO){
+    public ResponseEntity<PageResponseDTO<NoticeDTO>> list(PageRequestDTO pageRequestDTO){
 
-        return noticeService.list(pageRequestDTO);
+        return ResponseEntity.ok().body(noticeService.list(pageRequestDTO));
     }
 
 
     @GetMapping("/{id}")
-    public NoticeDTO getOne(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<NoticeDTO> getOne(@PathVariable(name = "id") Long id) {
 
-        return noticeService.getOne(id);
+        return ResponseEntity.ok().body(noticeService.getOne(id));
     }
 
 
