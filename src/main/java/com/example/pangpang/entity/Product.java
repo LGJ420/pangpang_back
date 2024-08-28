@@ -38,7 +38,7 @@ public class Product {
 
     private int productStock; // 상품 재고량
 
-    private int productSales; // 상품 판매량
+    private int productTotalSales; // 상품 판매량
 
     private LocalDateTime productCreated;
 

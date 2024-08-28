@@ -39,7 +39,7 @@ public class ProductDTO {
     private int productStock;
 
     @Positive
-    private int productSales;
+    private int productTotalSales;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime productCreated;

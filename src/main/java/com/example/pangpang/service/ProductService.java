@@ -88,7 +88,7 @@ public class ProductService {
     product.setProductDetailContent(productDTO.getProductDetailContent());
     product.setProductCategory(productDTO.getProductCategory());
     product.setProductStock(productDTO.getProductStock());
-    product.setProductSales(productDTO.getProductSales());
+    product.setProductTotalSales(productDTO.getProductTotalSales());
 
     // 기존 이미지 유지하고 새 이미지 추가
     if (files != null && !files.isEmpty()) {
@@ -180,7 +180,7 @@ public class ProductService {
           ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
           List<String> imageNames = productImagesMap.getOrDefault(product.getId(), Collections.emptyList());
           productDTO.setUploadFileNames(imageNames);
-          productDTO.setProductSales(ordersProductRepository.getTotalSalesForProduct(product.getId()));
+          productDTO.setProductTotalSales(ordersProductRepository.getTotalSalesForProduct(product.getId()));
           productDTO.setProductStock(
               product.getProductStock() - ordersProductRepository.getTotalSalesForProduct(product.getId()));
           return productDTO;
