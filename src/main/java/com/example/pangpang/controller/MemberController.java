@@ -91,7 +91,7 @@ public class MemberController {
     }
 
     // 비밀번호 찾기->비밀번호 변경
-    @PostMapping("/find/pw/reset")
+    @PutMapping("/find/pw/reset")
     public ResponseEntity<?> resetPw(@RequestBody MemberDTO memberDTO) {
 
         try {
