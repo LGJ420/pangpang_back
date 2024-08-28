@@ -1,9 +1,11 @@
 package com.example.pangpang.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.pangpang.entity.ProductImage;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.*;
@@ -23,9 +25,11 @@ public class ProductReviewDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime reviewDate;
 
-    private Long productId;
     private Long memberId;
-
     private String memberImage;
     private String memberNickName;
+    
+    private Long productId;
+    private String productTitle;
+    private List<String> productImages;
 }
