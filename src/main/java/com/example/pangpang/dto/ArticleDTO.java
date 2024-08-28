@@ -23,6 +23,8 @@ public class ArticleDTO {
 
     private Long memberId;
 
+    private String memberRole;
+
     private LocalDateTime articleCreated; 
     private LocalDateTime articleUpdated;
 

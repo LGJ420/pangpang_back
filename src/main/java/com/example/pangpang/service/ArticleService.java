@@ -163,12 +163,21 @@ public class ArticleService {
 
     // 게시글 삭제
     @Transactional
-    public void deleteArticle(Long id) {
-        if (!articleRepository.existsById(id)) {
-            throw new RuntimeException("글을 찾지 못했습니다. " + id);
+    public void deleteArticle(Long memberId, Long id) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("글을 찾지 못했습니다. " + id));
+
+        // 로그인한 회원이 admin인 경우 모든 글 삭제 가능
+        if (!member.getMemberRole().equals("admin") && !article.getMember().getId().equals(memberId)) {
+            throw new RuntimeException("이 글을 삭제할 권한이 없습니다.");
         }
+
         articleRepository.deleteById(id);
     }
+
 
     
 
