@@ -46,10 +46,10 @@ public class ProductReviewService {
         productReviewRepository.save(productReview);
     }
 
-    public List<ProductReviewDTO> list(Long id) {
+    public List<ProductReviewDTO> list(Long productId) {
 
         Sort sort = Sort.by("reviewDate").descending();
-        List<ProductReview> productReviews = productReviewRepository.findByProductId(id, sort);
+        List<ProductReview> productReviews = productReviewRepository.findByProductId(productId, sort);
 
         List<ProductReviewDTO> productReviewDTOs = productReviews.stream()
             .map(review->{
@@ -78,15 +78,22 @@ public class ProductReviewService {
 
         List<ProductReviewDTO> productReviewDTOs = productReviews.stream()
             .map(review->{
+
+                List<String> productImageFilenames = review.getProduct().getProductImage().stream()
+                    .map(ProductImage::getFileName)
+                    .collect(Collectors.toList());
+
                 ProductReviewDTO productReviewDTO = ProductReviewDTO.builder()
                     .rating(review.getRating())
                     .reviewContent(review.getReviewContent())
                     .reviewFileName(review.getReviewFileName())
                     .reviewDate(review.getReviewDate())
-                    .productId(review.getProduct().getId())
                     .memberId(review.getMember().getId())
                     .memberImage(review.getMember().getMemberImage())
                     .memberNickName(review.getMember().getMemberNickname())
+                    .productId(review.getProduct().getId())
+                    .productTitle(review.getProduct().getProductTitle())
+                    .productImages(productImageFilenames)
                     .build();
                 
                 return productReviewDTO;
