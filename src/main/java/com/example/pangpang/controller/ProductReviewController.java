@@ -24,7 +24,7 @@ public class ProductReviewController {
     private final CustomFileUtil customFileUtil;
 
     @PostMapping("")
-    public Map<String, String> add(
+    public ResponseEntity<Map<String, String>> add(
         @ModelAttribute ProductReviewDTO productReviewDTO,
         Authentication auth){
 
@@ -33,24 +33,24 @@ public class ProductReviewController {
     
         productReviewService.add(memberId, productReviewDTO);
 
-        return Map.of("result", "등록 완료");
+        return ResponseEntity.ok().body(Map.of("result", "success"));
     }
 
 
     @GetMapping("/{id}")
-    public List<ProductReviewDTO> list(@PathVariable(name = "id") Long productId){
+    public ResponseEntity<List<ProductReviewDTO>> list(@PathVariable(name = "id") Long productId){
 
-        return productReviewService.list(productId);
+        return ResponseEntity.ok().body(productReviewService.list(productId));
     }
 
 
     @GetMapping
-    public List<ProductReviewDTO> mylist(Authentication auth){
+    public ResponseEntity<List<ProductReviewDTO>> mylist(Authentication auth){
 
         Member member = (Member)auth.getPrincipal();
         Long memberId = member.getId();
 
-        return productReviewService.mylist(memberId);
+        return ResponseEntity.ok().body(productReviewService.mylist(memberId));
     }
 
 

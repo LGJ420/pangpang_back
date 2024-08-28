@@ -1,6 +1,5 @@
 package com.example.pangpang.controller;
 
-import java.util.*;
 import java.security.Principal;
 
 import org.springframework.web.bind.annotation.*;
@@ -11,12 +10,10 @@ import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.MemberService;
 import com.example.pangpang.util.CustomFileUtil;
 import com.example.pangpang.util.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
