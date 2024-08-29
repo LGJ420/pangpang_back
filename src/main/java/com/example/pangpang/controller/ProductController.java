@@ -47,6 +47,7 @@ public class ProductController {
   @PutMapping("/{id}")
   public ResponseEntity<Void> modifyProduct(Authentication auth, @PathVariable(name = "id") Long id,
       @RequestParam Map<String, String> params,
+      @RequestParam(value = "deleteImages", required = false) List<String> deleteImages,
       @RequestParam(value = "files", required = false) List<MultipartFile> files) {
 
     Member member = (Member) auth.getPrincipal();
@@ -61,7 +62,7 @@ public class ProductController {
     productDTO.setProductCategory(params.get("productCategory"));
     
     // 상품 수정
-    productService.modifyProduct(memberId, id, productDTO, files);
+    productService.modifyProduct(memberId, id, productDTO, deleteImages, files);
     return ResponseEntity.noContent().build();
   }
 
