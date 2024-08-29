@@ -29,7 +29,7 @@ public class MemberDTO {
     // 회원가입, 로그인, 비밀번호확인(마이페이지), 내정보수정(마이페이지)
     @NotNull(message = "비밀번호는 필수 항목입니다.")
     @NotNull(message = "비밀번호는 필수입니다.")
-    @Size(min = 8, max = 20, message = "비밀번호는 8자 이상 20자 이하이어야 합니다.")
+    @Size(min = 4, max = 20, message = "비밀번호는 4자 이상 20자 이하이어야 합니다.")
     private String memberPw;
 
     // 회원가입, 아이디찾기, 비밀번호찾기
