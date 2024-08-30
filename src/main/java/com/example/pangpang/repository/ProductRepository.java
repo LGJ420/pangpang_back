@@ -49,13 +49,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                                                   @Param("search") String search,
                                                   Pageable pageable);
 
-    // 두 번째 메서드: 특정 Product ID들에 대한 ProductImage 조회
-    @Query("SELECT pi FROM ProductImage pi WHERE pi.product.id IN :productIds")
-    List<ProductImage> findImagesByProductIds(@Param("productIds") List<Long> productIds);
-      
 
   // 상품 랜덤으로 가져오기 (메인에서 사용)
-  @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.productImage pi ORDER BY RAND() LIMIT 3")
-  List<Product> findAllRandomWithImages();
+  @Query("SELECT p FROM Product p ORDER BY RAND() LIMIT 3")
+  List<Product> findAllRandom();
+
+  // 특정 Product ID들에 대한 ProductImage 조회
+  @Query("SELECT pi FROM ProductImage pi WHERE pi.product.id IN :productIds")
+  List<ProductImage> findImagesByProductIds(@Param("productIds") List<Long> productIds);
 
 }

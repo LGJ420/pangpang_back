@@ -201,19 +201,29 @@ public class ProductService {
   /* 메인 페이지 상품 목록 */
   public List<ProductDTO> mainList() {
 
-    List<Product> products = productRepository.findAllRandomWithImages();
+    // 1. 랜덤으로 상품 리스트 가져오기
+    List<Product> products = productRepository.findAllRandom();
 
+    // 2. 상품 ID 리스트 추출
+    List<Long> productIds = products.stream()
+        .map(product -> product.getId())
+        .collect(Collectors.toList());
+
+    // 3. 해당 상품들의 이미지 리스트 가져오기
+    List<ProductImage> allImages = productRepository.findImagesByProductIds(productIds);
+
+    // 4. 이미지 그룹화
+    Map<Long, List<String>> productImagesMap = allImages.stream()
+        .collect(Collectors.groupingBy(
+            image -> image.getProduct().getId(),  // 아이디별로 그룹화 (키 값 = 상품 아이디)
+            Collectors.mapping(productImage -> productImage.getFileName(), Collectors.toList())));  // value 값은 이미지 리스트
+
+    // 5. ProductDTO로 변환하고 이미지 설정
     List<ProductDTO> dtoList = products.stream()
         .map(product -> {
           ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
-
-          // Product 객체에서 직접 이미지 리스트를 가져옴
-          List<String> imageNames = product.getProductImage().stream()
-              .map(ProductImage::getFileName)
-              .collect(Collectors.toList());
-
+          List<String> imageNames = productImagesMap.getOrDefault(product.getId(), Collections.emptyList());
           productDTO.setUploadFileNames(imageNames);
-
           return productDTO;
         })
         .collect(Collectors.toList());
