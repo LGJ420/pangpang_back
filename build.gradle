@@ -62,6 +62,8 @@ dependencies {
 	compileOnly('org.projectlombok:lombok')
     annotationProcessor('org.projectlombok:lombok')
 	testAnnotationProcessor('org.projectlombok:lombok')
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:3.1.0'
+
 }
 
 tasks.named('test') {
