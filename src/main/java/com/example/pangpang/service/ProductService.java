@@ -68,7 +68,7 @@ public class ProductService {
   }
 
   /* 상품 수정하기 */
-  public void modifyProduct(Long memberId, Long id, ProductDTO productDTO, List<MultipartFile> files) {
+  public void modifyProduct(Long memberId, Long id, ProductDTO productDTO, List<String> deleteImages, List<MultipartFile> files) {
 
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new EntityNotFoundException("Member not found"));
@@ -84,12 +84,17 @@ public class ProductService {
     product.changeProduct(productDTO.getProductTitle(), productDTO.getProductContent(),
         productDTO.getProductDetailContent(), productDTO.getProductCategory(), productDTO.getProductPrice());
 
-    // 기존 이미지 유지하고 새 이미지 추가
+    // 기존 이미지 삭제
+    if (deleteImages != null && !deleteImages.isEmpty()) {
+      // 이미지 삭제 로직
+      productImageRepository.deleteByFileNameIn(deleteImages);
+      customFileUtil.deleteFiles(deleteImages); // 파일 시스템에서 삭제
+    }
+
+     // 새 이미지 저장
     if (files != null && !files.isEmpty()) {
-      // 새 이미지 저장
       List<String> fileNames = customFileUtil.saveFiles(files);
 
-      // 새 이미지 엔티티 생성
       List<ProductImage> images = fileNames.stream()
           .map(fileName -> ProductImage.builder()
               .fileName(fileName)
