@@ -1,8 +1,13 @@
 package com.example.pangpang.service;
 
-import java.time.LocalDateTime;
 import java.util.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -29,8 +34,10 @@ import lombok.RequiredArgsConstructor;
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
-    private final CommentRepository commentRepository;  // Add CommentRepository
+    private final CommentRepository commentRepository;
     private final ModelMapper modelMapper = new ModelMapper();
+    
+    private static final Duration VIEW_LOG_DURATION = Duration.ofMinutes(1);
 
     // 게시글 페이지네이션 및 검색
     public PageResponseDTO<ArticleDTO> list(PageRequestDTO pageRequestDTO) {
@@ -70,8 +77,6 @@ public class ArticleService {
         return responseDTO;
     }
 
-
-
     public List<ArticleDTO> mainArticleList() {
         List<Article> result = articleRepository.findAll();
 
@@ -86,8 +91,6 @@ public class ArticleService {
 
         return dtoList;
     }
-
-
 
     // 게시글 작성
     @Transactional
@@ -108,25 +111,17 @@ public class ArticleService {
         return article.getId();
     }
 
-
-
-    // 조회수 증가
-    @Transactional
-    public void incrementViewCount(Long id) {
-        articleRepository.incrementViewCount(id);
-        articleRepository.flush();
-    }
-
-
-
     // 게시글 조회
     @Transactional
-    public ArticleDTO getArticleById(Long id) {
+    public ArticleDTO getArticleById(Long id, HttpServletRequest request, HttpServletResponse response) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Article not found"));
 
-        // 조회수 증가
-        incrementViewCount(id);
+        // 쿠키 기반 조회수 증가
+        if (isNewViewAllowed(id, request)) {
+            incrementViewCount(id);
+            setViewCookie(id, response);
+        }
 
         ArticleDTO articleDTO = modelMapper.map(article, ArticleDTO.class);
         articleDTO.setMemberId(article.getMember().getId());
@@ -136,7 +131,34 @@ public class ArticleService {
         return articleDTO;
     }
 
+    private boolean isNewViewAllowed(Long articleId, HttpServletRequest request) {
+        // 현재 시간에서 쿠키를 읽어와서 마지막 조회 시간 확인
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().startsWith("view_" + articleId)) {
+                    LocalDateTime lastViewTime = LocalDateTime.parse(cookie.getValue());
+                    return lastViewTime.isBefore(LocalDateTime.now().minus(VIEW_LOG_DURATION));
+                }
+            }
+        }
+        return true;
+    }
 
+    private void setViewCookie(Long articleId, HttpServletResponse response) {
+        // 쿠키에 조회 시간 기록
+        Cookie cookie = new Cookie("view_" + articleId, LocalDateTime.now().toString());
+        cookie.setMaxAge((int) VIEW_LOG_DURATION.toSeconds()); // 쿠키 유효 시간 설정
+        cookie.setPath("/"); // 쿠키 경로 설정
+        response.addCookie(cookie);
+    }
+
+    // 조회수 증가
+    @Transactional
+    public void incrementViewCount(Long id) {
+        articleRepository.incrementViewCount(id);
+        articleRepository.flush();
+    }
 
     // 게시글 업데이트
     @Transactional
@@ -159,8 +181,6 @@ public class ArticleService {
         articleRepository.save(article);
     }
 
-
-
     // 게시글 삭제
     @Transactional
     public void deleteArticle(Long memberId, Long id) {
@@ -177,9 +197,6 @@ public class ArticleService {
 
         articleRepository.deleteById(id);
     }
-
-
-    
 
     // 회원 마이페이지 게시글 목록 조회
     public PageResponseDTO<ArticleDTO> listByMember(Long memberId, PageRequestDTO pageRequestDTO) {

@@ -10,6 +10,8 @@ import com.example.pangpang.dto.PageResponseDTO;
 import com.example.pangpang.entity.Member;
 import com.example.pangpang.service.ArticleService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import java.util.*;
@@ -23,6 +25,7 @@ public class ArticleController {
 
     // 게시글 작성
     @PostMapping("")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<Long> createArticle(@Valid @RequestBody ArticleDTO articleDTO, Authentication auth){
 
         Member member = (Member)auth.getPrincipal();
@@ -36,6 +39,7 @@ public class ArticleController {
 
     // 전체 게시글 리스트
     @GetMapping("/list")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<PageResponseDTO<ArticleDTO>> list(
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "size", defaultValue = "12") int size,
@@ -57,14 +61,17 @@ public class ArticleController {
 
     // 게시글 조회
     @GetMapping("/{id}")
-    public ResponseEntity<ArticleDTO> getArticleById(@PathVariable(name = "id") Long id){
-        return ResponseEntity.ok(articleService.getArticleById(id));
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    public ResponseEntity<ArticleDTO> getArticleById(@PathVariable(name = "id") Long id,
+            HttpServletRequest request, HttpServletResponse response){
+        return ResponseEntity.ok(articleService.getArticleById(id, request, response));
     }
 
 
 
     // 게시글 수정
     @PutMapping("/{id}")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<Map<String, String>> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO, Authentication auth){
         Member member = (Member)auth.getPrincipal();
         Long memberId = member.getId();
@@ -77,6 +84,7 @@ public class ArticleController {
 
     // 게시글 삭제
     @DeleteMapping("/{id}")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<Map<String, String>> deleteArticle(@PathVariable Long id, Authentication auth){
         Member member = (Member) auth.getPrincipal();
         Long memberId = member.getId();
@@ -89,6 +97,7 @@ public class ArticleController {
 
     // 로그인한 회원의 본인 게시글 목록 조회
     @GetMapping("/myArticles")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<PageResponseDTO<ArticleDTO>> getMyArticles(
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
