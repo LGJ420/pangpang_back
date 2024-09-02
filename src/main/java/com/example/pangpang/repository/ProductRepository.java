@@ -24,14 +24,18 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   @Query("select p, pi from Product p left join p.productImage pi")
   Page<Product> selectList(Pageable pageable);
 
-  // 상품명 기준으로 검색
-  @Query("select p, pi from Product p left join p.productImage pi where p.productTitle like %:search%")
+  @Query("select p from Product p where p.productTitle like %:search%")
   Page<Product> findByProductTitleContainingWithImage(@Param("search") String search, Pageable pageable);
 
   // 카테고리별 정렬
   @Query("SELECT p FROM Product p WHERE (:category IS NULL OR :category = '' OR p.productCategory = :category) " +
+      "AND p.productStock > 0 " +
       "ORDER BY p.id DESC")
   Page<Product> findProductsByCategoryAndSearch(@Param("category") String category,
+      Pageable pageable);
+
+  @Query("SELECT p FROM Product p ORDER BY p.id DESC")
+  Page<Product> findAllProducts(@Param("category") String category,
       Pageable pageable);
 
   // 상품 랜덤으로 가져오기 (메인에서 사용)

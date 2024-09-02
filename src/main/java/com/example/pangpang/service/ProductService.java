@@ -67,7 +67,8 @@ public class ProductService {
   }
 
   /* 상품 수정하기 */
-  public void modifyProduct(Long memberId, Long id, ProductDTO productDTO, List<String> deleteImages, List<MultipartFile> files) {
+  public void modifyProduct(Long memberId, Long id, ProductDTO productDTO, List<String> deleteImages,
+      List<MultipartFile> files) {
 
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new EntityNotFoundException("Member not found"));
@@ -90,7 +91,7 @@ public class ProductService {
       customFileUtil.deleteFiles(deleteImages); // 파일 시스템에서 삭제
     }
 
-     // 새 이미지 저장
+    // 새 이미지 저장
     if (files != null && !files.isEmpty()) {
       List<String> fileNames = customFileUtil.saveFiles(files);
 
@@ -139,7 +140,7 @@ public class ProductService {
     productRepository.deleteById(id);
   }
 
-  /* 상품 목록 보기 */
+  /* 쇼핑 페이지 - 상품 목록 보기 */
   public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO) {
 
     // 페이지 정의
@@ -197,6 +198,58 @@ public class ProductService {
         .build();
   }
 
+  /* 상품 관리 페이지 - 상품 전체 목록 보기 (재고량 0인 상품도 포함) */
+  public PageResponseDTO<ProductDTO> productList(PageRequestDTO pageRequestDTO) {
+
+    // 페이지 정의
+    Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
+        Sort.by("id").descending());
+
+    // 검색 키워드 가져오기
+    String search = pageRequestDTO.getSearch();
+
+    // 첫 번째 단계: Product 목록만 조회
+    Page<Product> productPage = productRepository.findByProductTitleContainingWithImage(search, pageable);
+
+    // 현재 페이지의 Product ID 리스트 추출
+    List<Long> productIds = productPage.getContent().stream()
+        .map(Product::getId)
+        .collect(Collectors.toList());
+
+    // 두 번째 단계: Product ID 리스트로 관련된 이미지 조회
+    List<ProductImage> allImages = productRepository.findImagesByProductIds(productIds);
+
+    // 이미지 그룹화
+    Map<Long, List<String>> productImagesMap = allImages.stream()
+        .collect(Collectors.groupingBy(
+            image -> image.getProduct().getId(),
+            Collectors.mapping(ProductImage::getFileName, Collectors.toList())));
+
+    // Product 목록을 ProductDTO로 변환하고 이미지 설정
+    List<ProductDTO> dtoList = productPage.getContent().stream()
+        .map(product -> {
+          ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+          List<String> imageNames = productImagesMap.getOrDefault(product.getId(), Collections.emptyList());
+          productDTO.setUploadFileNames(imageNames);
+          productDTO.setProductTotalSales(product.getProductTotalSales());
+          productDTO.setProductStock(product.getProductStock() - product.getProductUpdateSales());
+          return productDTO;
+        })
+        .collect(Collectors.toList());
+
+    // 총 개수 가져오기
+    long totalCount = productPage.getTotalElements();
+
+    log.info("totalCount : " + totalCount);
+
+    // PageResponseDTO 생성 및 반환
+    return PageResponseDTO.<ProductDTO>withAll()
+        .dtoList(dtoList)
+        .pageRequestDTO(pageRequestDTO)
+        .totalCount(totalCount)
+        .build();
+  }
+
   /* 메인 페이지 상품 목록 */
   public List<ProductDTO> mainList() {
 
@@ -214,8 +267,8 @@ public class ProductService {
     // 4. 이미지 그룹화
     Map<Long, List<String>> productImagesMap = allImages.stream()
         .collect(Collectors.groupingBy(
-            image -> image.getProduct().getId(),  // 아이디별로 그룹화 (키 값 = 상품 아이디)
-            Collectors.mapping(productImage -> productImage.getFileName(), Collectors.toList())));  // value 값은 이미지 리스트
+            image -> image.getProduct().getId(), // 아이디별로 그룹화 (키 값 = 상품 아이디)
+            Collectors.mapping(productImage -> productImage.getFileName(), Collectors.toList()))); // value 값은 이미지 리스트
 
     // 5. ProductDTO로 변환하고 이미지 설정
     List<ProductDTO> dtoList = products.stream()

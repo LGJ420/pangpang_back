@@ -83,7 +83,7 @@ public class ProductController {
     return fileUtil.getFile(fileName);
   }
 
-  /* 상품 목록 보기 */
+  /* 쇼핑페이지 - 상품 목록 보기 */
   @GetMapping("/list")
   public PageResponseDTO<ProductDTO> list(
       @RequestParam(value = "page", defaultValue = "1") int page,
@@ -100,6 +100,23 @@ public class ProductController {
         .build();
 
     return productService.list(pageRequestDTO);
+  }
+
+  /* 상품 관리 페이지 - 상품 전체 목록 보기 */
+  @GetMapping("/")
+  public PageResponseDTO<ProductDTO> productList(
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "size", defaultValue = "12") int size,
+      @RequestParam(value = "search", required = false) String search) {
+
+    // URL에서 전달받은 데이터 PageRequestDTO에 저장
+    PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+        .page(page)
+        .size(size)
+        .search(search)
+        .build();
+
+    return productService.productList(pageRequestDTO);
   }
 
   /* 상품 상세 보기 */
