@@ -1,7 +1,7 @@
 package com.example.pangpang.service;
 
-import java.util.*;
 import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -29,10 +29,8 @@ import lombok.RequiredArgsConstructor;
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
-    private final CommentRepository commentRepository;
+    private final CommentRepository commentRepository;  // Add CommentRepository
     private final ModelMapper modelMapper = new ModelMapper();
-    
-
 
     // 게시글 페이지네이션 및 검색
     public PageResponseDTO<ArticleDTO> list(PageRequestDTO pageRequestDTO) {
@@ -72,6 +70,8 @@ public class ArticleService {
         return responseDTO;
     }
 
+
+
     public List<ArticleDTO> mainArticleList() {
         List<Article> result = articleRepository.findAll();
 
@@ -86,6 +86,8 @@ public class ArticleService {
 
         return dtoList;
     }
+
+
 
     // 게시글 작성
     @Transactional
@@ -106,12 +108,25 @@ public class ArticleService {
         return article.getId();
     }
 
+
+
+    // 조회수 증가
+    @Transactional
+    public void incrementViewCount(Long id) {
+        articleRepository.incrementViewCount(id);
+        articleRepository.flush();
+    }
+
+
+
     // 게시글 조회
     @Transactional
     public ArticleDTO getArticleById(Long id) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Article not found"));
 
+        // 조회수 증가
+        incrementViewCount(id);
 
         ArticleDTO articleDTO = modelMapper.map(article, ArticleDTO.class);
         articleDTO.setMemberId(article.getMember().getId());
@@ -122,13 +137,6 @@ public class ArticleService {
     }
 
 
-
-    // 조회수 증가
-    @Transactional
-    public void incrementViewCount(Long id) {
-        articleRepository.incrementViewCount(id);
-        articleRepository.flush();
-    }
 
     // 게시글 업데이트
     @Transactional
@@ -151,6 +159,8 @@ public class ArticleService {
         articleRepository.save(article);
     }
 
+
+
     // 게시글 삭제
     @Transactional
     public void deleteArticle(Long memberId, Long id) {
@@ -167,6 +177,9 @@ public class ArticleService {
 
         articleRepository.deleteById(id);
     }
+
+
+    
 
     // 회원 마이페이지 게시글 목록 조회
     public PageResponseDTO<ArticleDTO> listByMember(Long memberId, PageRequestDTO pageRequestDTO) {
