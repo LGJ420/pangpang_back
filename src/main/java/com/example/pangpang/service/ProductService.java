@@ -157,7 +157,7 @@ public class ProductService {
     }
 
     // 첫 번째 단계: Product 목록만 조회
-    Page<Product> productPage = productRepository.findProductsByCategoryAndSearch(category, search, pageable);
+    Page<Product> productPage = productRepository.findProductsByCategoryAndSearch(category, pageable);
 
     // 현재 페이지의 Product ID 리스트 추출
     List<Long> productIds = productPage.getContent().stream()
