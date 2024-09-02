@@ -18,15 +18,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   Optional<Product> findProductWithImages(@Param("id") Long id);
 
 
-  // 상세 보기 - 상품 이미지 포함
-  // 주어진 id에 해당하는 Product 조회. 조회 결과에는 ProductImage도 포함
+  // 상세 보기
   @Query("SELECT p FROM Product p LEFT JOIN FETCH p.productImage WHERE p.id = :id")
   Optional<Product> selectOne(@Param("id") Long id);
 
 
   
-  // 목록 보기 - 상품 이미지 포함
-  // 모든 Product와 각 Product에 연결된 ProductImage도 함께 조회. 결과는 페이지로 반환
+  // 목록 보기
   @Query("select p, pi from Product p left join p.productImage pi")
   Page<Product> selectList(Pageable pageable);
 
@@ -36,17 +34,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   Page<Product> findByProductCategory(@Param("category") String category, Pageable pageable);
 
   // 상품명 기준으로 검색
-  // 조회된 Product들과 각 Product에 연결된 ProductImage를 함꼐 로딩하여 페이지로 반환
   @Query("select p, pi from Product p left join p.productImage pi where p.productTitle like %:search%")
   Page<Product> findByProductTitleContainingWithImage(@Param("search") String search, Pageable pageable);
 
 
-  // 첫 번째 메서드: Product만 페이징 처리하여 조회 - 이미지 여러개인 파일은 상품을 중복으로 가져오므로 이미지는 조회 x
+  // 카테고리별 정렬
     @Query("SELECT p FROM Product p WHERE (:category IS NULL OR :category = '' OR p.productCategory = :category) " +
-           "AND (:search IS NULL OR :search = '' OR p.productTitle LIKE %:search%) " +
            "ORDER BY p.id DESC")
     Page<Product> findProductsByCategoryAndSearch(@Param("category") String category,
-                                                  @Param("search") String search,
                                                   Pageable pageable);
 
 
