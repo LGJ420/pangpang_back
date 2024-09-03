@@ -116,6 +116,7 @@ public class OrdersService {
                                                         product.getProductTotalSales() + dto.getCartCount());
                                         product.setProductUpdateSales(
                                                         product.getProductUpdateSales() + dto.getCartCount());
+                                        product.setProductStock(product.getProductStock() - product.getProductUpdateSales());
 
                                         // 업데이트할 상품을 Map에 추가
                                         productsToUpdate.put(product.getId(), product);

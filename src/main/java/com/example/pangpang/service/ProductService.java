@@ -180,7 +180,7 @@ public class ProductService {
           List<String> imageNames = productImagesMap.getOrDefault(product.getId(), Collections.emptyList());
           productDTO.setUploadFileNames(imageNames);
           productDTO.setProductTotalSales(product.getProductTotalSales());
-          productDTO.setProductStock(product.getProductStock() - product.getProductUpdateSales());
+          productDTO.setProductStock(product.getProductStock());
           return productDTO;
         })
         .collect(Collectors.toList());
@@ -232,7 +232,7 @@ public class ProductService {
           List<String> imageNames = productImagesMap.getOrDefault(product.getId(), Collections.emptyList());
           productDTO.setUploadFileNames(imageNames);
           productDTO.setProductTotalSales(product.getProductTotalSales());
-          productDTO.setProductStock(product.getProductStock() - product.getProductUpdateSales());
+          productDTO.setProductStock(product.getProductStock());
           return productDTO;
         })
         .collect(Collectors.toList());
