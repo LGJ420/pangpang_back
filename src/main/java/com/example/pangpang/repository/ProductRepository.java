@@ -13,18 +13,18 @@ import com.example.pangpang.entity.ProductImage;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-
+  // 관리 페이지 상품 목록
   @Query("select p from Product p where p.productTitle like %:search%")
   Page<Product> findByProductTitleContainingWithImage(@Param("search") String search, Pageable pageable);
 
-  // 카테고리별 정렬
+  // 쇼핑 페이지 상품 목록
   @Query("SELECT p FROM Product p WHERE (:category IS NULL OR :category = '' OR p.productCategory = :category) " +
       "AND (:search IS NULL OR :search = '' OR p.productTitle LIKE %:search%) " + "AND p.productStock > 0" +
       "ORDER BY p.id DESC")
   Page<Product> findProductsByCategoryAndSearch(@Param("category") String category,
       @Param("search") String search,
       Pageable pageable);
-
+      
 
   // 상품 랜덤으로 가져오기 (메인에서 사용)
   @Query("SELECT p FROM Product p ORDER BY RAND() LIMIT 3")
