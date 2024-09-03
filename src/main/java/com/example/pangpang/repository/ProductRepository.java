@@ -13,16 +13,6 @@ import com.example.pangpang.entity.ProductImage;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-  @Query("SELECT p FROM Product p LEFT JOIN FETCH p.productImage WHERE p.id = :id")
-  Optional<Product> findProductWithImages(@Param("id") Long id);
-
-  // 상세 보기
-  @Query("SELECT p FROM Product p LEFT JOIN FETCH p.productImage WHERE p.id = :id")
-  Optional<Product> selectOne(@Param("id") Long id);
-
-  // 목록 보기
-  @Query("select p, pi from Product p left join p.productImage pi")
-  Page<Product> selectList(Pageable pageable);
 
   @Query("select p from Product p where p.productTitle like %:search%")
   Page<Product> findByProductTitleContainingWithImage(@Param("search") String search, Pageable pageable);
@@ -35,9 +25,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       @Param("search") String search,
       Pageable pageable);
 
-  @Query("SELECT p FROM Product p ORDER BY p.id DESC")
-  Page<Product> findAllProducts(@Param("category") String category,
-      Pageable pageable);
 
   // 상품 랜덤으로 가져오기 (메인에서 사용)
   @Query("SELECT p FROM Product p ORDER BY RAND() LIMIT 3")
