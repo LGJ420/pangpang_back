@@ -29,9 +29,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
   // 카테고리별 정렬
   @Query("SELECT p FROM Product p WHERE (:category IS NULL OR :category = '' OR p.productCategory = :category) " +
-      "AND p.productStock > 0 " +
+      "AND (:search IS NULL OR :search = '' OR p.productTitle LIKE %:search%) " +
       "ORDER BY p.id DESC")
   Page<Product> findProductsByCategoryAndSearch(@Param("category") String category,
+      @Param("search") String search,
       Pageable pageable);
 
   @Query("SELECT p FROM Product p ORDER BY p.id DESC")
