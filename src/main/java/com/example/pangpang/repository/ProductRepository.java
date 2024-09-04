@@ -19,7 +19,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
   // 쇼핑 페이지 상품 목록
   @Query("SELECT p FROM Product p WHERE (:category IS NULL OR :category = '' OR p.productCategory = :category) " +
-      "AND (:search IS NULL OR :search = '' OR p.productTitle LIKE %:search%) " + "AND p.productStock > 0" +
+      "AND (:search IS NULL OR :search = '' OR p.productTitle LIKE %:search%) " +
       "ORDER BY p.id DESC")
   Page<Product> findProductsByCategoryAndSearch(@Param("category") String category,
       @Param("search") String search,
