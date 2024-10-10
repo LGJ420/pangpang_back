@@ -61,7 +61,7 @@ dependencies {
     implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4:1.16'
 
     // Feign Client
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.3'
 
     // 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
