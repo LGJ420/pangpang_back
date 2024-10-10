@@ -139,4 +139,11 @@ public class ProductController {
 
     return ResponseEntity.ok().body(Map.of("result", "success"));
   }
+
+  /* 메인페이지에서 3개 랜덤 상품만 가져오기 */
+  @GetMapping("/random")
+  public List<ProductDTO> mainList() {
+
+   return productService.mainList();
+  }
 }
