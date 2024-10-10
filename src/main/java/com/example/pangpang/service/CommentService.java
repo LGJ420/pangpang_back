@@ -74,8 +74,8 @@ public class CommentService {
 
 
     public void updateComment(Long memberId, Long id, CommentDTO commentDTO) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+        // Member member = memberRepository.findById(memberId)
+        //         .orElseThrow(() -> new EntityNotFoundException("Member not found"));
 
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));

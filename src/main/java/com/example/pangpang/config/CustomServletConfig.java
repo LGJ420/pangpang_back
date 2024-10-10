@@ -19,6 +19,7 @@ public class CustomServletConfig implements WebMvcConfigurer {
      * 프론트에서 axios하면 안받아줍니다
      * 이게 이런 비동기 통신하면 무조건 cors정책을 설정해야 됩니다
      */
+    @SuppressWarnings("null")
     @Override
     public void addCorsMappings(CorsRegistry registry) {
 

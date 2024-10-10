@@ -7,33 +7,14 @@ import java.util.stream.Collectors;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.example.pangpang.dto.*;
 import com.example.pangpang.entity.Member;
-import com.example.pangpang.entity.Product;
-import com.example.pangpang.entity.ProductImage;
 import com.example.pangpang.exception.MemberNotFoundException;
 import com.example.pangpang.util.CustomFileUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.security.Principal;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.modelmapper.ModelMapper;
-
 import org.springframework.data.domain.*;
-import org.springframework.http.ResponseEntity;
-
-import com.example.pangpang.entity.*;
 import com.example.pangpang.repository.*;
-
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -50,10 +31,6 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     private final CustomFileUtil customFileUtil;
-
-    private final ModelMapper modelMapper;
-    private final ProductRepository productRepository;
-    private final ProductImageRepository productImageRepository;
 
     // ===================================================
 

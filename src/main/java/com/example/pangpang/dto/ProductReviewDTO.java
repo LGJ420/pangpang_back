@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.pangpang.entity.ProductImage;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.*;
